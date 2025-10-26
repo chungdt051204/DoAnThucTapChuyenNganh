@@ -1,0 +1,30 @@
+.navBar__container {
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: var(--gradient-color);
+  cursor: pointer;
+
+  & img {
+    width: 80px;
+    height: 80px;
+  }
+
+  & a {
+    font-weight: 500;
+    &:hover {
+      text-shadow: 0.1px 0 0 black;
+    }
+  }
+
+  & .navBar__item1 {
+    display: flex;
+    gap: 35px;
+  }
+
+  & .navBar__item2 {
+    display: flex;
+    gap: 30px;
+  }
+}
