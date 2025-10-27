@@ -1,26 +1,43 @@
 import { Link } from "react-router-dom";
-import "./components-css/main.css";
+import "./components-css/NavBar.css";
 export default function UserNavBar() {
   return (
     <>
-      <section class="navBar__section">
-        <div class="container navBar__container">
-          <img src="rocket-icon.svg" alt="rocket 1h" class="navBar__img" />
-          <div class="navBar__item1">
-            <a href="#">Trang chủ</a>
-            <a href="#">Khóa học</a>
-            <a href="#">🛒</a>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">
+              <img src="rocket-icon.svg" alt="rocket 1h" class="navBar__img" />
+            </Link>
+          </li>
+          <li>
+            <Link to="/">
+              <p>Trang chủ</p>
+            </Link>
+          </li>
+          <li>
+            <Link>
+              <p>Khóa học</p>
+            </Link>
+          </li>
+          <li>
+            <Link>
+              <p>🛒</p>
+            </Link>
+          </li>
+          <li>
             <div>
               <input type="text" />
               <button>🔍</button>
             </div>
-          </div>
-          <div class="navBar__item2">
-            <a href="#">Đăng nhập</a>
-            <a href="#">Đăng ký</a>
-          </div>
-        </div>
-      </section>
+          </li>
+          <li>
+            <Link to="/login">
+              <p>Đăng nhập</p>
+            </Link>
+          </li>
+        </ul>
+      </nav>
     </>
   );
 }
