@@ -1,13 +1,12 @@
-/*Reset cơ bản*/
-* {
+/* Scoped styles for auth pages — prefix all selectors with .auth-page to avoid global leakage */
+.auth-page * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Segoe UI", sans-serif;
 }
 
-/* Toàn trang */
-body {
+.auth-page {
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -15,8 +14,7 @@ body {
   background: linear-gradient(to bottom, #ffffff, #dbefff);
 }
 
-/* Khung đăng nhập */
-section {
+.auth-page section {
   background-color: #fff;
   padding: 40px;
   border-radius: 10px;
@@ -25,12 +23,12 @@ section {
   text-align: center;
 }
 
-h2 {
+.auth-page h2 {
   color: #0070ba;
   margin-bottom: 20px;
 }
 
-input {
+.auth-page input {
   width: 100%;
   padding: 10px;
   margin: 8px 0;
@@ -38,7 +36,65 @@ input {
   border-radius: 5px;
 }
 
-button {
+/* Floating label form-group */
+.auth-page .form-group {
+  position: relative;
+  margin: 8px 0;
+}
+.auth-page .form-group2 {
+  position: relative;
+  margin: 8px 0;
+}
+
+/* increase top padding so label doesn't overlap typed text */
+.auth-page .form-group input {
+  padding: 14px 10px; /* top padding larger for placeholder area */
+}
+.auth-page .form-group2 input {
+  padding: 14px 10px; /* top padding larger for placeholder area */
+}
+
+/* label initial (acts like placeholder) */
+.auth-page .form-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 6px;
+  font-size: 14px;
+  color: #888;
+  pointer-events: none;
+  transition: all 0.18s ease;
+  background: transparent;
+}
+.auth-page .form-group2 label {
+  position: absolute;
+  left: 12px;
+  top: -2px;
+  padding: 0 6px;
+  font-size: 14px;
+  color: #888;
+  background: #fff;
+}
+
+/* float label when input focused or has content */
+.auth-page .form-group input:focus + label,
+.auth-page .form-group input:not(:placeholder-shown) + label {
+  top: -2px;
+  transform: none;
+  font-size: 12px;
+  color: #0070ba;
+  background: #fff;
+  padding: 0 6px;
+}
+
+.auth-page .form-group input:focus {
+  outline: none;
+  border-color: #0070ba;
+  box-shadow: 0 0 0 3px rgba(0, 120, 255, 0.06);
+}
+
+.auth-page button {
   width: 100%;
   padding: 10px;
   background-color: #0070ba;
@@ -49,20 +105,24 @@ button {
   font-weight: bold;
 }
 
-button:hover {
+.auth-page button:hover {
   background-color: #005fa3;
 }
 
-p {
+.auth-page p {
   margin-top: 15px;
   font-size: 14px;
 }
 
-a {
+.auth-page a {
   color: #0070ba;
   text-decoration: none;
 }
 
-a:hover {
+.auth-page a:hover {
   text-decoration: underline;
+}
+
+.auth-page .gender-group {
+  display: flex;
 }

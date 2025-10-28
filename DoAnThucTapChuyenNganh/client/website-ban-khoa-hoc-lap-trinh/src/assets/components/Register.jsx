@@ -29,46 +29,81 @@ export default function Register() {
   };
   return (
     <>
-      <section>
-        <h2>Register</h2>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="fullname">Fullname</label>
-          <input
-            type="text"
-            name="fullName"
-            ref={fullName}
-            placeholder="Fullname"
-          />
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            name="username"
-            ref={username}
-            placeholder="Username"
-          />
-          <label htmlFor="email">Email</label>
-          <input type="text" name="email" ref={email} placeholder="Email" />
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            name="password"
-            ref={password}
-            placeholder="Password"
-          />
-          <label htmlFor="avatar">Avatar</label>
-          <input type="file" name="avatar" ref={avatar} />
-          <label htmlFor="phone">Phone</label>
-          <input type="text" name="phone" ref={phone} placeholder="Phone" />
-          <label htmlFor="gender">Gender</label>
-          <input type="radio" name="gender" ref={male} value="nam" />
-          Nam
-          <input type="radio" name="gender" ref={female} value="nữ" />
-          Nữ
-          <label htmlFor="dateOfBirth">Date Of Birth</label>
-          <input type="date" name="dateOfBirth" ref={dateOfBirth} />
-          <button>Đăng ký</button>
-        </form>
-      </section>
+      <div className="auth-page">
+        <section>
+          <h2>Register</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="text"
+                id="fullname"
+                name="fullname"
+                ref={fullName}
+                placeholder=" "
+                required
+              />
+              <label htmlFor="fullname">Fullname</label>
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                id="username"
+                name="username"
+                ref={username}
+                placeholder=" "
+                required
+              />
+              <label htmlFor="username">Username</label>
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                name="email"
+                ref={email}
+                placeholder=" "
+                id="email"
+                required
+              />
+              <label htmlFor="email">Email</label>
+            </div>
+            <div className="form-group">
+              <input
+                type="password"
+                name="password"
+                ref={password}
+                placeholder=" "
+                id="password"
+                required
+              />
+              <label htmlFor="password">Password</label>
+            </div>
+            <label htmlFor="avatar">Avatar</label>
+            <input type="file" name="avatar" ref={avatar} placeholder=" " />
+            <div className="form-group">
+              <input
+                type="text"
+                name="phone"
+                ref={phone}
+                placeholder=" "
+                id="phone"
+              />
+              <label htmlFor="phone">Phone</label>
+            </div>
+            <div className="gender-group">
+              <label htmlFor="gender">Gender: </label>
+              <input type="radio" name="gender" ref={male} value="nam" />
+              Nam
+              <input type="radio" name="gender" ref={female} value="nữ" />
+              Nữ
+            </div>
+            <div className="form-group2">
+              <input type="date" name="dateOfBirth" ref={dateOfBirth} />
+              <label htmlFor="dateOfBirth">Date Of Birth</label>
+            </div>
+            <button>Đăng ký</button>
+          </form>
+        </section>
+      </div>
     </>
   );
 }
