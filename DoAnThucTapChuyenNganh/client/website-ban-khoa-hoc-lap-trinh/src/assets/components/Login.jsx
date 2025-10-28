@@ -10,21 +10,25 @@ export default function Login() {
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">Email</label>
-          <input type="text" id="email" name="email" placeholder="Email" />
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
             name="password"
             placeholder="Password"
+            required
           />
           <button>Login</button>
         </form>
         <p>
-          Chưa có tài khoản
-          <span>
-            <Link to="/register">Đăng ký ngay</Link>
-          </span>
+          Chưa có tài khoản? <a href="/Register">Đăng ký ngay</a>
         </p>
       </section>
     </>
