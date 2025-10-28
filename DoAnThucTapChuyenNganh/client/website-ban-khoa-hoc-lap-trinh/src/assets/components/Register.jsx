@@ -77,8 +77,12 @@ export default function Register() {
               />
               <label htmlFor="password">Password</label>
             </div>
-            <label htmlFor="avatar">Avatar</label>
-            <input type="file" name="avatar" ref={avatar} placeholder=" " />
+
+            <div className="form-group2">
+              <input type="file" name="avatar" ref={avatar} />
+              <label htmlFor="avatar">Avatar</label>
+            </div>
+
             <div className="form-group">
               <input
                 type="text"
