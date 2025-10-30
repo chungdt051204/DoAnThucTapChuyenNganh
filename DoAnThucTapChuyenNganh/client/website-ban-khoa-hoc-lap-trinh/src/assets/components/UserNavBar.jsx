@@ -32,8 +32,8 @@ export default function UserNavBar() {
         </ul>
 
         <div className="auth">
-          <Link to="/Login">Đăng nhập</Link>
-          <Link to="/Register">Đăng ký</Link>
+          <Link to="/login">Đăng nhập</Link>
+          <Link to="/register">Đăng ký</Link>
         </div>
       </nav>
     </>

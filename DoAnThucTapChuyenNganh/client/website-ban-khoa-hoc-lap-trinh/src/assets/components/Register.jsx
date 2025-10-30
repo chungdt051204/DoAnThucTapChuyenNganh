@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 import "./components-css/Auth.css";
 export default function Register() {
+  const navigate = useNavigate();
   const fullName = useRef();
   const username = useRef();
   const email = useRef();
@@ -24,13 +26,33 @@ export default function Register() {
       : female.current.value;
     formData.append("gender", gender);
     formData.append("dateOfBirth", dateOfBirth.current.value);
-    const data = Object.fromEntries(formData.entries());
-    console.log("Dữ liệu form:", data);
+    // const data = Object.fromEntries(formData.entries());
+    // console.log("Dữ liệu form:", data);
+    fetch("http://localhost:3000/register", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then(({ message }) => {
+        alert(message);
+        navigate("/login");
+      })
+      .catch(async (err) => {
+        if (err.status === 400) {
+          //Lấy dữ liệu gửi từ backend
+          const { message } = await err.json();
+          alert(message);
+        }
+      });
   };
   return (
     <>
       <div className="auth-page">
-        <section>
+        <div className="formAuth">
           <h2>Register</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -77,12 +99,6 @@ export default function Register() {
               />
               <label htmlFor="password">Password</label>
             </div>
-
-            <div className="form-group2">
-              <input type="file" name="avatar" ref={avatar} />
-              <label htmlFor="avatar">Avatar</label>
-            </div>
-
             <div className="form-group">
               <input
                 type="text"
@@ -93,6 +109,10 @@ export default function Register() {
               />
               <label htmlFor="phone">Phone</label>
             </div>
+            <div className="form-group">
+              <input type="date" name="dateOfBirth" ref={dateOfBirth} />
+              <label htmlFor="dateOfBirth">Date Of Birth</label>
+            </div>
             <div className="gender-group">
               <label htmlFor="gender">Gender: </label>
               <input type="radio" name="gender" ref={male} value="nam" />
@@ -100,13 +120,12 @@ export default function Register() {
               <input type="radio" name="gender" ref={female} value="nữ" />
               Nữ
             </div>
-            <div className="form-group2">
-              <input type="date" name="dateOfBirth" ref={dateOfBirth} />
-              <label htmlFor="dateOfBirth">Date Of Birth</label>
+            <div className="avatar-group">
+              <input type="file" name="avatar" ref={avatar} />
             </div>
             <button>Đăng ký</button>
           </form>
-        </section>
+        </div>
       </div>
     </>
   );

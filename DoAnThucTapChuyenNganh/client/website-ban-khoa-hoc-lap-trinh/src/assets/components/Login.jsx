@@ -7,7 +7,7 @@ export default function Login() {
   };
   return (
     <div className="auth-page">
-      <section>
+      <div className="formAuth">
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -31,13 +31,12 @@ export default function Login() {
             />
             <label htmlFor="password">Password</label>
           </div>
-
           <button>Login</button>
         </form>
         <p>
           Chưa có tài khoản? <Link to="/Register">Đăng ký ngay</Link>
         </p>
-      </section>
+      </div>
     </div>
   );
 }

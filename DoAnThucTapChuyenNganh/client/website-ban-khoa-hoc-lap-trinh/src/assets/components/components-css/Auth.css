@@ -1,61 +1,35 @@
-/* Scoped styles for auth pages — prefix all selectors with .auth-page to avoid global leakage */
-.auth-page * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
-}
-
 .auth-page {
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(to bottom, #ffffff, #dbefff);
+  font-family: "Segoe UI", sans-serif;
 }
-
-.auth-page section {
-  background-color: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.auth-page > .formAuth {
   width: 300px;
+  padding: 40px;
   text-align: center;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-.auth-page h2 {
+.formAuth > h2 {
   color: #0070ba;
   margin-bottom: 20px;
 }
-
-.auth-page input {
+form > .form-group {
+  position: relative;
+  margin: 8px 0;
+}
+.form-group > input {
   width: 100%;
-  padding: 10px;
+  padding: 5px;
   margin: 8px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
-
-/* Floating label form-group */
-.auth-page .form-group {
-  position: relative;
-  margin: 8px 0;
-}
-.auth-page .form-group2 {
-  position: relative;
-  margin: 8px 0;
-}
-
-/* increase top padding so label doesn't overlap typed text */
-.auth-page .form-group input {
-  padding: 14px 10px; /* top padding larger for placeholder area */
-}
-.auth-page .form-group2 input {
-  padding: 14px 10px; /* top padding larger for placeholder area */
-}
-
-/* label initial (acts like placeholder) */
-.auth-page .form-group label {
+.form-group > label {
   position: absolute;
   left: 12px;
   top: 50%;
@@ -67,17 +41,6 @@
   transition: all 0.18s ease;
   background: transparent;
 }
-.auth-page .form-group2 label {
-  position: absolute;
-  left: 12px;
-  top: -3px;
-  padding: 0 6px;
-  font-size: 14px;
-  color: #888;
-  background: #fff;
-}
-
-/* float label when input focused or has content */
 .auth-page .form-group input:focus + label,
 .auth-page .form-group input:not(:placeholder-shown) + label {
   top: -2px;
@@ -87,14 +50,12 @@
   background: #fff;
   padding: 0 6px;
 }
-
-.auth-page .form-group input:focus {
+.form-group > input:focus {
   outline: none;
   border-color: #0070ba;
   box-shadow: 0 0 0 3px rgba(0, 120, 255, 0.06);
 }
-
-.auth-page button {
+form > button {
   width: 100%;
   padding: 10px;
   background-color: #0070ba;
@@ -104,25 +65,28 @@
   cursor: pointer;
   font-weight: bold;
 }
-
-.auth-page button:hover {
+form > button:hover {
   background-color: #005fa3;
 }
-
-.auth-page p {
+.formAuth > p {
   margin-top: 15px;
   font-size: 14px;
 }
-
-.auth-page a {
+.formAuth > p > a {
   color: #0070ba;
   text-decoration: none;
 }
-
-.auth-page a:hover {
+.formAuth > p > a:hover {
   text-decoration: underline;
 }
-
-.auth-page .gender-group {
+form > .gender-group {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+form > .avatar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  margin: 15px 0;
 }
