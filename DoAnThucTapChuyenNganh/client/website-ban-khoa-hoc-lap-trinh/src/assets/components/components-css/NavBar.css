@@ -84,3 +84,7 @@ body {
 .auth a:hover {
   color: #0078ff;
 }
+.auth > .userProfile {
+  display: flex;
+  align-items: center;
+}

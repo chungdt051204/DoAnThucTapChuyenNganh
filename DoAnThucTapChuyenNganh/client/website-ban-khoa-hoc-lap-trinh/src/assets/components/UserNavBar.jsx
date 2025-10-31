@@ -1,7 +1,27 @@
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
 
 export default function UserNavBar() {
+  const { user, isLogin, setIsLogin } = useContext(AppContext);
+  const handleLogout = () => {
+    setIsLogin(false);
+    fetch("http://localhost:3000/me", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then(({ message }) => {
+        alert(message);
+      });
+  };
   return (
     <>
       <nav className="navbar">
@@ -30,10 +50,24 @@ export default function UserNavBar() {
             </div>
           </li>
         </ul>
-
         <div className="auth">
-          <Link to="/login">Đăng nhập</Link>
-          <Link to="/register">Đăng ký</Link>
+          {isLogin ? (
+            <div className="userProfile">
+              <img
+                src={
+                  user && user.avatar.includes("https")
+                    ? user.avatar
+                    : `http://localhost:3000/${user.avatar}`
+                }
+                alt=""
+                width={50}
+                height={50}
+              />
+              <Link onClick={handleLogout}>Đăng xuất</Link>
+            </div>
+          ) : (
+            <Link to="/login">Đăng nhập</Link>
+          )}
         </div>
       </nav>
     </>

@@ -13,7 +13,11 @@ app.use(
     credentials: true,
   })
 );
+const cookiesParser = require("cookie-parser");
+app.use(cookiesParser());
 app.use(express.json());
+const userRouter = require("./modules/users/user.router");
+app.use("/", userRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Lưu trữ file vô ổ đĩa bằng multer
@@ -34,7 +38,7 @@ app.post("/register", upload.single("avatar"), async (req, res) => {
     if (existingUser)
       return res.status(400).json({ message: "Email này đã tồn tại" });
     //Nếu chưa có thì thêm mới
-    await userEntity.create({ ...body, avatar: req.file.filename });
+    await userEntity.create({ ...body, avatar: req.file && req.file.filename });
     return res.status(200).json({ message: "Đăng ký tài khoản thành công" });
   } catch (error) {
     console.log("Có lỗi xảy ra trong quá trình đăng ký", error);
