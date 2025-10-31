@@ -57,7 +57,7 @@ export default function UserNavBar() {
                 src={
                   user && user.avatar.includes("https")
                     ? user.avatar
-                    : `http://localhost:3000/${user.avatar}`
+                    : `http://localhost:3000/images/${user.avatar}`
                 }
                 alt=""
                 width={50}
