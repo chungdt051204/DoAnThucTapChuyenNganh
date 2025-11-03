@@ -8,7 +8,7 @@
 //     dateOfBirth: Date,      // Ngày sinh
 //     gender: String,         // Giới tính ("Nam", "Nữ", "Khác")
 //     avatar: String,         // Đường dẫn ảnh đại diện (URL)
-//     role: String,           // Vai trò: "user" | "teacher" | "admin"
+//     role: String,           // Vai trò: "user" | "instructor" | "admin"
 //     status: String,         // Trạng thái tài khoản: "active" | "inactive" | "banned"
 //     createdAt: Date,        // Ngày tạo tài khoản
 //     updatedAt: Date         // Ngày cập nhật gần nhất
@@ -18,7 +18,7 @@
 //     title: String,               // Tên khóa học
 //     description: String,         // Mô tả chi tiết về khóa học
 //     categoryId: ObjectId,          // ID danh mục khóa học (tham chiếu đến collection categories)
-//     teacherId: ObjectId,         // ID giảng viên đăng khóa học (tham chiếu đến collection users)
+//     instructorId: ObjectId,         // ID giảng viên đăng khóa học (tham chiếu đến collection users)
 //     level: String,               // Cấp độ: "Cơ bản", "Trung cấp", "Nâng cao"
 //     language: String,            // Ngôn ngữ giảng dạy (VD: "Tiếng Việt", "English")
 //     duration: String,            // Thời lượng toàn khóa (VD: "10 giờ 30 phút")

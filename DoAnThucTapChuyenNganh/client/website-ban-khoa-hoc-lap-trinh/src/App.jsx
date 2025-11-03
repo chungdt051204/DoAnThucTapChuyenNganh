@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 function App() {
   const [user, setUser] = useState("");
   const [isLogin, setIsLogin] = useState(false);
+  const [courses, setCourses] = useState([]);
   useEffect(() => {
     fetch("http://localhost:3000/me", {
       credentials: "include",
@@ -21,9 +22,20 @@ function App() {
         setUser(data);
       });
   }, []);
+  useEffect(() => {
+    fetch("http://localhost:3000/courses")
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then((data) => {
+        setCourses(data);
+      })
+      .catch();
+  }, []);
   return (
     <>
-      <AppContext.Provider value={{ user, isLogin, setIsLogin }}>
+      <AppContext.Provider value={{ user, isLogin, setIsLogin, courses }}>
         <Routes>
           <Route path="/" element={<Home></Home>} />
           <Route path="/login" element={<Login></Login>} />

@@ -16,8 +16,10 @@ app.use(
 const cookiesParser = require("cookie-parser");
 app.use(cookiesParser());
 app.use(express.json());
-const userRouter = require("./modules/users/user.router");
-app.use("/", userRouter);
+const usersRouter = require("./modules/users/user.router");
+const coursesRouter = require("./modules/courses/courses.router");
+app.use("/", usersRouter);
+app.use("/", coursesRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Lưu trữ file vô ổ đĩa bằng multer
