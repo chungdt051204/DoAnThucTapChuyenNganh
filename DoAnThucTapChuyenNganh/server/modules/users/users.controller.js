@@ -53,3 +53,12 @@ exports.logout = (req, res) => {
     .status(200)
     .json({ message: "Đăng xuất thành công" });
 };
+exports.getInstructors = async (req, res) => {
+  try {
+    const instructors = await userEntity.find({ role: "instructor" });
+    res.status(200).json(instructors);
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi lấy thông tin giảng viên", error);
+    res.status(500).json({ mesage: "Lấy thông tin giảng viên thất bại" });
+  }
+};

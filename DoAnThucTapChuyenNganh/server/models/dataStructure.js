@@ -25,7 +25,8 @@
 //     price: Number,               // Giá khóa học
 //     rating: Number,              // Điểm đánh giá trung bình (VD: 4.5)
 //     totalLessons: Number,        // Tổng số bài học trong khóa
-//     thumbnail: String,           // Ảnh đại diện khóa học (URL)
+//     thumbnail: String,           // Ảnh nền khóa học (URL)
+//     image: String                // Ảnh đại diện khóa học (URL)
 //     tags: [String],              // Các từ khóa gắn với khóa học
 //     objectives: [String],        // Mục tiêu học tập (VD: “Nắm vững cú pháp JavaScript”)
 //     requirements: [String],      // Yêu cầu đầu vào (VD: “Biết HTML cơ bản”)
@@ -39,7 +40,8 @@
 //       }
 //     ],
 //     isFeatured: Boolean,         // Có được đánh dấu là khóa học nổi bật hay không
-//     isFree: Boolean          // Khoá học miễn phí hay không
+//     isFree: Boolean,          // Khoá học miễn phí hay không
+//     status: String            //Trạng thái của khóa học
 //     createdAt: Date,             // Ngày tạo khóa học
 //     updatedAt: Date              // Ngày cập nhật khóa học
 //   }

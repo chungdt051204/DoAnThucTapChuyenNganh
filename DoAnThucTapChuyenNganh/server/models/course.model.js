@@ -37,6 +37,11 @@ const courseSchema = new mongoose.Schema(
     lessons: [lessonSchema],
     isFeatured: { type: Boolean, default: false },
     isFree: { type: Boolean, default: true },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "inactive",
+    },
   },
   { timestamps: true }
 );
