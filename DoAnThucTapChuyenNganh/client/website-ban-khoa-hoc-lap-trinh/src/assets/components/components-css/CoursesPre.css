@@ -1,0 +1,17 @@
+.course-pre-component {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 1000px;
+  margin: 50px auto 0;
+}
+.course-pre-component > .course-pre-track {
+  display: flex;
+  gap: 15px;
+}
+.course-pre-track > .course-pre-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 150px;
+}

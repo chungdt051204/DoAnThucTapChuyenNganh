@@ -37,11 +37,6 @@ export default function UserNavBar() {
             <Link to="#">Khóa học</Link>
           </li>
           <li>
-            <Link to="#">
-              <i className="fas fa-shopping-cart">🛒</i>
-            </Link>
-          </li>
-          <li>
             <div className="search-box">
               <input type="text" placeholder="Tìm kiếm..." />
               <button>
