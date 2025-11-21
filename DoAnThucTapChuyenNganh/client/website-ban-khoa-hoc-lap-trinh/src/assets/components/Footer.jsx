@@ -37,8 +37,8 @@ export default function Footer() {
         {/* Cột 3: Liên hệ */}
         <div className="footer-section">
           <h3 className="footer-title">Liên hệ</h3>
-          <p>Email: contact@laptrinhonline.com</p>
-          <p>Hotline: 0901 234 567</p>
+          <p>Email: quoctien15904@gmail.com</p>
+          <p>Hotline: 0903 006 340</p>
           <div className="footer-social">
             <Link to="#">
               <FaFacebookF />
