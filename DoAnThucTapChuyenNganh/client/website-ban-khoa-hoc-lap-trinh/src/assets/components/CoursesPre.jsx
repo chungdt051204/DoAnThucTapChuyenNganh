@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./components-css/CoursesPre.css";
 export default function CoursesPre() {
@@ -21,7 +22,9 @@ export default function CoursesPre() {
             coursesPre.map((value, index) => {
               return (
                 <div key={index} className="course-pre-item">
-                  <img src={value.image} alt="" width={150} height={200} />
+                  <Link to={`/course/detail?id=${value._id}`}>
+                    <img src={value.image} alt="" width={150} height={200} />
+                  </Link>
                   <p>{value.title}</p>
                   <p style={{ color: "red" }}>{value.price}</p>
                 </div>

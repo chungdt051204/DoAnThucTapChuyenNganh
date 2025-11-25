@@ -26,3 +26,13 @@ exports.getCoursesPre = async (req, res) => {
     res.status(500).json({ message: "Lấy dữ liệu khóa học trả phí thất bại" });
   }
 };
+exports.getDetailCourse = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const course = await coursesEntity.findOne({ _id: id });
+    res.json(course);
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi xử lý hàm getDetailCourse");
+    res.status(500).json({ message: "Lấy dữ liệu chi tiết khóa học thất bại" });
+  }
+};

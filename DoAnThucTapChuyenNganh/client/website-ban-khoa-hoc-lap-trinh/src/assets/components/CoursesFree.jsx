@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./components-css/CoursesFree.css";
 export default function CoursesFree() {
@@ -21,7 +22,9 @@ export default function CoursesFree() {
             coursesFree.map((value, index) => {
               return (
                 <div key={index} className="course-free-item">
-                  <img src={value.image} alt="" width={150} height={200} />
+                  <Link to={`/course/detail?id=${value._id}`}>
+                    <img src={value.image} alt="" width={150} height={200} />
+                  </Link>
                   <p>{value.title}</p>
                 </div>
               );

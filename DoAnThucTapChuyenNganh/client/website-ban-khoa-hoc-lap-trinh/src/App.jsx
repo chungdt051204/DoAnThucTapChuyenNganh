@@ -5,6 +5,7 @@ import Login from "./assets/components/Login";
 import Register from "./assets/components/Register";
 import { useEffect, useState } from "react";
 import Instructor from "./assets/components/Instructors";
+import GetDetailCourse from "./assets/components/Detail";
 
 function App() {
   const [user, setUser] = useState("");
@@ -42,6 +43,10 @@ function App() {
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
           <Route path="/instructors" element={<Instructor></Instructor>} />
+          <Route
+            path="/course/detail"
+            element={<GetDetailCourse></GetDetailCourse>}
+          />
         </Routes>
       </AppContext.Provider>
     </>
