@@ -1,10 +1,30 @@
 import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
 
 export default function UserNavBar() {
-  const { user, isLogin, setIsLogin } = useContext(AppContext);
+  const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
+  const [onClick, setOnClick] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [coursesWithSearchSuggestion, setCoursesWithSearchSuggestion] =
+    useState([]);
+  const inputRef = useRef();
+  const handleChange = () => {
+    setInputValue(inputRef.current.value);
+    fetch(
+      `http://localhost:3000/courses/search/suggestion?title=${encodeURIComponent(
+        inputRef.current.value
+      )}`
+    )
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then((data) => {
+        setCoursesWithSearchSuggestion(data);
+      });
+  };
   const handleLogout = () => {
     setIsLogin(false);
     fetch("http://localhost:3000/me", {
@@ -26,22 +46,70 @@ export default function UserNavBar() {
     <>
       <nav className="navbar">
         <div className="logo">
-          <img src="rocket-icon.svg" alt="Logo" />
+          <img src="/rocket-icon.svg" alt="Logo" />
         </div>
 
         <ul className="menu">
           <li>
-            <Link to="#">Trang chủ</Link>
+            <Link to="/">Trang chủ</Link>
           </li>
           <li>
-            <Link to="#">Khóa học</Link>
+            <div className="categories-dropdown">
+              <Link to="#">
+                <p onClick={() => setOnClick((prev) => !prev)}>Danh mục</p>
+              </Link>
+              {onClick && (
+                <div className="categories-dropdown-menu">
+                  {categories.length > 0 &&
+                    categories.map((value, index) => {
+                      return (
+                        <div className="categories-dropdown-item" key={index}>
+                          <Link
+                            to={`/courses/category?category_id=${value._id}`}
+                          >
+                            <p>{value.title}</p>
+                          </Link>
+                        </div>
+                      );
+                    })}
+                </div>
+              )}
+            </div>
           </li>
-          <li>
-            <div className="search-box">
-              <input type="text" placeholder="Tìm kiếm..." />
-              <button>
-                <i className="fas fa-search">🔍</i>
-              </button>
+          <li className="search">
+            <div className="search-dropdown">
+              <div className="search-box">
+                <input
+                  onChange={handleChange}
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Nhập tên khóa học..."
+                />
+                <button>
+                  <i className="fas fa-search">🔍</i>
+                </button>
+              </div>
+              {inputValue !== "" && (
+                <div className="search-dropdown-menu">
+                  {coursesWithSearchSuggestion.length > 0 ? (
+                    coursesWithSearchSuggestion.map((value, index) => {
+                      return (
+                        <div className="search-dropdown-item" key={index}>
+                          <img
+                            src={value.image}
+                            alt=""
+                            width={60}
+                            height={80}
+                          />
+                          <p>{value.title}</p>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <p>Không tìm thấy khóa học để hiển thị</p>
+                  )}
+                </div>
+              )}
             </div>
           </li>
         </ul>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import "./components-css/Detail.css";
+import UserNavBar from "./UserNavBar";
+import Footer from "./Footer";
 export default function GetDetailCourse() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
@@ -18,6 +20,7 @@ export default function GetDetailCourse() {
   }, [id]);
   return (
     <>
+      <UserNavBar></UserNavBar>
       <div>
         <img src={course.thumbnail} alt="" width={800} height={400} />
         <h2>{course.title}</h2>
@@ -64,6 +67,7 @@ export default function GetDetailCourse() {
             })}
         </div>
       </div>
+      <Footer></Footer>
     </>
   );
 }

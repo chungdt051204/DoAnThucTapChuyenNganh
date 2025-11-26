@@ -51,4 +51,4 @@ const usersSchema = new mongoose.Schema(
     timestamps: true, //MongoDB tự thêm createdAt và updatedAt
   }
 );
-module.exports = mongoose.model("usersEntity", usersSchema, "users");
+module.exports = mongoose.model("userEntity", usersSchema, "user");

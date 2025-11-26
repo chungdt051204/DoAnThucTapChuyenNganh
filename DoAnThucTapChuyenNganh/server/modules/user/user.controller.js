@@ -1,4 +1,4 @@
-const userEntity = require("../../models/users.model");
+const userEntity = require("../../models/user.model");
 const sessions = {};
 exports.postLogin = async (req, res) => {
   try {

@@ -1,5 +1,5 @@
 const connectDB = require("./database");
-const userEntity = require("./models/users.model");
+const userEntity = require("./models/user.model");
 connectDB();
 const express = require("express");
 const app = express();
@@ -16,10 +16,12 @@ app.use(
 const cookiesParser = require("cookie-parser");
 app.use(cookiesParser());
 app.use(express.json());
-const usersRouter = require("./modules/users/user.router");
-const coursesRouter = require("./modules/courses/courses.router");
-app.use("/", usersRouter);
-app.use("/", coursesRouter);
+const userRouter = require("./modules/user/user.router");
+const courseRouter = require("./modules/course/course.router");
+const categoryRouter = require("./modules/category/category.router");
+app.use("/", userRouter);
+app.use("/", courseRouter);
+app.use("/", categoryRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Lưu trữ file vô ổ đĩa bằng multer
