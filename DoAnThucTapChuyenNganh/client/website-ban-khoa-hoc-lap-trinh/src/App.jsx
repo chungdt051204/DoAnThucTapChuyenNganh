@@ -1,14 +1,16 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import AppContext from "./assets/components/AppContext";
-import Home from "./assets/components/Home";
+import HomeUser from "./assets/components/HomeUser";
 import Login from "./assets/components/Login";
 import Register from "./assets/components/Register";
 import { useEffect, useState } from "react";
 import Instructor from "./assets/components/Instructors";
 import GetDetailCourse from "./assets/components/Detail";
 import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
+import HomeAdmin from "./assets/components/HomeAdmin";
 
 function App() {
+  const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -50,10 +52,11 @@ function App() {
   return (
     <>
       <AppContext.Provider
-        value={{ user, isLogin, setIsLogin, courses, categories }}
+        value={{ user, setUser, isLogin, setIsLogin, courses, categories }}
       >
         <Routes>
-          <Route path="/" element={<Home></Home>} />
+          <Route path="/" element={<HomeUser></HomeUser>} />
+          <Route path="/admin" element={<HomeAdmin></HomeAdmin>} />
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
           <Route path="/instructors" element={<Instructor></Instructor>} />

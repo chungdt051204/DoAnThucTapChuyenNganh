@@ -24,7 +24,7 @@ exports.postLogin = async (req, res) => {
           httpOnly: true,
         })
         .status(200)
-        .json({ message: "Đăng nhập thành công" });
+        .json({ message: "Đăng nhập thành công", user });
     }
   } catch (error) {
     console.log("Có lỗi xảy ra trong quá trình đăng nhập", error);

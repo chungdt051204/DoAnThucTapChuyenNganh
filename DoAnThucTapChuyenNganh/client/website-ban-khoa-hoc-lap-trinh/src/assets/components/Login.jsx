@@ -4,8 +4,8 @@ import AppContext from "./AppContext";
 import "./components-css/Auth.css";
 import { useRef, useState } from "react";
 export default function Login() {
-  const { setIsLogin } = useContext(AppContext);
   const navigate = useNavigate();
+  const { setIsLogin, user, setUser } = useContext(AppContext);
   const [loginNotValid, setLoginNotValid] = useState("");
   const email = useRef();
   const password = useRef();
@@ -30,10 +30,11 @@ export default function Login() {
           if (res.ok) return res.json();
           throw res;
         })
-        .then(({ message }) => {
-          alert(message);
-          navigate("/");
+        .then((data) => {
+          alert(data.message);
           setIsLogin(true);
+          setUser(data.user);
+          navigate(data.user.role === "admin" ? "/admin" : "/");
         })
         .catch(async (err) => {
           if (err.status === 401) {
