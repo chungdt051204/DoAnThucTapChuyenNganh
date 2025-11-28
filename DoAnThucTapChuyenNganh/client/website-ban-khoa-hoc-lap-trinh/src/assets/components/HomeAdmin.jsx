@@ -1,5 +1,6 @@
 import Footer from "./Footer";
 import AdminNavBar from "./AdminNavBar";
+import QuanLyDanhMuc from "./QuanLyDanhMuc";
 
 export default function HomeAdmin() {
   return (

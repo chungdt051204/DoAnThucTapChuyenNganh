@@ -37,7 +37,7 @@ export default function AdminNavBar() {
             <Link to="/">Dashboard</Link>
           </li>
           <li>
-            <Link to="#">
+            <Link to="/admin/quanlydanhmuc">
               <p>Quản lý danh mục</p>
             </Link>
           </li>

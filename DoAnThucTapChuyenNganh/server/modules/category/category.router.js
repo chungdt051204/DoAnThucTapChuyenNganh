@@ -1,6 +1,16 @@
 const express = require("express");
+const {
+  createCat,
+  deleteCat,
+  getAllCats,
+  updateCat,
+} = require("./category.controller");
+
 const router = express.Router();
-const categoryController = require("./category.controller");
-const prefix = "";
-router.get(`${prefix}/categories`, categoryController.getCategories);
+
+router.get("/", getAllCats);
+router.post("/", createCat);
+router.put("/:id", updateCat);
+router.delete("/:id", deleteCat);
+
 module.exports = router;

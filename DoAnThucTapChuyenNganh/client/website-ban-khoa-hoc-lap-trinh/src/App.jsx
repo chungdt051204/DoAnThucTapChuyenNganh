@@ -8,6 +8,7 @@ import Instructor from "./assets/components/Instructors";
 import GetDetailCourse from "./assets/components/Detail";
 import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
 import HomeAdmin from "./assets/components/HomeAdmin";
+import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
 
 function App() {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ function App() {
             path="/courses/category"
             element={<GetCoursesWithCategory_Id />}
           />
+          <Route path="/admin/quanlydanhmuc" element={<QuanLyDanhMuc />} />
         </Routes>
       </AppContext.Provider>
     </>
