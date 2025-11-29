@@ -21,7 +21,7 @@ const courseRouter = require("./modules/course/course.router");
 const categoryRouter = require("./modules/category/category.router");
 app.use("/", userRouter);
 app.use("/", courseRouter);
-app.use("/categories", categoryRouter);
+app.use("/", categoryRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Lưu trữ file vô ổ đĩa bằng multer

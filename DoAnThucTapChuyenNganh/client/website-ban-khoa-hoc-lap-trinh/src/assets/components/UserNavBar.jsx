@@ -85,9 +85,6 @@ export default function UserNavBar() {
                   type="text"
                   placeholder="Nhập tên khóa học..."
                 />
-                <button>
-                  <i className="fas fa-search">🔍</i>
-                </button>
               </div>
               {inputValue !== "" && (
                 <div className="search-dropdown-menu">

@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AppContext from "./assets/components/AppContext";
 import HomeUser from "./assets/components/HomeUser";
 import Login from "./assets/components/Login";
@@ -11,7 +11,6 @@ import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
 
 function App() {
-  const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [courses, setCourses] = useState([]);
@@ -49,7 +48,7 @@ function App() {
       .then((data) => {
         setCategories(data);
       });
-  }, []);
+  });
   return (
     <>
       <AppContext.Provider
@@ -69,7 +68,7 @@ function App() {
             path="/courses/category"
             element={<GetCoursesWithCategory_Id />}
           />
-          <Route path="/admin/quanlydanhmuc" element={<QuanLyDanhMuc />} />
+          <Route path="/admin/category" element={<QuanLyDanhMuc />} />
         </Routes>
       </AppContext.Provider>
     </>

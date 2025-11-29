@@ -34,10 +34,10 @@ export default function AdminNavBar() {
 
         <ul className="menu">
           <li>
-            <Link to="/">Dashboard</Link>
+            <Link to="/admin">Dashboard</Link>
           </li>
           <li>
-            <Link to="/admin/quanlydanhmuc">
+            <Link to="/admin/category">
               <p>Quản lý danh mục</p>
             </Link>
           </li>
