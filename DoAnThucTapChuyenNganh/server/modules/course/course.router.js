@@ -1,6 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const coursesController = require("./course.controller");
+const express = require("express"); // import thư viện express
+
+const router = express.Router(); // tạo router để định nghĩa các router con
+
+const coursesController = require("./course.controller"); // import controller xử lý logic cho từng API
+
 const prefix = "";
 router.get(`${prefix}/courses`, coursesController.getCourses);
 router.get(`${prefix}/course-free`, coursesController.getCoursesFree);

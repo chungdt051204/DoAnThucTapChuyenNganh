@@ -6,38 +6,51 @@ import Footer from "./Footer";
 import "./components-css/QuanLyDanhMuc.css";
 
 export default function QuanLyDanhMuc() {
-  const { categories } = useContext(AppContext);
-  const [searchParams] = useSearchParams();
+  const { categories } = useContext(AppContext); // lấy danh mục từ context: đây là danh sách sẽ hiển thị trong bảng
+
+  const [searchParams] = useSearchParams(); // lấy id từ url
   const id = searchParams.get("id");
-  const addDialog = useRef();
-  const updateDialog = useRef();
-  const addDialogValue = useRef();
-  const updateDialogValue = useRef();
+
+  // các dialog và input
+  const addDialog = useRef(); // dialog thêm
+  const updateDialog = useRef(); // dialog sửa
+  const addDialogValue = useRef(); // input thêm
+  const updateDialogValue = useRef(); // input sửa
+  // dùng để mở/đóng dialog và lấy giá trị của input
+
+  // quản lý lỗi + dữ liệu category cần sửa
   const [err, setErr] = useState("");
   const [categoryWithId, setCategoryWithId] = useState("");
+
   const handleAddSubmit = (e) => {
-    e.preventDefault();
+    // hàm chạy khi bấm nút "thêm"
+    e.preventDefault(); // ngăn reload trang
     if (addDialogValue.current.value === "") {
       setErr("Vui lòng nhập tên danh mục muốn thêm");
       return;
     }
+    // Gửi dữ liệu lên backend bằng post
     fetch("http://localhost:3000/category", {
+      // gọi API đến backend
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json", // báo cáo cho backend biết dữ liệu bạn gửi là JSON
       },
-      body: JSON.stringify({ title: addDialogValue.current.value }),
+      body: JSON.stringify({ title: addDialogValue.current.value }), // gửi tên danh mục bạn vừa nhập
     })
+      //kiểm tra phản hồi từ server
       .then((res) => {
         if (res.ok) return res.json();
         throw res;
       })
+      // xử lý dữ liệu từ backend
       .then(({ message }) => {
         alert(message);
-        addDialog.current.close();
+        addDialog.current.close(); // đóng dialog
       })
-      .catch();
+      .catch(); // kết thúc
   };
+
   const handleClickUpdate = (id) => {
     fetch(`http://localhost:3000/category?id=${id}`)
       .then((res) => res.json())
@@ -46,6 +59,7 @@ export default function QuanLyDanhMuc() {
         updateDialog.current.showModal();
       });
   };
+
   const handleUpdateSubmit = (e) => {
     e.preventDefault();
     fetch(`http://localhost:3000/category?id=${id}`, {
@@ -65,6 +79,7 @@ export default function QuanLyDanhMuc() {
       })
       .catch();
   };
+
   const handleDelete = (id) => {
     fetch(`http://localhost:3000/category?id=${id}`, {
       method: "DELETE",
@@ -78,6 +93,7 @@ export default function QuanLyDanhMuc() {
       })
       .catch();
   };
+
   return (
     <>
       <section>
@@ -85,7 +101,7 @@ export default function QuanLyDanhMuc() {
         <div style={{ marginTop: "30px" }}>
           <button
             onClick={() => {
-              addDialog.current.showModal();
+              addDialog.current.showModal(); // mở dialog thêm
             }}
           >
             Thêm danh mục
@@ -124,6 +140,8 @@ export default function QuanLyDanhMuc() {
           </table>
         </div>
         <Footer />
+
+        {/* Giao diện các bảng dialog */}
         <dialog ref={addDialog}>
           <h2>Thêm danh mục</h2>
           <form method="dialog" onSubmit={handleAddSubmit}>
