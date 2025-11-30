@@ -78,7 +78,7 @@ export default function GetDetailCourse() {
           />
 
           <div className="course-side">
-            <div className="level">ReactJS cơ bản</div>
+            <div className="level">{course.title}</div>
             <div className="price">Giá: {course.price} VND</div>
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
@@ -140,7 +140,9 @@ export default function GetDetailCourse() {
                 <div className="lesson-item">
                   <div className="lesson-left">
                     <div className="play">▶</div>
-                    <div className="lesson-title">{lesson.title}</div>
+                    <div className="lesson-title">
+                      {idx + 1}. {lesson.title}
+                    </div>
                   </div>
                   <div className="lesson-time">
                     {lesson.duration || "00:00"}
