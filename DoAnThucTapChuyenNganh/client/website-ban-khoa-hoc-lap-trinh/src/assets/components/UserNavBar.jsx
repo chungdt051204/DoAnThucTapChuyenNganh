@@ -128,6 +128,7 @@ export default function UserNavBar() {
           ) : (
             <Link to="/login">Đăng nhập</Link>
           )}
+          <button>Giỏ hàng</button>
         </div>
       </nav>
     </>

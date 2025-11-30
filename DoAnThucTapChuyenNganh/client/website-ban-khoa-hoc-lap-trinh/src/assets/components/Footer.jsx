@@ -26,9 +26,6 @@ export default function Footer() {
               <Link to="#">Khóa học</Link>
             </li>
             <li>
-              <Link to="/instructors">Giảng viên</Link>
-            </li>
-            <li>
               <Link to="#">Liên hệ</Link>
             </li>
           </ul>
