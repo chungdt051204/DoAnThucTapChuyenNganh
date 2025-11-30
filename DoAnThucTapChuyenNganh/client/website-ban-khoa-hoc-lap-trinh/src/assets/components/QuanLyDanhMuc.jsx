@@ -98,7 +98,7 @@ export default function QuanLyDanhMuc() {
     <>
       <section>
         <AdminNavBar />
-        <div style={{ marginTop: "30px" }}>
+        <div style={{ margin: "100px 50px" }}>
           <button
             onClick={() => {
               addDialog.current.showModal(); // mở dialog thêm
