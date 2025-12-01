@@ -1,3 +1,11 @@
 .coursesWithQueryString-track {
   display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.coursesWithQueryString-track > .coursesWithQueryString-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 150px;
 }

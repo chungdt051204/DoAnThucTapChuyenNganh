@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import AppContext from "./AppContext";
+import { useSearchParams } from "react-router-dom";
 import "./components-css/Detail.css";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 
 export default function GetDetailCourse() {
+  const { user, isLogin } = useContext(AppContext);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [course, setCourse] = useState("");
@@ -19,6 +21,35 @@ export default function GetDetailCourse() {
         setCourse(data);
       });
   }, [id]);
+  const handleClick = () => {
+    if (!isLogin) {
+      alert("Bạn chưa đăng nhập");
+      return;
+    }
+    fetch("http://localhost:3000/addCart", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user._id,
+        courseId: course._id,
+        courseName: course.title,
+        coursePrice: course.price,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then((message) => {
+        alert(message);
+      })
+      .catch(async (err) => {
+        const { message } = await err.json();
+        alert(message);
+      });
+  };
   return (
     <>
       <UserNavBar></UserNavBar>
@@ -44,7 +75,7 @@ export default function GetDetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            <button>
+            <button onClick={handleClick}>
               {course.price > 0 ? <p>Thêm vào giỏ</p> : <p>Học ngay</p>}
             </button>
           </div>

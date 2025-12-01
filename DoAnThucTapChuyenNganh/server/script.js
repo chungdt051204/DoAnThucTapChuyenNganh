@@ -19,9 +19,11 @@ app.use(express.json());
 const userRouter = require("./modules/user/user.router");
 const courseRouter = require("./modules/course/course.router");
 const categoryRouter = require("./modules/category/category.router");
+const cartRouter = require("./modules/cart/cart.router");
 app.use("/", userRouter);
 app.use("/", courseRouter);
 app.use("/", categoryRouter);
+app.use("/", cartRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Lưu trữ file vô ổ đĩa bằng multer

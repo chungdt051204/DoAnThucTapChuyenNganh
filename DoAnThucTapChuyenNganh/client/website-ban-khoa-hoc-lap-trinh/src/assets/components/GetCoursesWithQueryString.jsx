@@ -1,6 +1,4 @@
 import "./components-css/CoursesWithQueryString.css";
-import Footer from "./Footer";
-import UserNavBar from "./UserNavBar";
 export default function GetCoursesWithQueryString({ data }) {
   return (
     <>

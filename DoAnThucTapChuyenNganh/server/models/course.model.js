@@ -11,27 +11,15 @@ const courseSchema = new mongoose.Schema(
     description: { type: String },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "categories", //Tham chiếu đến collection categories
+      ref: "category", //Tham chiếu đến collection category
       required: true,
     },
-    instructorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users", //Tham chiếu đến collection users
-      required: true,
-    },
-    level: {
-      type: String,
-      enum: ["cơ bản", "trung cấp", "nâng cao"],
-      default: "cơ bản",
-    },
-    language: { type: String, default: "Tiếng Việt" },
     duration: { type: String, default: "0h0m" },
     price: { type: Number, required: true, min: 0 },
     rating: { type: Number, default: 0, min: 0, max: 5 }, // Điểm đánh giá trung bình
     totalLessons: { type: Number, default: 0 },
     thumbnail: { type: String, required: true },
     image: { type: String, required: true },
-    tags: [{ type: String }],
     objectives: [{ type: String }],
     requirements: [{ type: String }],
     lessons: [lessonSchema],
@@ -40,7 +28,7 @@ const courseSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["active", "inactive"],
-      default: "inactive",
+      default: "active",
     },
   },
   { timestamps: true }

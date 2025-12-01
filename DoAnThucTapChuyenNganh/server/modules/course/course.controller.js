@@ -57,10 +57,8 @@ exports.getCoursesWithSearchSuggestion = async (req, res) => {
     res.status(200).json(courses);
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCoursesWithSearchSuggestion");
-    res
-      .status(500)
-      .json({
-        message: "Lấy dữ liệu khóa học dựa trên gợi ý tìm kiếm thất bại",
-      });
+    res.status(500).json({
+      message: "Lấy dữ liệu khóa học dựa trên gợi ý tìm kiếm thất bại",
+    });
   }
 };
