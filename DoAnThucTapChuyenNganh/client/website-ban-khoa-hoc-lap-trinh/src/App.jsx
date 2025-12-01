@@ -9,6 +9,7 @@ import GetDetailCourse from "./assets/components/Detail";
 import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
 import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
+import Cart from "./assets/components/Cart";
 
 function App() {
   const [user, setUser] = useState("");
@@ -69,6 +70,7 @@ function App() {
             element={<GetCoursesWithCategory_Id />}
           />
           <Route path="/admin/category" element={<QuanLyDanhMuc />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </AppContext.Provider>
     </>

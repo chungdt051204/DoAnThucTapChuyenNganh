@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
+import { FaCartPlus } from "react-icons/fa";
 
 export default function UserNavBar() {
   const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
@@ -76,6 +77,11 @@ export default function UserNavBar() {
               )}
             </div>
           </li>
+          <li>
+            <Link to="/cart">
+              <FaCartPlus />
+            </Link>
+          </li>
           <li className="search">
             <div className="search-dropdown">
               <div className="search-box">
@@ -128,7 +134,6 @@ export default function UserNavBar() {
           ) : (
             <Link to="/login">Đăng nhập</Link>
           )}
-          <button>Giỏ hàng</button>
         </div>
       </nav>
     </>
