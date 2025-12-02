@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
-import { FaCartPlus } from "react-icons/fa";
 
 export default function UserNavBar() {
   const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
@@ -79,7 +78,7 @@ export default function UserNavBar() {
           </li>
           <li>
             <Link to="/cart">
-              <FaCartPlus />
+              <i class="fa-solid fa-cart-shopping"></i>
             </Link>
           </li>
           <li className="search">

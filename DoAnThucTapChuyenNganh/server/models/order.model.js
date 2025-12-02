@@ -3,7 +3,7 @@ const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "user",
+      ref: "userEntity", //Tham chiếu đến collection user
       required: true,
     },
     totalAmount: {

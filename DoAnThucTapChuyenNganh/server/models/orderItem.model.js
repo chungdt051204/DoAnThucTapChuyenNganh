@@ -2,12 +2,12 @@ const mongoose = require("mongoose");
 const orderItemSchema = new mongoose.Schema({
   orderId: {
     type: mongoose.Schema.ObjectId,
-    ref: "order",
+    ref: "orderEntity", //Tham chiếu đến collection order
     required: true,
   },
   courseId: {
     type: mongoose.Schema.ObjectId,
-    ref: "course",
+    ref: "courseEntity", //Tham chiếu đến collection course
     required: true,
   },
   courseName: {

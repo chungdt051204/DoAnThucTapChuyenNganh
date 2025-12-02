@@ -1,6 +1,8 @@
 const orderEntity = require("../../models/order.model");
 const orderItemEntity = require("../../models/orderItem.model");
+//Router xử lý chức năng thêm khóa học và giỏ hàng
 exports.addCart = async (req, res) => {
+  //Lấy dữ liệu gửi từ phía client bằng req.body
   const { body } = req;
   //Kiểm tra xem người dùng có đơn hàng trạng thái cart chưa
   const orderInDatabase = await orderEntity.findOne({
@@ -54,6 +56,7 @@ exports.addCart = async (req, res) => {
       const orderItemsInOrder = await orderItemEntity.find({
         orderId: orderInDatabase._id,
       });
+      //Duyệt vòng lặp
       orderItemsInOrder.forEach((value) => {
         tong = tong + parseFloat(value.priceAtPurchase);
         return tong;
@@ -78,4 +81,32 @@ exports.addCart = async (req, res) => {
         .json({ message: "Khóa học này đã tồn tại trong giỏ hàng" });
     }
   }
+};
+//Router lấy dữ liệu khóa học nằm trong giỏ hàng
+exports.getCartItem = async (req, res) => {
+  //Lấy id người dùng gửi từ phía client bằng req.query
+  const { user_id } = req.query;
+  //Tìm kiếm đơn hàng có userId bằng id người dùng gửi từ phía client
+  const order = await orderEntity.findOne({ userId: user_id });
+  const orderItems = await orderItemEntity
+    .find({ orderId: order._id })
+    .populate("courseId"); //Sử dụng popullate để tham chiếu đến collection course và lấy toàn bộ thuộc tính
+  if (!orderItems)
+    return res.status(404).json({ message: "Giỏ hàng của bạn hiện đang rỗng" });
+  else return res.status(200).json(orderItems);
+};
+//Router xử lý chức năng xóa nhiều khóa học trong giỏ hàng
+exports.deleteCartItems = async (req, res) => {
+  //Lấy mảng chứa id khóa học gửi từ phía client bằng req.body
+  const { orderIdItemsSelected } = req.body;
+  await orderItemEntity.deleteMany({ _id: { $in: orderIdItemsSelected } });
+  //Dùng toán tử $in để cho phép xóa nhiều phần tử trong database có id thuộc mảng orderIdItemsSelected
+  res.status(200).json({
+    message:
+      "Đã xóa" +
+      " " +
+      orderIdItemsSelected.length +
+      " " +
+      "khóa học ra khỏi giỏ hàng thành công",
+  });
 };

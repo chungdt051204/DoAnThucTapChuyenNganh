@@ -1,5 +1,5 @@
 const categoryEntity = require("../../models/category.model");
-
+//Router lấy dữ liệu danh mục trong database
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await categoryEntity.find();
@@ -9,9 +9,10 @@ exports.getAllCategories = async (req, res) => {
     return res.status(500).json({ message: "Lấy dữ liệu danh mục thất bại" });
   }
 };
-
+//Router thêm danh mục
 exports.postCategory = async (req, res) => {
   try {
+    //Lấy dữ liệu title gửi từ phía client bằng req.body
     const { title } = req.body;
     await categoryEntity.create({ title });
     return res.status(200).json({ message: "Thêm thành công" });
@@ -20,9 +21,12 @@ exports.postCategory = async (req, res) => {
     return res.status(500).json({ message: "Thêm thất bại" });
   }
 };
+//Router lấy dữ liệu danh mục theo id
 exports.getCategoryWithId = async (req, res) => {
   try {
+    //Lấy id danh mục gửi từ phía client bằng req.query
     const { id } = req.query;
+    //Tìm kiếm danh mục có id bằng id danh mục gửi từ phía client
     const category = await categoryEntity.findOne({ _id: id });
     res.status(200).json(category);
   } catch (error) {
@@ -32,10 +36,14 @@ exports.getCategoryWithId = async (req, res) => {
       .json({ message: "Lấy dữ liệu danh mục theo Id thất bại" });
   }
 };
+//Router cập nhật danh mục
 exports.putCategory = async (req, res) => {
   try {
+    //Lấy id danh mục gửi từ phía client bằng req.query
     const { id } = req.query;
+    //Lấy dữ liệu title gửi từ phía client bằng req.body
     const { title } = req.body;
+    //Cập nhật tên danh mục có id bằng id danh mục gửi từ phía client
     await categoryEntity.updateOne({ _id: id }, { title });
     return res.status(200).json({ message: "Sửa thành công" });
   } catch (error) {
@@ -43,9 +51,12 @@ exports.putCategory = async (req, res) => {
     return res.status(500).json({ message: "Sửa thất bại" });
   }
 };
+//Router xóa danh mục theo danh mục được chọn
 exports.deleteCategory = async (req, res) => {
   try {
+    //Lấy id danh mục gửi từ phía client bằng req.query
     const { id } = req.query;
+    //Xóa danh mục được chọn dựa vào id gửi từ phía client
     await categoryEntity.deleteOne({ _id: id });
     return res.status(200).json({
       message: "Đã xóa danh mục có mã" + " " + id + " " + "thành công",

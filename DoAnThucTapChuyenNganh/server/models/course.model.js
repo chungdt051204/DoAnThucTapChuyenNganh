@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema(
     description: { type: String },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "category", //Tham chiếu đến collection category
+      ref: "categoryEntity", //Tham chiếu đến collection category
       required: true,
     },
     duration: { type: String, default: "0h0m" },

@@ -9,7 +9,7 @@ const multer = require("multer");
 //Thứ tự đặt: cors, cookie-parser, body-parser, router
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "http://localhost:5174",
     credentials: true,
   })
 );
