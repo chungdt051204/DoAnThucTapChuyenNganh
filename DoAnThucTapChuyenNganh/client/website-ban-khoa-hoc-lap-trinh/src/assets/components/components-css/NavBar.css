@@ -164,6 +164,6 @@ body {
   align-items: center;
 }
 
-.auth > .userProfile > img {
+.auth > .userProfile > a > img {
   border-radius: 50%;
 }

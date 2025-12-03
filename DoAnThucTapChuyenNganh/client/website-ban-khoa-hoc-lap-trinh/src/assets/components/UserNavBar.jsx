@@ -118,16 +118,20 @@ export default function UserNavBar() {
         <div className="auth">
           {isLogin ? (
             <div className="userProfile">
-              <img
-                src={
-                  user && user.avatar.includes("https")
-                    ? user.avatar
-                    : `http://localhost:3000/images/${user.avatar}`
-                }
-                alt=""
-                width={50}
-                height={50}
-              />
+              <Link to="/profile">
+                <img
+                  src={
+                    user && user.avatar && user.avatar.includes("https")
+                      ? user.avatar
+                      : user && user.avatar
+                      ? `http://localhost:3000/images/user/${user.avatar}`
+                      : ""
+                  }
+                  alt=""
+                  width={50}
+                  height={50}
+                />
+              </Link>
               <Link onClick={handleLogout}>Đăng xuất</Link>
             </div>
           ) : (

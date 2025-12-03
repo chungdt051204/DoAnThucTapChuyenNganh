@@ -10,6 +10,7 @@ import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
 import QuanLyKhoaHoc from "./assets/components/QuanLyKhoaHoc";
 import Cart from "./assets/components/Cart";
+import UserProfile from "./assets/components/UserProfile";
 
 function App() {
   const [user, setUser] = useState("");
@@ -78,6 +79,7 @@ function App() {
             path="/courses/category"
             element={<GetCoursesWithCategory_Id />}
           />
+          <Route path="/profile" element={<UserProfile />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/admin/category" element={<QuanLyDanhMuc />} />
           <Route path="/admin/course" element={<QuanLyKhoaHoc />} />

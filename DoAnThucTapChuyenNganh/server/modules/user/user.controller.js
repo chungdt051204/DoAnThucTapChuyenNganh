@@ -61,3 +61,35 @@ exports.logout = (req, res) => {
     .status(200)
     .json({ message: "Đăng xuất thành công" });
 };
+
+//Router xử lý cập nhật thông tin người dùng (tên, mật khẩu, avatar)
+exports.updateUser = async (req, res) => {
+  try {
+    const session = sessions[req.cookies.sessionId];
+    if (!session) {
+      return res.status(401).json({ message: "Bạn chưa đăng nhập" });
+    }
+
+    const userId = session.id;
+    const { fullName, password } = req.body;
+    const updateObj = {};
+    if (fullName) updateObj.fullName = fullName;
+    if (password) updateObj.password = password;
+    if (req.file && req.file.filename) updateObj.avatar = req.file.filename;
+
+    // Nếu không có gì để cập nhật
+    if (Object.keys(updateObj).length === 0) {
+      const user = await userEntity.findOne({ _id: userId });
+      return res.status(200).json({ message: "Không có thay đổi", user });
+    }
+
+    await userEntity.updateOne({ _id: userId }, { $set: updateObj });
+    const updatedUser = await userEntity.findOne({ _id: userId });
+    return res
+      .status(200)
+      .json({ message: "Cập nhật thành công", user: updatedUser });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi cập nhật người dùng", error);
+    res.status(500).json({ message: "Cập nhật người dùng thất bại" });
+  }
+};
