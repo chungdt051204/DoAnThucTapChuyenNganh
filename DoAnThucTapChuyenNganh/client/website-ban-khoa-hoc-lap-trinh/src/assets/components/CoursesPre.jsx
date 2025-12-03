@@ -15,7 +15,10 @@ export default function CoursesPre() {
   }, []);
   return (
     <>
-      <section className="course-pre-component">
+      <section
+        className="course-pre-component"
+        style={{ marginTop: "50px", marginBottom: "100px" }}
+      >
         <h2>Khóa học trả phí</h2>
         <div className="course-pre-track">
           {coursesPre.length > 0 ? (
