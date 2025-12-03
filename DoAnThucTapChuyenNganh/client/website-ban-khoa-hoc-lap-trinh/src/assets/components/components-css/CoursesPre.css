@@ -1,18 +1,154 @@
+/* CoursesPre.css - Giao diện kiểu cards 4 columns giống mẫu */
+
 .course-pre-component {
+  /* container chính */
+  max-width: 1100px; /* chiều rộng tổng (có thể chỉnh) */
+  margin: 40px auto; /* căn giữa */
+  padding: 22px; /* khoảng trong */
+  background: #ffffff; /* nền trắng giống khung */
+  border-radius: 10px; /* bo góc khung */
+  box-shadow: 0 6px 18px rgba(23, 30, 40, 0.06); /* đổ bóng nhẹ */
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* tiêu đề */
+.course-pre-component > h2 {
+  margin: 0 0 18px 6px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #111;
+}
+
+/* khung chứa các item: grid 4 cột */
+.course-pre-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px 18px; /* dọc x ngang */
+  align-items: start;
+  padding: 8px;
+}
+
+/* mỗi card khóa học */
+.course-pre-item {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  width: 1000px;
-  margin: 50px auto 0;
+  gap: 10px;
+  align-items: center;
+  text-align: center;
+  padding: 12px;
+  background: transparent; /* giữ trong suốt để giống mẫu (ảnh có khung riêng) */
 }
-.course-pre-component > .course-pre-track {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+
+/* ảnh: tạo khung vuông bo góc với border nhẹ */
+.course-pre-item img {
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%; /* tạo tỉ lệ vuông */
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(18, 24, 30, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: block;
+  /* để ảnh nằm trong ô vuông: dùng background-image-like bằng object-fit + padding-bottom */
 }
-.course-pre-track > .course-pre-item {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  width: 150px;
+
+/* vì JSX đặt width/height attribute, override bằng này để ảnh thực sự responsive */
+.course-pre-item img[width],
+.course-pre-item img[height] {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1;
+  padding-bottom: 0;
+  object-fit: cover;
+}
+
+/* tiêu đề khóa học */
+.course-pre-item > p:first-of-type {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #222;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* giới hạn 2 dòng */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px; /* giữ chiều cao cố định cho tên */
+}
+
+/* giá tiền */
+.course-pre-item > p:last-of-type {
+  margin: 6px 0 0;
+  color: #d21b2b; /* đỏ */
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* hover effect cho toàn bộ item (nhẹ) */
+.course-pre-item:hover img {
+  transform: translateY(-6px) scale(1.02);
+  transition: transform 220ms cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+.course-pre-item img {
+  transition: transform 220ms ease;
+}
+
+/* khoảng cách bên trong khung lớn (giống viền trong ảnh mẫu) */
+.course-pre-track-wrapper {
+  padding: 8px;
+}
+
+/* responsive: 3 cột trên tablet */
+@media (max-width: 1024px) {
+  .course-pre-track {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* responsive: 2 cột trên điện thoại ngang */
+@media (max-width: 700px) {
+  .course-pre-component {
+    margin: 20px 12px;
+    padding: 16px;
+  }
+  .course-pre-track {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .course-pre-item > p:first-of-type {
+    min-height: 36px;
+    font-size: 13px;
+  }
+}
+
+/* responsive: 1 cột rất nhỏ / mobile dọc */
+@media (max-width: 420px) {
+  .course-pre-track {
+    grid-template-columns: 1fr;
+  }
+  .course-pre-item {
+    padding: 10px 6px;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    text-align: left;
+  }
+  .course-pre-item img {
+    width: 72px;
+    height: 72px;
+    padding-bottom: 0;
+    aspect-ratio: 1/1;
+    flex: 0 0 72px;
+  }
+  .course-pre-item > p:first-of-type {
+    margin: 0;
+  }
+  .course-pre-item > p:last-of-type {
+    margin-left: auto;
+    font-weight: 700;
+  }
 }

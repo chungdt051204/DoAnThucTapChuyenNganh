@@ -78,7 +78,7 @@ export default function UserNavBar() {
           </li>
           <li>
             <Link to="/cart">
-              <i class="fa-solid fa-cart-shopping"></i>
+              <i className="fa-solid fa-cart-shopping"></i>
             </Link>
           </li>
           <li className="search">
