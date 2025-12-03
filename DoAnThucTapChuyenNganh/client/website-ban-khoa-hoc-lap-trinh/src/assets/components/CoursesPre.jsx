@@ -29,7 +29,7 @@ export default function CoursesPre() {
                     <img src={value.image} alt="" width={150} height={200} />
                   </Link>
                   <p>{value.title}</p>
-                  <p style={{ color: "red" }}>{value.price}</p>
+                  <p className="price">{value.price} VND</p>
                 </div>
               );
             })

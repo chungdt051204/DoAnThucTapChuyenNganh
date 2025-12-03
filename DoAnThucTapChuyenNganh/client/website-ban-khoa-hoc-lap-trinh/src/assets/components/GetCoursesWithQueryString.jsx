@@ -1,15 +1,19 @@
-import "./components-css/CoursesWithQueryString.css";
+import "./components-css/CoursesPre.css";
 export default function GetCoursesWithQueryString({ data }) {
   return (
     <>
-      <div className="coursesWithQueryString-track">
+      <div className="course-pre-track">
         {data.length > 0 ? (
           data.map((value, index) => {
             return (
-              <div className="coursesWithQueryString-item" key={index}>
+              <div className="course-pre-item" key={index}>
                 <img src={value.image} alt="" width={150} height={200} />
                 <p>{value.title}</p>
-                {value.price > 0 ? <p>{value.price}</p> : <p>Miễn phí</p>}
+                {value.price > 0 ? (
+                  <p className="price">{value.price} VND</p>
+                ) : (
+                  <p className="price">Miễn phí</p>
+                )}
               </div>
             );
           })

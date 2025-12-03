@@ -42,7 +42,7 @@ export default function AdminNavBar() {
             </Link>
           </li>
           <li>
-            <Link to="#">
+            <Link to="/admin/course">
               <p>Quản lý khóa học</p>
             </Link>
           </li>

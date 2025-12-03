@@ -11,7 +11,6 @@ export default function GetCoursesWithCategory_Id() {
   // State to hold the list of courses returned from the server
   const [coursesWithCategory_Id, setCoursesWithCategory_Id] = useState([]);
   // State to hold the human-readable category title (converted from id)
-  const [categoryName, setCategoryName] = useState("");
 
   useEffect(() => {
     fetch(`http://localhost:3000/courses/category?category_id=${category_id}`)
@@ -20,36 +19,11 @@ export default function GetCoursesWithCategory_Id() {
         throw res;
       })
       .then((data) => {
+        console.log(data);
         setCoursesWithCategory_Id(data);
       })
       .catch((err) => {
         console.error(err);
-      });
-  }, [category_id]);
-
-  // When a category_id is present, fetch the category object to display
-  // its title instead of the raw id. The server exposes `GET /category?id=<id>`
-  // (see server/modules/category/category.router.js -> getCategoryWithId).
-  useEffect(() => {
-    if (!category_id) {
-      // No id provided -> clear categoryName
-      setCategoryName("");
-      return;
-    }
-
-    fetch(`http://localhost:3000/category?id=${category_id}`)
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then((category) => {
-        // The category object returned by the server includes a `title` field.
-        // Save it for display; fall back to the raw id if title missing.
-        setCategoryName(category && category.title ? category.title : "");
-      })
-      .catch((err) => {
-        console.error("Failed to load category name:", err);
-        setCategoryName("");
       });
   }, [category_id]);
 
@@ -61,11 +35,6 @@ export default function GetCoursesWithCategory_Id() {
           <header className="courses-list-header">
             <div className="title-block">
               <h1 className="page-title">Khóa học theo danh mục</h1>
-              <p className="category-sub">
-                {/* Display the category title when available, otherwise show id or 'Tất cả' */}
-                Danh mục:{" "}
-                <strong>{categoryName || category_id || "Tất cả"}</strong>
-              </p>
             </div>
 
             <div className="result-stats">
@@ -73,11 +42,7 @@ export default function GetCoursesWithCategory_Id() {
               <span className="label">khóa học tìm thấy</span>
             </div>
           </header>
-
-          <section className="courses-list-content">
-            {/* Reuse existing component: it should render the grid (cards) */}
-            <GetCoursesWithQueryString data={coursesWithCategory_Id} />
-          </section>
+          <GetCoursesWithQueryString data={coursesWithCategory_Id} />
         </div>
       </main>
       <Footer />

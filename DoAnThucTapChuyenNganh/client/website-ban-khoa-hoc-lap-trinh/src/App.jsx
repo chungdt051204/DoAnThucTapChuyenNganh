@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import AppContext from "./assets/components/AppContext";
 import HomeUser from "./assets/components/HomeUser";
 import Login from "./assets/components/Login";
@@ -9,6 +9,7 @@ import GetDetailCourse from "./assets/components/Detail";
 import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
 import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
+import QuanLyKhoaHoc from "./assets/components/QuanLyKhoaHoc";
 import Cart from "./assets/components/Cart";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [courses, setCourses] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     fetch("http://localhost:3000/me", {
       credentials: "include",
@@ -28,7 +30,7 @@ function App() {
         setIsLogin(true);
         setUser(data);
       });
-  }, []);
+  }, [refresh]);
   useEffect(() => {
     fetch("http://localhost:3000/courses")
       .then((res) => {
@@ -39,7 +41,7 @@ function App() {
         setCourses(data);
       })
       .catch();
-  }, []);
+  }, [refresh]);
   useEffect(() => {
     fetch("http://localhost:3000/categories")
       .then((res) => {
@@ -49,11 +51,19 @@ function App() {
       .then((data) => {
         setCategories(data);
       });
-  });
+  }, [refresh]);
   return (
     <>
       <AppContext.Provider
-        value={{ user, setUser, isLogin, setIsLogin, courses, categories }}
+        value={{
+          user,
+          setUser,
+          isLogin,
+          setIsLogin,
+          courses,
+          categories,
+          setRefresh,
+        }}
       >
         <Routes>
           <Route path="/" element={<HomeUser></HomeUser>} />
@@ -69,8 +79,9 @@ function App() {
             path="/courses/category"
             element={<GetCoursesWithCategory_Id />}
           />
-          <Route path="/admin/category" element={<QuanLyDanhMuc />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/admin/category" element={<QuanLyDanhMuc />} />
+          <Route path="/admin/course" element={<QuanLyKhoaHoc />} />
         </Routes>
       </AppContext.Provider>
     </>

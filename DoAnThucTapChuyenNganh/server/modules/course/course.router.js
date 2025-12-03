@@ -14,4 +14,6 @@ router.get(
   `${prefix}/courses/search/suggestion`,
   coursesController.getCoursesWithSearchSuggestion
 );
+router.delete(`${prefix}/admin/course`, coursesController.deleteCourse);
+router.get(`${prefix}/course`, coursesController.getCourseWithId);
 module.exports = router;

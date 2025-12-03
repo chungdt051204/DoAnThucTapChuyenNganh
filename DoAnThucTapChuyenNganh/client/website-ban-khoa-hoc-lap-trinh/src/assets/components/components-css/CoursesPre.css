@@ -38,7 +38,6 @@
   flex-direction: column;
   gap: 10px;
   align-items: center;
-  text-align: center;
   padding: 12px;
   background: transparent; /* giữ trong suốt để giống mẫu (ảnh có khung riêng) */
 }
@@ -81,11 +80,11 @@
 }
 
 /* giá tiền */
-.course-pre-item > p:last-of-type {
+.course-pre-item > .price {
   margin: 6px 0 0;
-  color: #d21b2b; /* đỏ */
+  color: red; /* đỏ */
   font-weight: 700;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 /* hover effect cho toàn bộ item (nhẹ) */
@@ -100,55 +99,4 @@
 /* khoảng cách bên trong khung lớn (giống viền trong ảnh mẫu) */
 .course-pre-track-wrapper {
   padding: 8px;
-}
-
-/* responsive: 3 cột trên tablet */
-@media (max-width: 1024px) {
-  .course-pre-track {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* responsive: 2 cột trên điện thoại ngang */
-@media (max-width: 700px) {
-  .course-pre-component {
-    margin: 20px 12px;
-    padding: 16px;
-  }
-  .course-pre-track {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .course-pre-item > p:first-of-type {
-    min-height: 36px;
-    font-size: 13px;
-  }
-}
-
-/* responsive: 1 cột rất nhỏ / mobile dọc */
-@media (max-width: 420px) {
-  .course-pre-track {
-    grid-template-columns: 1fr;
-  }
-  .course-pre-item {
-    padding: 10px 6px;
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
-    text-align: left;
-  }
-  .course-pre-item img {
-    width: 72px;
-    height: 72px;
-    padding-bottom: 0;
-    aspect-ratio: 1/1;
-    flex: 0 0 72px;
-  }
-  .course-pre-item > p:first-of-type {
-    margin: 0;
-  }
-  .course-pre-item > p:last-of-type {
-    margin-left: auto;
-    font-weight: 700;
-  }
 }

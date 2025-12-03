@@ -2,7 +2,7 @@ const courseEntity = require("../../models/course.model");
 //Router lấy dữ liệu tất cả khóa học trong database
 exports.getCourses = async (req, res) => {
   try {
-    const courses = await courseEntity.find();
+    const courses = await courseEntity.find().populate("categoryId");
     res.status(200).json(courses);
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
@@ -50,7 +50,9 @@ exports.getCoursesWithCategory_Id = async (req, res) => {
     //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
     const { category_id } = req.query;
     //Tìm kiếm các khóa học có categoryId bằng id danh mục gửi từ phía client
-    const courses = await courseEntity.find({ categoryId: category_id });
+    const courses = await courseEntity
+      .find({ categoryId: category_id })
+      .populate("categoryId");
     res.status(200).json(courses);
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCoursesWithCategory_Id");
@@ -75,5 +77,37 @@ exports.getCoursesWithSearchSuggestion = async (req, res) => {
     res.status(500).json({
       message: "Lấy dữ liệu khóa học dựa trên gợi ý tìm kiếm thất bại",
     });
+  }
+};
+//Router lấy dữ liệu khóa theo id
+exports.getCourseWithId = async (req, res) => {
+  try {
+    //Lấy id khóa học gửi từ phía client bằng req.query
+    const { id } = req.query;
+    //Tìm kiếm khóa học có id bằng id danh mục gửi từ phía client
+    const course = await courseEntity
+      .findOne({ _id: id })
+      .populate("categoryId");
+    res.status(200).json(course);
+  } catch (error) {
+    console.error("Có lỗi xảy ra khi gọi hàm getCourseWithId");
+    return res
+      .status(500)
+      .json({ message: "Lấy dữ liệu khóa học theo Id thất bại" });
+  }
+};
+//Router xóa khóa học được chọn
+exports.deleteCourse = async (req, res) => {
+  try {
+    //Lấy id khóa học gửi từ phía client bằng req.query
+    const { id } = req.query;
+    //Xóa khóa học được chọn dựa vào id gửi từ phía client
+    await courseEntity.deleteOne({ _id: id });
+    return res.status(200).json({
+      message: "Đã xóa khóa học có mã" + " " + id + " " + "thành công",
+    });
+  } catch (error) {
+    console.error("Có lỗi xảy ra khi gọi hàm deleteCourse");
+    return res.status(500).json({ message: "Xóa thất bại" });
   }
 };

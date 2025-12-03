@@ -119,53 +119,11 @@
   margin: 6px 0 0;
   color: #d21b2b;
   font-weight: 700;
-  font-size: 14px;
+  font-size: px;
   margin-top: auto; /* kéo giá xuống chân card nếu còn không gian */
 }
 
 /* Hover nhẹ lift ảnh */
 .course-pre-item:hover img {
   transform: translateY(-6px) scale(1.02);
-}
-
-/* ====== Responsive ====== */
-/* tablet: 2 columns */
-@media (max-width: 992px) {
-  .courses-list-content .course-pre-track {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px;
-  }
-  .course-pre-item {
-    min-height: 220px;
-  }
-}
-
-/* mobile: 1 column */
-@media (max-width: 600px) {
-  .courses-list-content .course-pre-track {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  .course-pre-item {
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    gap: 12px;
-    min-height: 92px;
-  }
-  .course-pre-item img {
-    width: 88px;
-    height: 88px;
-    aspect-ratio: auto;
-    border-radius: 6px;
-    flex: 0 0 88px;
-  }
-  .course-pre-item > p:first-of-type {
-    min-height: auto;
-    -webkit-line-clamp: 2;
-  }
-  .course-pre-item > p:last-of-type {
-    margin-left: auto;
-    margin-top: 0;
-  }
 }
