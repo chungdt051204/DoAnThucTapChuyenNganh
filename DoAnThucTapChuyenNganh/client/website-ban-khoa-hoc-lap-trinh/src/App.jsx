@@ -4,7 +4,6 @@ import HomeUser from "./assets/components/HomeUser";
 import Login from "./assets/components/Login";
 import Register from "./assets/components/Register";
 import { useEffect, useState } from "react";
-import Instructor from "./assets/components/Instructors";
 import GetDetailCourse from "./assets/components/Detail";
 import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
 import HomeAdmin from "./assets/components/HomeAdmin";
@@ -70,7 +69,7 @@ function App() {
           <Route path="/admin" element={<HomeAdmin></HomeAdmin>} />
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
-          <Route path="/instructors" element={<Instructor></Instructor>} />
+
           <Route
             path="/course/detail"
             element={<GetDetailCourse></GetDetailCourse>}
