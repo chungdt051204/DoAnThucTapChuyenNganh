@@ -90,6 +90,68 @@ exports.getCourseWithId = async (req, res) => {
       .json({ message: "Lấy dữ liệu khóa học theo Id thất bại" });
   }
 };
+//Router thêm khóa học mới
+exports.postAddCourse = async (req, res) => {
+  try {
+    const { title, categoryId, price } = req.body;
+    const image = req.file;
+
+    // Validate input
+    if (!title || !categoryId || !price || !image) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng điền đầy đủ thông tin" });
+    }
+
+    // Create new course
+    const courseData = {
+      title,
+      categoryId,
+      price: parseFloat(price),
+      image: image.filename,
+      thumbnail: image.filename,
+      isFree: parseFloat(price) === 0,
+    };
+
+    await courseEntity.create(courseData);
+    res.status(200).json({ message: "Thêm khóa học thành công" });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi thêm khóa học:", error);
+    res.status(500).json({ message: "Thêm khóa học thất bại" });
+  }
+};
+//Router cập nhật khóa học
+exports.putUpdateCourse = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const { title, categoryId, price } = req.body;
+    const { image, thumbnail } = req.files || {};
+
+    // Validate input
+    if (!id || !title || !price) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng điền đầy đủ thông tin" });
+    }
+
+    // Update course data
+    const updateData = {
+      title,
+      categoryId,
+      price: parseFloat(price),
+      isFree: parseFloat(price) === 0,
+    };
+
+    if (image) updateData.image = image[0].filename;
+    if (thumbnail) updateData.thumbnail = thumbnail[0].filename;
+
+    await courseEntity.updateOne({ _id: id }, updateData);
+    res.status(200).json({ message: "Cập nhật khóa học thành công" });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi cập nhật khóa học:", error);
+    res.status(500).json({ message: "Cập nhật khóa học thất bại" });
+  }
+};
 //Router xóa khóa học được chọn
 exports.deleteCourse = async (req, res) => {
   try {

@@ -127,6 +127,31 @@ exports.putStatusUser = async (req, res) => {
       .json({ message: "Thay đổi trạng thái người dùng thất bại" });
   }
 };
+//Router xử lý cập nhật thông tin cá nhân của người dùng
+exports.putUser = async (req, res) => {
+  try {
+    const session = sessions[req.cookies.sessionId];
+    if (!session) {
+      return res.status(401).json({ message: "Người dùng chưa đăng nhập" });
+    }
+
+    const userId = session.id;
+    const { fullName, password } = req.body;
+    const updateData = {};
+
+    if (fullName) updateData.fullName = fullName;
+    if (password) updateData.password = password;
+    if (req.file) updateData.avatar = req.file.filename;
+
+    await userEntity.updateOne({ _id: userId }, updateData);
+    const updatedUser = await userEntity.findOne({ _id: userId });
+
+    res.status(200).json({ message: "Cập nhật thành công", user: updatedUser });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi cập nhật thông tin người dùng", error);
+    res.status(500).json({ message: "Cập nhật thông tin thất bại" });
+  }
+};
 //Router xử lý chức năng đăng xuất
 exports.logout = (req, res) => {
   //Xóa cookies => Mất phiên đăng nhập

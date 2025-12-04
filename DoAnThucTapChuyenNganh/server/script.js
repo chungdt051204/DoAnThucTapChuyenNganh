@@ -10,7 +10,7 @@ const multer = require("multer");
 //Thứ tự đặt: cors, cookie-parser, body-parser, router
 app.use(
   cors({
-    origin: "http://localhost:5174",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -62,29 +62,25 @@ const storageCourse = multer.diskStorage({
   },
 });
 const uploadCourse = multer({ storage: storageCourse });
-app.post(
-  "/admin/course",
-  uploadCourse.fields([
-    { name: "image", maxCount: 1 },
-    { name: "thumbnail", maxCount: 1 },
-  ]),
-  async (req, res) => {
-    try {
-      const { title, categoryId, price } = req.body;
-      await courseEntity.create({
-        title: title,
-        categoryId: categoryId,
-        price: price,
-        image: req.files["image"][0].filename,
-        thumbnail: req.files["thumbnail"][0].filename,
-      });
-      res.status(200).json({ message: "Thêm mới khóa học thành công" });
-    } catch (error) {
-      console.log("Có lỗi xảy ra trong quá trình thêm dữ liệu", error);
-      res.status(500).json({ message: "Thêm dữ liệu thất bại, error", error });
+app.post("/admin/course", uploadCourse.single("image"), async (req, res) => {
+  try {
+    const { title, categoryId, price } = req.body;
+    if (!req.file) {
+      return res.status(400).json({ message: "Vui lòng chọn ảnh" });
     }
+    await courseEntity.create({
+      title: title,
+      categoryId: categoryId,
+      price: price,
+      image: req.file.filename,
+      thumbnail: req.file.filename,
+    });
+    res.status(200).json({ message: "Thêm mới khóa học thành công" });
+  } catch (error) {
+    console.log("Có lỗi xảy ra trong quá trình thêm dữ liệu", error);
+    res.status(500).json({ message: "Thêm dữ liệu thất bại, error", error });
   }
-);
+});
 app.put(
   "/admin/course",
   uploadCourse.fields([
