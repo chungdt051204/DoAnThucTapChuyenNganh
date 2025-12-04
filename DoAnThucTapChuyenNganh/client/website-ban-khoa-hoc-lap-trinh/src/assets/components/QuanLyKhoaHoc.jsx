@@ -11,9 +11,13 @@ import "./components-css/QuanLyKhoaHoc.css";
  * - Nếu ảnh chỉ là tên file: thêm đường dẫn server vào
  */
 const getImageUrl = (image) => {
+  // Nếu không có ảnh, trả về chuỗi rỗng
   if (!image) return "";
+  // Nếu image là URL đầy đủ (ví dụ: Cloudinary), trả về nguyên URL
   if (image.includes("http")) return image;
-  return `http://localhost:3000/images/course/${image}`;
+  // Nếu image chỉ là tên file trên server, mã hóa tên file để tránh lỗi URL
+  // (ví dụ: khoảng trắng hoặc ký tự đặc biệt trong tên file)
+  return `http://localhost:3000/images/course/${encodeURIComponent(image)}`;
 };
 
 export default function QuanLyKhoaHoc() {

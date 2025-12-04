@@ -66,11 +66,12 @@ export default function QuanLyNguoiDung() {
   return (
     <>
       <AdminNavBar />
-      <section className="user-management">
+      <section className="user-management" style={{ margin: "50px" }}>
         <select
           onChange={handleRoleSelected}
           ref={roleSelectedRef}
           className="role-select"
+          style={{ marginBottom: "20px" }}
         >
           <option value="">Chọn vai trò</option>
           <option value="admin">Admin</option>
