@@ -52,7 +52,7 @@ export default function AdminNavBar() {
             </Link>
           </li>
           <li>
-            <Link to="#">
+            <Link to="/admin/order">
               <p>Quản lý đơn hàng</p>
             </Link>
           </li>

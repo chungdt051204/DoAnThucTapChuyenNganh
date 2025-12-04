@@ -1,0 +1,150 @@
+/* QuanLyDonHang.css
+   Thiết kế dễ đọc cho người mới: container, control, bảng,
+   trạng thái (success/failed) và responsive cơ bản.
+*/
+
+/* ---- Wrapper page (khoảng cách so với header/nav) ---- */
+.quanly-donhang-wrapper {
+  margin: 110px 50px; /* tương tự inline style trước - bạn có thể điều chỉnh */
+}
+
+/* Khung chứa toàn nội dung (padding + nền) */
+.quanly-donhang {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(18, 24, 30, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+/* Controls area (select filter) */
+.ql-controls {
+  display: flex;
+  justify-content: flex-start; /* để select nằm bên trái */
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+/* Label + select styling (dễ đọc) */
+.ql-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #222;
+  font-size: 14px;
+}
+
+/* Tùy chỉnh select để trông giống button */
+.ql-filter select {
+  appearance: none; /* loại bỏ style mặc định */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+/* ---- Bảng đơn hàng ---- */
+.ql-table {
+  width: 100%;
+  border-collapse: separate; /* để có khoảng cách giữa header & body */
+  border-spacing: 0; /* giữ spacing 0 nhưng ta dùng border on cells */
+  margin-top: 6px;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Header */
+.ql-table thead th {
+  text-align: left;
+  padding: 14px 18px;
+  font-weight: 700;
+  color: #333;
+  background: #fafafa;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Body cells */
+.ql-table tbody td {
+  padding: 14px 18px;
+  color: #222;
+  font-size: 14px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Nếu muốn hàng không có đường biên cuối cùng */
+.ql-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Kiểu chữ cho mã (bold nhẹ) */
+.ql-table td:first-child {
+  font-weight: 600;
+}
+
+/* Giá tiền: màu đỏ và in đậm */
+.ql-table td:nth-last-child(2) {
+  color: #d21b2b;
+  font-weight: 700;
+}
+
+/* Trạng thái: pill nhỏ */
+.ql-status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Thành công: nền xanh nhạt chữ xanh */
+.ql-status.success {
+  background: #e9fff0;
+  color: #1b7a3a;
+  border: 1px solid rgba(27, 122, 58, 0.08);
+}
+
+/* Thất bại: nền đỏ nhạt chữ đỏ */
+.ql-status.failed {
+  background: #fff1f1;
+  color: #b33a3a;
+  border: 1px solid rgba(179, 58, 58, 0.06);
+}
+
+/* Thông báo không có đơn hàng */
+.ql-table tbody td[colspan] {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+}
+
+/* ---- Responsive nhỏ (mobile) ---- */
+@media (max-width: 800px) {
+  .quanly-donhang-wrapper {
+    margin: 90px 16px;
+  }
+  .ql-table thead th,
+  .ql-table tbody td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .ql-filter {
+    font-size: 13px;
+  }
+}
+
+/* ---- Một vài mẹo dễ hiểu ----
+ - .quanly-donhang-wrapper chứa margin lớn, tách khỏi header/nav.
+ - .quanly-donhang là "card" chứa bảng, có border-radius và shadow.
+ - .ql-controls chứa select; bạn có thể thêm các button khác ở đây.
+ - .ql-table các th/td có padding; giá nằm ở cột thứ 2 từ phải.
+ - .ql-status.* style trạng thái success/failed.
+*/

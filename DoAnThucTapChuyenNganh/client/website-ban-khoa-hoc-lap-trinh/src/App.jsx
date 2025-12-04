@@ -12,6 +12,7 @@ import QuanLyKhoaHoc from "./assets/components/QuanLyKhoaHoc";
 import QuanLyNguoiDung from "./assets/components/QuanLyNguoiDung";
 import Cart from "./assets/components/Cart";
 import UserProfile from "./assets/components/UserProfile";
+import QuanLyDonHang from "./assets/components/QuanLyDonHang";
 
 function App() {
   const [user, setUser] = useState("");
@@ -85,6 +86,7 @@ function App() {
           <Route path="/admin/category" element={<QuanLyDanhMuc />} />
           <Route path="/admin/course" element={<QuanLyKhoaHoc />} />
           <Route path="/admin/user" element={<QuanLyNguoiDung />} />
+          <Route path="/admin/order" element={<QuanLyDonHang />} />
         </Routes>
       </AppContext.Provider>
     </>
