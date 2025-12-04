@@ -1,18 +1,20 @@
 const courseEntity = require("../../models/course.model"); //Import courseEntity từ model
 exports.getCourses = async (req, res) => {
   try {
-    //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
+    // Lấy id danh mục từ query parameter (tùy chọn)
     const { category_id } = req.query;
+
     if (category_id) {
-      //Nếu có category_id thì lọc theo danh mục
+      // Nếu có category_id: lọc khóa học theo danh mục
+      // populate(): tương tự JOIN trong SQL để lấy thông tin danh mục
       const coursesWithCategoryId = await courseEntity
         .find({ categoryId: category_id })
-        .populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json(coursesWithCategoryId); //Gửi dữ liệu về cho phía client
+        .populate("categoryId");
+      res.status(200).json(coursesWithCategoryId);
     } else {
-      //Không có query String thì lấy tất cả
-      const courses = await courseEntity.find().populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json(courses); //Gửi dữ liệu về cho phía client
+      // Không có category_id: lấy tất cả khóa học
+      const courses = await courseEntity.find().populate("categoryId");
+      res.status(200).json(courses);
     }
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
@@ -22,7 +24,7 @@ exports.getCourses = async (req, res) => {
 //Router lấy dữ liệu các khóa học miễn phí
 exports.getCoursesFree = async (req, res) => {
   try {
-    //Tìm các khóa học có isFree = true
+    // Tìm tất cả khóa học có isFree = true
     const courses = await courseEntity.find({ isFree: true });
     res.status(200).json(courses);
   } catch (error) {
@@ -33,7 +35,7 @@ exports.getCoursesFree = async (req, res) => {
 //Router lấy dữ liệu các khóa học trả phí
 exports.getCoursesPre = async (req, res) => {
   try {
-    //Tìm các khóa học có isFree = false
+    // Tìm tất cả khóa học có isFree = false
     const courses = await courseEntity.find({ isFree: false });
     res.status(200).json(courses);
   } catch (error) {
@@ -44,9 +46,10 @@ exports.getCoursesPre = async (req, res) => {
 //Router lấy dữ liệu chi tiết khóa học dựa vào id khóa học
 exports.getDetailCourse = async (req, res) => {
   try {
-    //Lấy id khóa học từ chuỗi query String nhận được bên phía client bằng req.query
+    // Lấy id khóa học từ query parameter
     const { id } = req.query;
-    //Tìm khóa học có id bằng id khóa học gửi từ phía client
+
+    // Tìm khóa học có id tương ứng (không populate danh mục)
     const course = await courseEntity.findOne({ _id: id });
     res.status(200).json(course);
   } catch (error) {
@@ -58,12 +61,14 @@ exports.getDetailCourse = async (req, res) => {
 //Tìm kiếm gần đúng các khóa học dựa vào gợi ý tìm kiếm
 exports.getCoursesWithSearchSuggestion = async (req, res) => {
   try {
-    //Lấy dữ liệu title từ từ chuỗi query String nhận được bên phía client bằng req.query
+    // Lấy từ khóa tìm kiếm từ query parameter
     const { title } = req.query;
-    //Tìm kiếm gần đúng các khóa học có title chứa chuỗi query String gửi từ phía client
+
+    // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
+    // $regex: biểu thức chính quy
+    // $options: "i" = case-insensitive
     const courses = await courseEntity.find({
-      title: { $regex: title, $options: "i" }, //$regex cho phép nhận biểu thức, $options: "i"
-      //không phân biệt hoa thường
+      title: { $regex: title, $options: "i" },
     });
     res.status(200).json(courses);
   } catch (error) {
@@ -73,12 +78,14 @@ exports.getCoursesWithSearchSuggestion = async (req, res) => {
     });
   }
 };
-//Router lấy dữ liệu khóa theo id
+//Router lấy dữ liệu khóa theo id (với populate danh mục)
 exports.getCourseWithId = async (req, res) => {
   try {
-    //Lấy id khóa học gửi từ phía client bằng req.query
+    // Lấy id khóa học từ query parameter
     const { id } = req.query;
-    //Tìm kiếm khóa học có id bằng id khóa học gửi từ phía client
+
+    // Tìm khóa học và populate (lấy) thông tin danh mục
+    // populate(): tương tự JOIN trong SQL
     const course = await courseEntity
       .findOne({ _id: id })
       .populate("categoryId");
@@ -93,26 +100,29 @@ exports.getCourseWithId = async (req, res) => {
 //Router thêm khóa học mới
 exports.postAddCourse = async (req, res) => {
   try {
+    // Lấy dữ liệu từ request body
     const { title, categoryId, price } = req.body;
-    const image = req.file;
+    const image = req.file; // File ảnh từ multer
 
-    // Validate input
+    // Validation: Kiểm tra đầy đủ dữ liệu
     if (!title || !categoryId || !price || !image) {
       return res
         .status(400)
         .json({ message: "Vui lòng điền đầy đủ thông tin" });
     }
 
-    // Create new course
+    // Tạo object khóa học mới
+    // Lưu tên file ảnh vào cả field image và thumbnail (do frontend chỉ gửi 1 file)
     const courseData = {
       title,
       categoryId,
       price: parseFloat(price),
       image: image.filename,
       thumbnail: image.filename,
-      isFree: parseFloat(price) === 0,
+      isFree: parseFloat(price) === 0, // Đánh dấu khóa học miễn phí nếu giá = 0
     };
 
+    // Lưu vào database
     await courseEntity.create(courseData);
     res.status(200).json({ message: "Thêm khóa học thành công" });
   } catch (error) {
@@ -123,28 +133,34 @@ exports.postAddCourse = async (req, res) => {
 //Router cập nhật khóa học
 exports.putUpdateCourse = async (req, res) => {
   try {
+    // Lấy id khóa học từ query parameter
     const { id } = req.query;
+    // Lấy dữ liệu cập nhật từ request body
     const { title, categoryId, price } = req.body;
-    const { image, thumbnail } = req.files || {};
 
-    // Validate input
+    // Validation: Kiểm tra dữ liệu bắt buộc (ảnh là tùy chọn)
     if (!id || !title || !price) {
       return res
         .status(400)
         .json({ message: "Vui lòng điền đầy đủ thông tin" });
     }
 
-    // Update course data
+    // Tạo object dữ liệu cập nhật
     const updateData = {
       title,
       categoryId,
       price: parseFloat(price),
-      isFree: parseFloat(price) === 0,
+      isFree: parseFloat(price) === 0, // Tự động đánh dấu miễn phí nếu giá = 0
     };
 
-    if (image) updateData.image = image[0].filename;
-    if (thumbnail) updateData.thumbnail = thumbnail[0].filename;
+    // Chỉ cập nhật ảnh nếu người dùng gửi file mới
+    // Cập nhật cả image và thumbnail từ file ảnh (vì frontend chỉ gửi 1 file)
+    if (req.file) {
+      updateData.image = req.file.filename;
+      updateData.thumbnail = req.file.filename;
+    }
 
+    // Cập nhật khóa học trong database
     await courseEntity.updateOne({ _id: id }, updateData);
     res.status(200).json({ message: "Cập nhật khóa học thành công" });
   } catch (error) {
@@ -155,10 +171,12 @@ exports.putUpdateCourse = async (req, res) => {
 //Router xóa khóa học được chọn
 exports.deleteCourse = async (req, res) => {
   try {
-    //Lấy id khóa học gửi từ phía client bằng req.query
+    // Lấy id khóa học từ query parameter
     const { id } = req.query;
-    //Xóa khóa học được chọn dựa vào id gửi từ phía client
+
+    // Xóa khóa học khỏi database dựa vào id
     await courseEntity.deleteOne({ _id: id });
+
     return res.status(200).json({
       message: "Đã xóa khóa học có mã" + " " + id + " " + "thành công",
     });

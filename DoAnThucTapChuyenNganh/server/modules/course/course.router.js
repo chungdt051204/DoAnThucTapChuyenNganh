@@ -2,9 +2,14 @@ const express = require("express"); //Import thư viện express
 const router = express.Router();
 const coursesController = require("./course.controller");
 const multer = require("multer"); //Import thư viện multer
+
 const prefix = "";
 
-//Lưu trữ ảnh khóa học vào thư mục public/images/course bằng multer
+/**
+ * Cấu hình multer để lưu trữ ảnh khóa học
+ * - destination: Lưu ảnh vào thư mục ./public/images/course/
+ * - filename: Tên file = timestamp + tên file gốc (để tránh trùng tên)
+ */
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     return cb(null, "./public/images/course/");
@@ -15,25 +20,34 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-router.get(`${prefix}/courses`, coursesController.getCourses);
-router.get(`${prefix}/course-free`, coursesController.getCoursesFree);
-router.get(`${prefix}/course-pre`, coursesController.getCoursesPre);
-router.get(`${prefix}/course`, coursesController.getDetailCourse);
+// Routes GET: Lấy dữ liệu khóa học
+router.get(`${prefix}/courses`, coursesController.getCourses); // Lấy tất cả hoặc lọc theo danh mục
+router.get(`${prefix}/course-free`, coursesController.getCoursesFree); // Lấy khóa học miễn phí
+router.get(`${prefix}/course-pre`, coursesController.getCoursesPre); // Lấy khóa học trả phí
+router.get(`${prefix}/course`, coursesController.getDetailCourse); // Lấy chi tiết khóa học
+router.get(`${prefix}/course`, coursesController.getCourseWithId); // Lấy khóa học với populate danh mục
 
+// Route tìm kiếm gợi ý
 router.get(
   `${prefix}/courses/search/suggestion`,
   coursesController.getCoursesWithSearchSuggestion
 );
+
+// Routes POST, PUT, DELETE: Quản lý khóa học (Admin)
+// POST: Thêm khóa học mới (với upload.single("image") middleware)
 router.post(
   `${prefix}/admin/course`,
   upload.single("image"),
   coursesController.postAddCourse
 );
+
+// PUT: Cập nhật khóa học (ảnh là tùy chọn, với upload.single("image") middleware)
 router.put(
   `${prefix}/admin/course`,
-  upload.fields([{ name: "image" }, { name: "thumbnail" }]),
+  upload.single("image"),
   coursesController.putUpdateCourse
 );
+
+// DELETE: Xóa khóa học
 router.delete(`${prefix}/admin/course`, coursesController.deleteCourse);
-router.get(`${prefix}/course`, coursesController.getCourseWithId);
 module.exports = router;
