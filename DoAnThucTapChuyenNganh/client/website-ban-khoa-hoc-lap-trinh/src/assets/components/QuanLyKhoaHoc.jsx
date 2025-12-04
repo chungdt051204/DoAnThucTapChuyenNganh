@@ -3,6 +3,7 @@ import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
+import "./components-css/QuanLyKhoaHoc.css";
 export default function QuanLyKhoaHoc() {
   const { courses, categories, setRefresh } = useContext(AppContext);
   const [searchParams] = useSearchParams();
@@ -137,92 +138,124 @@ export default function QuanLyKhoaHoc() {
     <>
       <AdminNavBar />
       <div>
-        <button
-          onClick={() => {
-            addDialog.current.showModal();
-          }}
-        >
-          Thêm khóa học
-        </button>
-        <input type="text" name="" id="" placeholder="Tìm khóa học" />
-        <select ref={categoryFilterRef} onChange={handleCategorySelected}>
-          <option value="">Chọn danh mục</option>
-          {categories.length > 0 &&
-            categories.map((value, index) => {
-              return (
-                <option key={index} value={value._id}>
-                  {value.title}
-                </option>
-              );
-            })}
-        </select>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th colSpan={2}>Khóa học</th>
-            <th>Danh mục</th>
-            <th>Giá</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!categoryId && courses.length > 0
-            ? courses.map((value, index) => {
+        <div class="course-controls">
+          <button
+            class="add-course-btn"
+            onClick={() => {
+              addDialog.current.showModal();
+            }}
+          >
+            Thêm khóa học
+          </button>
+          <input
+            type="text"
+            class="course-search-input"
+            name=""
+            id=""
+            placeholder="Tìm khóa học"
+          />
+          <select
+            class="category-filter-select"
+            ref={categoryFilterRef}
+            onChange={handleCategorySelected}
+          >
+            <option value="">Lọc danh mục</option>
+            {categories.length > 0 &&
+              categories.map((value, index) => {
                 return (
-                  <tr key={index}>
-                    <td>
-                      <img src={value.image} alt="" width={50} height={60} />
-                    </td>
-                    <td>{value.title}</td>
-                    <td>{value.categoryId.title}</td>
-                    <td>{value.price > 0 ? value.price : "Miễn phí"}</td>
-                    <td>
-                      <Link to={`/admin/course?id=${value._id}`}>
-                        <i
-                          onClick={() => handleClickUpdate(value._id)}
-                          class="fa-solid fa-pen"
-                        ></i>
-                      </Link>
-                    </td>
-                    <td>
-                      <i
-                        onClick={() => handleDelete(value._id)}
-                        class="fa-solid fa-trash"
-                      ></i>
-                    </td>
-                  </tr>
-                );
-              })
-            : coursesWithCategory_Id.length > 0 &&
-              coursesWithCategory_Id.map((value, index) => {
-                return (
-                  <tr key={index}>
-                    <td>
-                      <img src={value.image} alt="" width={50} height={60} />
-                    </td>
-                    <td>{value.title}</td>
-                    <td>{value.categoryId.title}</td>
-                    <td>{value.price > 0 ? value.price : "Miễn phí"}</td>
-                    <td>
-                      <Link to={`/admin/course?id=${value._id}`}>
-                        <i
-                          onClick={() => handleClickUpdate(value._id)}
-                          class="fa-solid fa-pen"
-                        ></i>
-                      </Link>
-                    </td>
-                    <td>
-                      <i
-                        onClick={() => handleDelete(value._id)}
-                        class="fa-solid fa-trash"
-                      ></i>
-                    </td>
-                  </tr>
+                  <option key={index} value={value._id}>
+                    {value.title}
+                  </option>
                 );
               })}
-        </tbody>
-      </table>
+          </select>
+        </div>
+        <div className="course-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th className="course-col">Khóa học</th> <th>Danh mục</th>
+                <th>Giá</th>
+                <th className="action-col">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!categoryId && courses.length > 0
+                ? courses.map((value, index) => {
+                    const isSelected = index === 0 ? "selected" : "";
+                    return (
+                      <tr key={index} className={isSelected}>
+                        <td className="course-title-cell">
+                          <img
+                            src={value.image}
+                            alt=""
+                            className="course-image"
+                            width={50}
+                            height={50}
+                          />
+                          <span className="course-name">{value.title}</span>
+                        </td>
+                        <td>{value.categoryId.title}</td>
+                        <td className="price-cell">
+                          {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
+                        </td>
+                        <td className="action-cell">
+                          <Link to={`/admin/course?id=${value._id}`}>
+                            <i
+                              onClick={() => handleClickUpdate(value._id)}
+                              className="fa-solid fa-pen"
+                            ></i>
+                          </Link>
+                          <i
+                            onClick={() => handleDelete(value._id)}
+                            className="fa-solid fa-trash"
+                          ></i>
+                        </td>
+                      </tr>
+                    );
+                  })
+                : coursesWithCategory_Id.length > 0 &&
+                  coursesWithCategory_Id.map((value, index) => {
+                    const isSelected = index === 0 ? "selected" : "";
+                    return (
+                      <tr key={index} className={isSelected}>
+                        <td className="course-title-cell">
+                          <img
+                            src={value.image}
+                            alt=""
+                            className="course-image"
+                            width={50}
+                            height={50}
+                          />
+                          <span className="course-name">{value.title}</span>
+                        </td>
+                        <td>{value.categoryId.title}</td>
+                        <td className="price-cell">
+                          {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
+                        </td>
+                        <td className="action-cell">
+                          <Link to={`/admin/course?id=${value._id}`}>
+                            <i
+                              onClick={() => handleClickUpdate(value._id)}
+                              className="fa-solid fa-pen"
+                            ></i>
+                          </Link>
+                          <i
+                            onClick={() => handleDelete(value._id)}
+                            className="fa-solid fa-trash"
+                          ></i>
+                        </td>
+                      </tr>
+                    );
+                  })}
+            </tbody>
+          </table>
+          <div className="pagination-controls">
+            <button className="btn-prev">Trước</button>
+            <button className="btn-next">Sau</button>
+          </div>
+        </div>
+      </div>
       <dialog ref={addDialog}>
         <form action="" method="dialog" onSubmit={handleAddSubmit}>
           Tên khóa học:

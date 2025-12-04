@@ -25,7 +25,7 @@ export default function CoursesPre() {
             coursesPre.map((value, index) => {
               return (
                 <div key={index} className="course-pre-item">
-                  <Link to={`/course/detail?id=${value._id}`}>
+                  <Link to={`/course?id=${value._id}`}>
                     <img src={value.image} alt="" width={150} height={200} />
                   </Link>
                   <p>{value.title}</p>

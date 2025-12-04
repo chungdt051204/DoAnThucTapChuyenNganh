@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"); //Import thư viện express
 const router = express.Router();
 const categoryController = require("./category.controller");
 const prefix = "";

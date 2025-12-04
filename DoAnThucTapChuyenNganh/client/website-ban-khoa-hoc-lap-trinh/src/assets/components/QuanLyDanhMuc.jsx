@@ -6,25 +6,21 @@ import Footer from "./Footer";
 import "./components-css/QuanLyDanhMuc.css";
 
 export default function QuanLyDanhMuc() {
-  const { categories } = useContext(AppContext); // lấy danh mục từ context: đây là danh sách sẽ hiển thị trong bảng
-
-  const [searchParams] = useSearchParams(); // lấy id từ url
+  const { categories, setRefresh } = useContext(AppContext); // lấy danh mục từ useContext
+  const [searchParams] = useSearchParams(); // lấy id từ query String
   const id = searchParams.get("id");
-
   // các dialog và input
   const addDialog = useRef(); // dialog thêm
   const updateDialog = useRef(); // dialog sửa
   const addDialogValue = useRef(); // input thêm
   const updateDialogValue = useRef(); // input sửa
-  // dùng để mở/đóng dialog và lấy giá trị của input
-
   // quản lý lỗi + dữ liệu category cần sửa
   const [err, setErr] = useState("");
   const [categoryWithId, setCategoryWithId] = useState("");
 
   const handleAddSubmit = (e) => {
     // hàm chạy khi bấm nút "thêm"
-    e.preventDefault(); // ngăn reload trang
+    e.preventDefault(); // ngăn sự kiện submit mặc định
     if (addDialogValue.current.value === "") {
       setErr("Vui lòng nhập tên danh mục muốn thêm");
       return;
@@ -47,8 +43,12 @@ export default function QuanLyDanhMuc() {
       .then(({ message }) => {
         alert(message);
         addDialog.current.close(); // đóng dialog
+        setRefresh((prev) => prev + 1); //Tăng giá trị state 'refresh' để kích hoạt tải lại dữ liệu
       })
-      .catch(); // kết thúc
+      .catch(async (err) => {
+        const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
+        console.log(message);
+      });
   };
 
   const handleClickUpdate = (id) => {
@@ -61,37 +61,50 @@ export default function QuanLyDanhMuc() {
   };
 
   const handleUpdateSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
+
+    //  Gọi API Cập nhật
+    // Gửi yêu cầu PUT đến API, kèm theo ID của danh mục cần cập nhật dưới dạng query parameter.
     fetch(`http://localhost:3000/category?id=${id}`, {
-      method: "PUT",
+      method: "PUT", // Phương thức HTTP chuẩn để cập nhật/thay thế tài nguyên.
       headers: {
-        "Content-type": "application/json",
+        "Content-type": "application/json", // Chỉ định dữ liệu gửi đi là JSON.
       },
+      // Đóng gói dữ liệu mới thành chuỗi JSON để gửi đi.
       body: JSON.stringify({ title: updateDialogValue.current.value }),
     })
       .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+        if (res.ok) return res.json(); // Nếu thành công (2xx), parse JSON.
+        throw res; // Nếu thất bại, ném response.
       })
       .then(({ message }) => {
-        alert(message);
-        updateDialog.current.close();
+        alert(message); // Hiển thị thông báo thành công từ server.
+        updateDialog.current.close(); // Đóng hộp thoại/modal cập nhật.
+        setRefresh((prev) => prev + 1); // Tăng state 'refresh' để kích hoạt tải lại dữ liệu danh mục.
       })
-      .catch();
+      .catch(async (err) => {
+        const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
+        console.log(message);
+      });
   };
 
   const handleDelete = (id) => {
+    // Gửi yêu cầu DELETE đến API, kèm theo ID của danh mục cần xóa dưới dạng query parameter
     fetch(`http://localhost:3000/category?id=${id}`, {
-      method: "DELETE",
+      method: "DELETE", // Phương thức HTTP chuẩn để xóa tài nguyên
     })
       .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+        if (res.ok) return res.json(); // Nếu thành công (2xx), parse JSON
+        throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
       .then(({ message }) => {
-        alert(message);
+        alert(message); // Hiển thị thông báo thành công từ server
+        setRefresh((prev) => prev + 1); // Tăng giá trị state 'refresh' để kích hoạt tải lại dữ liệu
       })
-      .catch();
+      .catch(async (err) => {
+        const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
+        console.log(message);
+      });
   };
 
   return (

@@ -5,10 +5,11 @@ import Login from "./assets/components/Login";
 import Register from "./assets/components/Register";
 import { useEffect, useState } from "react";
 import GetDetailCourse from "./assets/components/Detail";
-import GetCoursesWithCategory_Id from "./assets/components/GetCoursesWithCategory_Id";
+import GetCoursesWithCategoryId from "./assets/components/GetCoursesWithCategoryId";
 import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
 import QuanLyKhoaHoc from "./assets/components/QuanLyKhoaHoc";
+import QuanLyNguoiDung from "./assets/components/QuanLyNguoiDung";
 import Cart from "./assets/components/Cart";
 import UserProfile from "./assets/components/UserProfile";
 
@@ -20,7 +21,7 @@ function App() {
   const [refresh, setRefresh] = useState(0);
   useEffect(() => {
     fetch("http://localhost:3000/me", {
-      credentials: "include",
+      credentials: "include", //Cho phép gửi kèm cookie
     })
       .then((res) => {
         if (res.ok) return res.json();
@@ -29,8 +30,14 @@ function App() {
       .then((data) => {
         setIsLogin(true);
         setUser(data);
+      })
+      .catch(async (err) => {
+        if (err.status === 401) {
+          const { message } = await err.json();
+          console.log(message);
+        }
       });
-  }, [refresh]);
+  }, [refresh]); //Khi giá trị refresh thay đổi useEffect sẽ được gọi lại
   useEffect(() => {
     fetch("http://localhost:3000/courses")
       .then((res) => {
@@ -71,18 +78,13 @@ function App() {
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
 
-          <Route
-            path="/course/detail"
-            element={<GetDetailCourse></GetDetailCourse>}
-          />
-          <Route
-            path="/courses/category"
-            element={<GetCoursesWithCategory_Id />}
-          />
+          <Route path="/course" element={<GetDetailCourse></GetDetailCourse>} />
+          <Route path="/courses" element={<GetCoursesWithCategoryId />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/admin/category" element={<QuanLyDanhMuc />} />
           <Route path="/admin/course" element={<QuanLyKhoaHoc />} />
+          <Route path="/admin/user" element={<QuanLyNguoiDung />} />
         </Routes>
       </AppContext.Provider>
     </>

@@ -41,7 +41,6 @@
 }
 
 .course-side {
-  background: var(--accent);
   border-radius: 8px;
   padding: 14px;
   display: flex;
@@ -183,27 +182,6 @@
   margin-left: 14px;
   min-width: 50px;
   text-align: right;
-}
-
-/* small screens */
-@media (max-width: 880px) {
-  .course-hero {
-    grid-template-columns: 1fr;
-  }
-  .course-thumb {
-    height: 180px;
-  }
-  .course-side {
-    align-items: center;
-  }
-
-  .info-split {
-    grid-template-columns: 1fr;
-  }
-
-  .lesson-title {
-    max-width: 280px;
-  }
 }
 
 /* extra polish: link hover */

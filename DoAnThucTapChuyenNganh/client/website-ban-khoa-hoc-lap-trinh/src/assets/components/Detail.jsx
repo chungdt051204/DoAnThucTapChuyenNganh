@@ -6,31 +6,42 @@ import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 
 export default function GetDetailCourse() {
-  const { user, isLogin } = useContext(AppContext);
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get("id");
-  const [course, setCourse] = useState("");
+  const { user, isLogin } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
+  const [searchParams] = useSearchParams(); // useSearch dùng để truy cập các tham số truy vấn (query string) trên URL.
+  const id = searchParams.get("id"); // Lấy giá trị của tham số 'id' từ query string.
+  const [course, setCourse] = useState(""); // useState lưu trữ dữ liệu chi tiết của khóa học.
+
   useEffect(() => {
-    console.log(id);
-    fetch(`http://localhost:3000/course/detail?id=${id}`)
+    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
+    fetch(`http://localhost:3000/course?id=${id}`)
       .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+        if (res.ok) return res.json(); // Nếu thành công parse JSON.
+        throw res; // Nếu thất bại, ném response để xử lý lỗi.
       })
       .then((data) => {
-        setCourse(data);
+        setCourse(data); // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
       });
-  }, [id]);
+  }, [id]); // Dependency array: useEffect sẽ chạy lại mỗi khi ID khóa học trên URL thay đổi.
   const handleClick = () => {
+    // Kiểm tra Bắt buộc Đăng nhập
     if (!isLogin) {
-      alert("Bạn chưa đăng nhập");
-      return;
+      alert("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
+      return; // Dừng hàm ngay lập tức
     }
-    fetch("http://localhost:3000/addCart", {
+
+    //  Kiểm tra Khóa học Miễn phí
+    if (course.isFree == true) {
+      return; // Dừng hàm vì không cần thêm khóa học miễn phí vào giỏ hàng
+    }
+
+    //  Gọi API Thêm vào Giỏ hàng
+    fetch("http://localhost:3000/cart", {
+      // Gửi yêu cầu POST đến endpoint /cart
       method: "POST",
       headers: {
-        "Content-type": "application/json",
+        "Content-type": "application/json", // Chỉ định dữ liệu gửi đi là JSON
       },
+      // Đóng gói dữ liệu cần thiết của khóa học và ID người dùng để thêm vào giỏ hàng
       body: JSON.stringify({
         userId: user._id,
         courseId: course._id,
@@ -39,15 +50,16 @@ export default function GetDetailCourse() {
       }),
     })
       .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+        if (res.ok) return res.json(); // Nếu thành công parse JSON
+        throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
       .then((message) => {
-        alert(message);
+        alert(message); // Hiển thị thông báo thành công từ server
       })
       .catch(async (err) => {
-        const { message } = await err.json();
-        alert(message);
+        // Xử lý lỗi (ví dụ: khóa học đã có trong giỏ hàng)
+        const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
+        alert(message); // Hiển thị thông báo lỗi
       });
   };
   return (

@@ -9,6 +9,13 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [orderItemsSelected, setOrderItemsSelected] = useState([]);
   const [refresh, setRefresh] = useState(0);
+  let sum = 0;
+  {
+    cartItems.forEach((value) => {
+      sum = sum + parseFloat(value.priceAtPurchase.$numberDecimal);
+      return sum;
+    });
+  }
   useEffect(() => {
     fetch(`http://localhost:3000/cart?user_id=${user._id}`)
       .then((res) => {
@@ -108,11 +115,13 @@ export default function Cart() {
                       </td>
 
                       <td className="col-price">
-                        {value.priceAtPurchase.$numberDecimal}
+                        <p style={{ color: "red" }}>
+                          {value.priceAtPurchase.$numberDecimal} VND
+                        </p>
                       </td>
 
                       <td className="col-action">
-                        <a className="action-delete">Xóa</a>
+                        <a style={{ color: "red" }}>Xóa</a>
                       </td>
                     </tr>
                   );
@@ -135,7 +144,7 @@ export default function Cart() {
                     <div className="right-summary">
                       <div className="total">
                         <span className="label">Tổng cộng sản phẩm:</span>
-                        <span className="amount"></span>
+                        <p className="amount">{sum} VND</p>
                       </div>
                       <button className="btn-buy">Mua Hàng</button>
                     </div>

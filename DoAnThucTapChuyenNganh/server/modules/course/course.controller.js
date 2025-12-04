@@ -1,9 +1,19 @@
-const courseEntity = require("../../models/course.model");
-//Router lấy dữ liệu tất cả khóa học trong database
+const courseEntity = require("../../models/course.model"); //Import courseEntity từ model
 exports.getCourses = async (req, res) => {
   try {
-    const courses = await courseEntity.find().populate("categoryId");
-    res.status(200).json(courses);
+    //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
+    const { category_id } = req.query;
+    if (category_id) {
+      //Nếu có category_id thì lọc theo danh mục
+      const coursesWithCategoryId = await courseEntity
+        .find({ categoryId: category_id })
+        .populate("categoryId"); //populate tương tự JOIN bên sql
+      res.status(200).json(coursesWithCategoryId); //Gửi dữ liệu về cho phía client
+    } else {
+      //Không có query String thì lấy tất cả
+      const courses = await courseEntity.find().populate("categoryId"); //populate tương tự JOIN bên sql
+      res.status(200).json(courses); //Gửi dữ liệu về cho phía client
+    }
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
     res.status(500).json({ message: "Lấy dữ liệu khóa học thất bại" });
@@ -44,23 +54,7 @@ exports.getDetailCourse = async (req, res) => {
     res.status(500).json({ message: "Lấy dữ liệu chi tiết khóa học thất bại" });
   }
 };
-//Router lọc khóa học theo danh mục
-exports.getCoursesWithCategory_Id = async (req, res) => {
-  try {
-    //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
-    const { category_id } = req.query;
-    //Tìm kiếm các khóa học có categoryId bằng id danh mục gửi từ phía client
-    const courses = await courseEntity
-      .find({ categoryId: category_id })
-      .populate("categoryId");
-    res.status(200).json(courses);
-  } catch (error) {
-    console.log("Có lỗi xảy ra khi xử lý hàm getCoursesWithCategory_Id");
-    res
-      .status(500)
-      .json({ message: "Lấy dữ liệu khóa học theo danh mục thất bại" });
-  }
-};
+
 //Tìm kiếm gần đúng các khóa học dựa vào gợi ý tìm kiếm
 exports.getCoursesWithSearchSuggestion = async (req, res) => {
   try {
@@ -84,7 +78,7 @@ exports.getCourseWithId = async (req, res) => {
   try {
     //Lấy id khóa học gửi từ phía client bằng req.query
     const { id } = req.query;
-    //Tìm kiếm khóa học có id bằng id danh mục gửi từ phía client
+    //Tìm kiếm khóa học có id bằng id khóa học gửi từ phía client
     const course = await courseEntity
       .findOne({ _id: id })
       .populate("categoryId");

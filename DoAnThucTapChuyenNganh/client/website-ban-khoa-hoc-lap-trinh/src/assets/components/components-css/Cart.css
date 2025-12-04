@@ -165,6 +165,7 @@ tfoot td {
 }
 
 .total .amount {
+  color: red;
   font-weight: 700;
   font-size: 18px;
   margin-left: 8px;
@@ -178,33 +179,4 @@ tfoot td {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 700;
-}
-
-/* responsive */
-@media (max-width: 700px) {
-  thead {
-    display: none;
-  }
-  .cart-table,
-  tbody,
-  tr,
-  td {
-    display: block;
-    width: 100%;
-  }
-  tbody tr {
-    margin-bottom: 12px;
-    border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
-  }
-  td {
-    border-bottom: 0;
-    padding: 12px;
-  }
-  .footer-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
 }

@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require("express"); //Import thư viện express
 const router = express.Router();
 const cartController = require("./cart.controller");
 const prefix = "";
-router.post(`${prefix}/addCart`, cartController.addCart);
+router.post(`${prefix}/cart`, cartController.postCart);
 router.get(`${prefix}/cart`, cartController.getCartItem);
 router.delete(`${prefix}/cart-items`, cartController.deleteCartItems);
 module.exports = router;

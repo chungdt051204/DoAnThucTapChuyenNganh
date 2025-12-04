@@ -47,7 +47,7 @@ export default function AdminNavBar() {
             </Link>
           </li>
           <li>
-            <Link to="#">
+            <Link to="/admin/user">
               <p>Quản lý người dùng</p>
             </Link>
           </li>

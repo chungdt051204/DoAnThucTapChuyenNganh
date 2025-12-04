@@ -2,13 +2,19 @@ import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import "./components-css/Auth.css";
 export default function Register() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook chuyển hướng trang sau khi đăng ký thành công.
+
+  // State Quản lý Lỗi (Hiển thị thông báo lỗi)
+  // Các state này dùng để lưu trữ và hiển thị thông báo lỗi kiểm tra đầu vào (validation).
   const [fullNameNotValid, setFullNameNotValid] = useState();
   const [usernameNotValid, setUsernameNotValid] = useState();
   const [emailNotValid, setEmailNotValid] = useState();
   const [passwordNotValid, setPasswordNotValid] = useState();
   const [verifyPasswordNotValid, setVerifyPasswordNotValid] = useState();
   const [phoneNotValid, setPhoneNotValid] = useState();
+
+  // useRef Quản lý Input (Truy cập giá trị form)
+  // Các ref này dùng để truy cập trực tiếp giá trị hiện tại của các trường input
   const fullName = useRef();
   const username = useRef();
   const email = useRef();
@@ -19,22 +25,28 @@ export default function Register() {
   const male = useRef();
   const female = useRef();
   const dateOfBirth = useRef();
+
+  // Hàm Xử lý Gửi Form
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
+    e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
+    const formData = new FormData(); // Tạo đối tượng để đóng gói dữ liệu form, bao gồm file (avatar).
+
+    //  Đóng gói Dữ liệu Form
+    // Gắn dữ liệu từ các trường input (thông qua ref) vào đối tượng formData.
     formData.append("fullName", fullName.current.value);
     formData.append("username", username.current.value);
     formData.append("email", email.current.value);
     formData.append("password", password.current.value);
-    formData.append("avatar", avatar.current.files[0]);
+    formData.append("avatar", avatar.current.files[0]); // Lấy file đầu tiên.
     formData.append("phone", phone.current.value);
     const gender = male.current.checked
       ? male.current.value
-      : female.current.value;
+      : female.current.value; // Xác định giá trị gender.
     formData.append("gender", gender);
     formData.append("dateOfBirth", dateOfBirth.current.value);
-    // const data = Object.fromEntries(formData.entries());
-    // console.log("Dữ liệu form:", data);
+
+    // Kiểm tra Validation (Kiểm tra đầu vào phía client)
+    // Thực hiện kiểm tra từng trường. Nếu có lỗi, đặt thông báo lỗi tương ứng và dừng hàm
     if (fullName.current.value === "") {
       setFullNameNotValid("Họ tên không được bỏ trống");
       return;
@@ -62,24 +74,24 @@ export default function Register() {
       setPhoneNotValid("Số điện thoại hợp lệ phải có đủ 10 số");
       return;
     } else {
+      //Gọi API Đăng ký (Nếu Validation thành công)
       fetch("http://localhost:3000/register", {
         method: "POST",
-        body: formData,
-        credentials: "include",
+        body: formData, // Gửi dữ liệu formData (bao gồm cả file)
       })
         .then((res) => {
           if (res.ok) return res.json();
-          throw res;
+          throw res; // Nếu không OK, ném response để xử lý lỗi backend
         })
         .then(({ message }) => {
-          alert(message);
-          navigate("/login");
+          alert(message); // Hiển thị thông báo thành công
+          navigate("/login"); // Chuyển hướng đến trang đăng nhập
         })
         .catch(async (err) => {
+          // Xử lý Lỗi từ Backend (Ví dụ: Email đã tồn tại)
           if (err.status === 400) {
-            //Lấy dữ liệu gửi từ backend
             const { message } = await err.json();
-            setEmailNotValid(message);
+            setEmailNotValid(message); // Hiển thị lỗi trả về từ server
           }
         });
     }
