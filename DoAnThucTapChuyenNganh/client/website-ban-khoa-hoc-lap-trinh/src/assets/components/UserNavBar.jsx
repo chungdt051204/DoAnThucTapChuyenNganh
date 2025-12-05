@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
-
 export default function UserNavBar() {
   const navigate = useNavigate(); // useNavigate dùng để điều hướng
   // Sử dụng Context để truy cập và quản lý các giá trị/hàm toàn cục của ứng dụng:
@@ -15,7 +14,6 @@ export default function UserNavBar() {
   const handleChange = () => {
     // Cập nhật state inputValue với giá trị hiện tại của ô input
     setInputValue(inputRef.current.value);
-
     // Gọi API Tìm kiếm Gợi ý
     fetch(
       // Gửi yêu cầu GET đến API
@@ -91,9 +89,18 @@ export default function UserNavBar() {
             </div>
           </li>
           <li>
-            <Link to="/cart">
-              <i className="fa-solid fa-cart-shopping"></i>
-            </Link>
+            <i
+              onClick={() => {
+                if (!isLogin) {
+                  alert("Bạn chưa đăng nhập");
+                  return;
+                } else {
+                  navigate("/cart");
+                }
+              }}
+              className="fa-solid fa-cart-shopping"
+              style={{ cursor: "pointer" }}
+            ></i>
           </li>
           <li className="search">
             <div className="search-dropdown">

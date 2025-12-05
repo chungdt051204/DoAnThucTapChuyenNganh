@@ -17,7 +17,6 @@ export default function GetDetailCourse() {
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
     : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
-
   useEffect(() => {
     // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
     fetch(`http://localhost:3000/course?id=${id}`)
@@ -35,12 +34,10 @@ export default function GetDetailCourse() {
       alert("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
       return; // Dừng hàm ngay lập tức
     }
-
     //  Kiểm tra Khóa học Miễn phí
     if (course.isFree == true) {
       return; // Dừng hàm vì không cần thêm khóa học miễn phí vào giỏ hàng
     }
-
     //  Gọi API Thêm vào Giỏ hàng
     fetch("http://localhost:3000/cart", {
       // Gửi yêu cầu POST đến endpoint /cart
@@ -72,7 +69,6 @@ export default function GetDetailCourse() {
   return (
     <>
       <UserNavBar></UserNavBar>
-
       <div className="course-card">
         <div className="course-hero">
           <img
@@ -80,11 +76,9 @@ export default function GetDetailCourse() {
             src={course.thumbnail}
             alt={course.title}
           />
-
           <div className="course-side">
             <div className="level">{course.title}</div>
             <div className="price">
-              {" "}
               {course.price > 0 ? (
                 <p>Giá: {course.price} VND</p>
               ) : (
@@ -99,16 +93,13 @@ export default function GetDetailCourse() {
             </button>
           </div>
         </div>
-
         <h2 className="course-title">{course.title}</h2>
         <div className="course-meta">{course.shortDescription || ""}</div>
-
         <div className="info-grid">
           <div className="info-card">
             <h3>Mô tả</h3>
             <p style={{ margin: 0 }}>{course.description}</p>
           </div>
-
           <div className="info-card">
             <div className="info-split">
               <div>
@@ -123,7 +114,6 @@ export default function GetDetailCourse() {
                   <p>Không có yêu cầu bắt buộc</p>
                 )}
               </div>
-
               <div>
                 <h3>Bạn sẽ học được</h3>
                 {course.objectives && course.objectives.length > 0 ? (
@@ -139,10 +129,8 @@ export default function GetDetailCourse() {
             </div>
           </div>
         </div>
-
         <div className="lessons">
           <div className="lessons-title">Nội dung khóa học</div>
-
           {course.lessons &&
             course.lessons.length > 0 &&
             course.lessons.map((lesson, idx) => (

@@ -6,7 +6,6 @@
   --muted: #5b6b7a;
   --pill: #ffe6a8;
 }
-
 /* Reset nhỏ */
 .course-card,
 .course-card * {
@@ -14,7 +13,6 @@
   font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   text-decoration: none;
 }
-
 /* wrapper */
 .course-card {
   max-width: 920px;
@@ -22,7 +20,6 @@
   padding: 24px;
   background: transparent;
 }
-
 /* Hero area: thumbnail left + right price box */
 .course-hero {
   display: grid;
@@ -31,7 +28,6 @@
   align-items: start;
   margin-bottom: 18px;
 }
-
 .course-thumb {
   width: 100%;
   height: 250px;
@@ -39,7 +35,6 @@
   box-shadow: 0 6px 18px rgba(10, 20, 40, 0.08);
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
-
 .course-side {
   border-radius: 8px;
   padding: 14px;
@@ -52,14 +47,12 @@
   text-align: center;
   border: 1px solid rgba(0, 0, 0, 0.03);
 }
-
 .course-side .level {
   font-size: 0.95rem;
   color: var(--primary);
   font-weight: 700;
   text-align: left;
 }
-
 .course-side .price {
   color: red;
   border-radius: 8px;
@@ -68,7 +61,6 @@
   display: inline-block;
   margin: 6px auto 0;
 }
-
 /* main title/summary */
 .course-title {
   font-size: 1.45rem;
@@ -76,13 +68,11 @@
   color: var(--primary);
   margin: 12px 0 8px;
 }
-
 .course-meta {
   color: var(--muted);
   margin-bottom: 12px;
   font-size: 0.95rem;
 }
-
 /* Info grid: description + two columns of card boxes */
 .info-grid {
   display: grid;
@@ -90,7 +80,6 @@
   gap: 14px;
   margin-bottom: 18px;
 }
-
 /* Big rounded pale box for description and features */
 .info-card {
   background: var(--card);
@@ -100,20 +89,17 @@
   box-shadow: 0 6px 18px rgba(10, 20, 40, 0.03);
   color: var(--primary);
 }
-
 /* Two-column list inside info-card */
 .info-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-
 /* headings inside info */
 .info-card h3 {
   margin: 0 0 8px;
   font-size: 1.05rem;
 }
-
 /* list style */
 .info-card ul {
   padding-left: 18px;
@@ -121,17 +107,14 @@
   color: #2e3b4a;
   line-height: 1.5;
 }
-
 /* Lessons block */
 .lessons {
   margin-top: 6px;
 }
-
 .lessons-title {
   font-weight: 700;
   margin: 6px 0 10px;
 }
-
 /* lesson item */
 .lesson-item {
   display: flex;
@@ -144,14 +127,12 @@
   margin-bottom: 10px;
   box-shadow: 0 6px 18px rgba(10, 20, 40, 0.03);
 }
-
 /* left part (title + icon) */
 .lesson-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 /* play circle */
 .play {
   min-width: 36px;
@@ -164,7 +145,6 @@
   color: var(--primary);
   background: var(--bg);
 }
-
 /* lesson title style */
 .lesson-title {
   font-weight: 600;
@@ -174,7 +154,6 @@
   text-overflow: ellipsis;
   max-width: 520px;
 }
-
 /* duration on right */
 .lesson-time {
   font-size: 0.85rem;
@@ -183,7 +162,6 @@
   min-width: 50px;
   text-align: right;
 }
-
 /* extra polish: link hover */
 .lesson-item a {
   text-decoration: none;

@@ -78,7 +78,6 @@ function App() {
           <Route path="/admin" element={<HomeAdmin></HomeAdmin>} />
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
-
           <Route path="/course" element={<GetDetailCourse></GetDetailCourse>} />
           <Route path="/courses" element={<GetCoursesWithCategoryId />} />
           <Route path="/profile" element={<UserProfile />} />

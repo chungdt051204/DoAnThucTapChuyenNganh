@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import GetCoursesWithQueryString from "./GetCoursesWithQueryString";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
-import "./components-css/Courses.List.css"; // <-- Mới: styles cho trang này
+import "./components-css/Courses.List.css";
 
 export default function GetCoursesWithCategoryId() {
   // Khai báo một state variable và hàm setter để lưu trữ dữ liệu các khóa học
@@ -14,7 +14,6 @@ export default function GetCoursesWithCategoryId() {
   const [searchParams] = useSearchParams();
   // Lấy giá trị của tham số 'category_id' từ query string.
   const category_id = searchParams.get("category_id");
-
   // Hook useEffect được sử dụng để thực hiện các side effect,
   // ở đây là gọi API fetch dữ liệu, sau khi component render lần đầu và mỗi khi dependency thay đổi.
   useEffect(() => {
@@ -36,7 +35,6 @@ export default function GetCoursesWithCategoryId() {
         console.log(message); // In thông báo lỗi ra console
       });
   }, [category_id]); // Mảng dependency: API sẽ được gọi lại mỗi khi giá trị của category_id thay đổi.
-
   return (
     <>
       <UserNavBar />
@@ -46,7 +44,6 @@ export default function GetCoursesWithCategoryId() {
             <div className="title-block">
               <h1 className="page-title">Khóa học theo danh mục</h1>
             </div>
-
             <div className="result-stats">
               <span className="count">{coursesWithCategory_Id.length}</span>
               <span className="label">khóa học tìm thấy</span>

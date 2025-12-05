@@ -3,7 +3,6 @@ import { useRef, useState } from "react";
 import "./components-css/Auth.css";
 export default function Register() {
   const navigate = useNavigate(); // Hook chuyển hướng trang sau khi đăng ký thành công.
-
   // State Quản lý Lỗi (Hiển thị thông báo lỗi)
   // Các state này dùng để lưu trữ và hiển thị thông báo lỗi kiểm tra đầu vào (validation).
   const [fullNameNotValid, setFullNameNotValid] = useState();
@@ -12,7 +11,6 @@ export default function Register() {
   const [passwordNotValid, setPasswordNotValid] = useState();
   const [verifyPasswordNotValid, setVerifyPasswordNotValid] = useState();
   const [phoneNotValid, setPhoneNotValid] = useState();
-
   // useRef Quản lý Input (Truy cập giá trị form)
   // Các ref này dùng để truy cập trực tiếp giá trị hiện tại của các trường input
   const fullName = useRef();
@@ -25,12 +23,10 @@ export default function Register() {
   const male = useRef();
   const female = useRef();
   const dateOfBirth = useRef();
-
   // Hàm Xử lý Gửi Form
   const handleSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
     const formData = new FormData(); // Tạo đối tượng để đóng gói dữ liệu form, bao gồm file (avatar).
-
     //  Đóng gói Dữ liệu Form
     // Gắn dữ liệu từ các trường input (thông qua ref) vào đối tượng formData.
     formData.append("fullName", fullName.current.value);
@@ -44,7 +40,6 @@ export default function Register() {
       : female.current.value; // Xác định giá trị gender.
     formData.append("gender", gender);
     formData.append("dateOfBirth", dateOfBirth.current.value);
-
     // Kiểm tra Validation (Kiểm tra đầu vào phía client)
     // Thực hiện kiểm tra từng trường. Nếu có lỗi, đặt thông báo lỗi tương ứng và dừng hàm
     if (fullName.current.value === "") {

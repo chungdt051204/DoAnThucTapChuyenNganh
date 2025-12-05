@@ -5,7 +5,6 @@
   border: 1px solid #ddd;
   border-radius: 5px;
 }
-
 .category-table th {
   background-color: #f8f8f8;
   color: #333;
@@ -13,17 +12,14 @@
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
-
 .category-table td {
   padding: 10px 15px;
   border-bottom: 1px solid #eee;
   color: #333;
 }
-
 .category-table tr:last-child td {
   border-bottom: none;
 }
-
 .category-table td:nth-child(2),
 .category-table td:nth-child(3) {
   text-align: center;
@@ -32,7 +28,6 @@
 .category-table i {
   cursor: pointer;
 }
-
 dialog {
   position: fixed;
   top: 50%;
@@ -44,12 +39,10 @@ dialog {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background-color: #fff;
 }
-
 /* 3. Đảm bảo backdrop (lớp nền mờ) chiếm toàn màn hình */
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.5); /* Màu đen trong suốt 50% */
 }
-
 /* 4. Thiết kế các thành phần bên trong (để nó trông đẹp hơn) */
 dialog h2 {
   margin-top: 0; /* Bỏ khoảng cách trên mặc định */
@@ -58,7 +51,6 @@ dialog h2 {
   color: #333;
   text-align: center;
 }
-
 dialog input[type="text"] {
   width: 100%;
   padding: 10px;
@@ -67,7 +59,6 @@ dialog input[type="text"] {
   border-radius: 4px;
   box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng tổng thể */
 }
-
 dialog button {
   width: 100%;
   padding: 10px;
@@ -79,7 +70,6 @@ dialog button {
   font-size: 1em;
   transition: background-color 0.2s;
 }
-
 dialog button:hover {
   background-color: #0056b3;
 }

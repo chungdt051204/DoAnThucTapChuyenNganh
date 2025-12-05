@@ -73,7 +73,6 @@ export default function Cart() {
                 <th className="col-action">Thao Tác</th>
               </tr>
             </thead>
-
             <tbody>
               {/* Row 1 */}
               {cartItems.length > 0 &&
@@ -113,13 +112,11 @@ export default function Cart() {
                           </div>
                         </div>
                       </td>
-
                       <td className="col-price">
                         <p style={{ color: "red" }}>
                           {value.priceAtPurchase.$numberDecimal} VND
                         </p>
                       </td>
-
                       <td className="col-action">
                         <a style={{ color: "red" }}>Xóa</a>
                       </td>
@@ -127,7 +124,6 @@ export default function Cart() {
                   );
                 })}
             </tbody>
-
             <tfoot>
               <tr>
                 <td colSpan="5">
@@ -140,7 +136,6 @@ export default function Cart() {
                         Xóa
                       </button>
                     </div>
-
                     <div className="right-summary">
                       <div className="total">
                         <span className="label">Tổng cộng sản phẩm:</span>

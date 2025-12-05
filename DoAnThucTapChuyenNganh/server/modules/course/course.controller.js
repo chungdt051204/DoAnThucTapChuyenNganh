@@ -50,7 +50,6 @@ exports.getCoursesPre = async (req, res) => {
     res.status(500).json({ message: "Lấy dữ liệu khóa học trả phí thất bại" });
   }
 };
-
 //Tìm kiếm gần đúng các khóa học dựa vào gợi ý tìm kiếm
 exports.getCoursesWithSearchSuggestion = async (req, res) => {
   try {
@@ -71,7 +70,6 @@ exports.getCoursesWithSearchSuggestion = async (req, res) => {
     });
   }
 };
-
 //Router thêm khóa học mới
 exports.postCourse = async (req, res) => {
   try {

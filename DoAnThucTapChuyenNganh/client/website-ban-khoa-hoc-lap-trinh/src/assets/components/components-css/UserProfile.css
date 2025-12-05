@@ -8,21 +8,18 @@
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 /* Tiêu đề */
 .profile-title {
   font-size: 24px;
   margin-bottom: 20px;
   font-weight: bold;
 }
-
 /* Avatar */
 .profile-avatar-wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
-
 .profile-avatar {
   width: 120px;
   height: 120px;
@@ -30,19 +27,16 @@
   object-fit: cover;
   border: 3px solid white;
 }
-
 /* Các ô nhập */
 .profile-field {
   text-align: left;
   margin-top: 12px;
 }
-
 .profile-field label {
   font-weight: bold;
   margin-bottom: 6px;
   display: inline-block;
 }
-
 .profile-field input {
   width: 100%;
   padding: 10px;
@@ -51,12 +45,10 @@
   outline: none;
   font-size: 15px;
 }
-
 /* Mật khẩu có icon mắt */
 .password-wrapper {
   position: relative;
 }
-
 .eye-icon {
   position: absolute;
   right: 10px;
@@ -64,7 +56,6 @@
   transform: translateY(-50%);
   cursor: pointer;
 }
-
 /* Button */
 .profile-button {
   margin-top: 20px;
@@ -76,11 +67,9 @@
   cursor: pointer;
   font-size: 15px;
 }
-
 .profile-button:hover {
   background: #005ec7;
 }
-
 /* dialog styles */
 .dialog-backdrop {
   position: fixed;

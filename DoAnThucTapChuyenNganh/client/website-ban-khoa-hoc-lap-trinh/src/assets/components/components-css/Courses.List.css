@@ -1,4 +1,3 @@
-/* (giữ nguyên phần đầu của bạn) */
 .courses-list-page {
   background: #f6f7f8;
   padding: 30px 14px 60px;
@@ -47,7 +46,6 @@
   color: #666;
   font-size: 13px;
 }
-
 /* content card wrapper (khung trắng) */
 .courses-list-content {
   background: #fff;
@@ -56,7 +54,6 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 6px 18px rgba(23, 30, 40, 0.04);
 }
-
 /* ======= GRID: 3 columns, evenly spaced ======= */
 /* Nếu component của bạn xuất ra class .course-pre-track thì rule này sẽ apply */
 .courses-list-content .course-pre-track {
@@ -67,7 +64,6 @@
   padding: 10px;
   box-sizing: border-box;
 }
-
 /* CARD: đảm bảo dàn đều, card có chiều cao giống nhau theo nội dung */
 .course-pre-item {
   display: flex;
@@ -79,7 +75,6 @@
   box-sizing: border-box;
   min-height: 240px; /* giữ đồng đều chiều cao card */
 }
-
 /* Ảnh: giữ tỉ lệ vuông, full-width của card, max-height để không quá to */
 .course-pre-item img {
   width: 100%;
@@ -91,7 +86,6 @@
   box-shadow: 0 6px 16px rgba(18, 24, 30, 0.04);
   transition: transform 220ms ease;
 }
-
 /* Nếu JSX có width/height attributes, đảm bảo CSS override: */
 .course-pre-item img[width],
 .course-pre-item img[height] {
@@ -99,7 +93,6 @@
   height: auto !important;
   aspect-ratio: 1 / 1;
 }
-
 /* Tên khoá học: cho tối đa 2 dòng, căn đều */
 .course-pre-item > p:first-of-type {
   margin: 0;
@@ -113,7 +106,6 @@
   text-overflow: ellipsis;
   min-height: 42px;
 }
-
 /* Giá: nằm ở dưới cùng của card nếu cần */
 .course-pre-item > p:last-of-type {
   margin: 6px 0 0;
@@ -122,7 +114,6 @@
   font-size: px;
   margin-top: auto; /* kéo giá xuống chân card nếu còn không gian */
 }
-
 /* Hover nhẹ lift ảnh */
 .course-pre-item:hover img {
   transform: translateY(-6px) scale(1.02);

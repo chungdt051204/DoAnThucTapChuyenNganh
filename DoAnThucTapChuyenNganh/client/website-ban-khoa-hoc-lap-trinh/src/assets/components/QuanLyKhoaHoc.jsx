@@ -118,7 +118,7 @@ export default function QuanLyKhoaHoc() {
         throw res; // Nếu status lỗi (4xx, 5xx), ném Response object
       })
       .then(({ message }) => {
-        // --- Xử lý Thành công ---
+        // Xử lý Thành công
         alert(message); // Hiển thị thông báo thành công
         setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu
         updateDialog.current.close(); // Đóng modal Cập nhật

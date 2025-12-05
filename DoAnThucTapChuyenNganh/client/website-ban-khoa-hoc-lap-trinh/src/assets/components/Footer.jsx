@@ -14,7 +14,6 @@ export default function Footer() {
             kỹ năng và sự nghiệp IT.
           </p>
         </div>
-
         {/* Cột 2: Liên kết nhanh */}
         <div className="footer-section">
           <h3 className="footer-title">Liên kết nhanh</h3>
@@ -30,7 +29,6 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-
         {/* Cột 3: Liên hệ */}
         <div className="footer-section">
           <h3 className="footer-title">Liên hệ</h3>
@@ -49,7 +47,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-
       <div className="footer-bottom">
         © 2025 Lập Trình Online. All rights reserved.
       </div>

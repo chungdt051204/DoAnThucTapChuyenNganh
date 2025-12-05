@@ -4,20 +4,17 @@
   --border: #e6e6e6;
   --bg: #fff;
 }
-
 .cart {
   background: var(--bg);
   border-radius: 8px;
   border: 1px solid var(--border);
   overflow: hidden;
 }
-
 .cart-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
 }
-
 .cart-table thead th {
   text-align: left;
   padding: 18px 20px;
@@ -26,14 +23,12 @@
   font-size: 15px;
   border-bottom: 1px solid var(--border);
 }
-
 .cart-table tbody td {
   padding: 18px 20px;
   vertical-align: middle;
   border-bottom: 1px solid #f0f0f0;
   color: #333;
 }
-
 /* column widths */
 .col-product {
   width: 70%;
@@ -55,7 +50,6 @@
   width: 10%;
   text-align: center;
 }
-
 /* product cell layout */
 .product-cell {
   display: flex;
@@ -82,7 +76,6 @@
 .product-name {
   font-weight: 600;
 }
-
 /* quantity control */
 .qty {
   display: inline-flex;
@@ -105,7 +98,6 @@
   border: 1px solid var(--border);
   border-radius: 3px;
 }
-
 /* delete button */
 .action-delete {
   color: var(--accent);
@@ -113,31 +105,26 @@
   text-decoration: none;
   font-weight: 600;
 }
-
 /* footer */
 tfoot td {
   padding: 16px 20px;
 }
-
 .footer-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-
 .left-actions {
   display: flex;
   gap: 12px;
   align-items: center;
 }
-
 .left-actions label {
   display: flex;
   gap: 8px;
   align-items: center;
   cursor: pointer;
 }
-
 .btn-plain {
   color: var(--accent);
   background: none;
@@ -145,32 +132,27 @@ tfoot td {
   cursor: pointer;
   font-weight: 600;
 }
-
 .right-summary {
   display: flex;
   gap: 12px;
   align-items: center;
 }
-
 .total {
   text-align: right;
   min-width: 180px;
   color: #333;
 }
-
 .total .label {
   color: var(--muted);
   display: block;
   font-size: 13px;
 }
-
 .total .amount {
   color: red;
   font-weight: 700;
   font-size: 18px;
   margin-left: 8px;
 }
-
 .btn-buy {
   background: var(--accent);
   color: #fff;

@@ -9,7 +9,6 @@
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
 }
-
 /* Nút "Thêm khóa học" */
 .add-course-btn {
   background-color: #007bff; /* Màu xanh nổi bật */
@@ -21,11 +20,9 @@
   font-weight: bold;
   transition: background-color 0.3s ease;
 }
-
 .add-course-btn:hover {
   background-color: #0056b3; /* Màu tối hơn khi di chuột */
 }
-
 /* Ô nhập liệu tìm kiếm */
 .course-search-input {
   flex-grow: 1; /* Cho phép ô tìm kiếm chiếm phần lớn không gian còn lại */
@@ -34,7 +31,6 @@
   border-radius: 5px;
   max-width: 300px; /* Giới hạn chiều rộng tối đa */
 }
-
 /* Hộp chọn danh mục */
 .category-filter-select {
   padding: 10px;
@@ -51,13 +47,11 @@
   padding: 20px;
   margin-top: 20px;
 }
-
 /* 🖼️ Bảng (Table) */
 .course-table-container table {
   width: 100%;
   border-collapse: collapse;
 }
-
 .course-table-container th {
   background-color: #f7f9fc; /* Nền xám nhạt cho tiêu đề */
   color: #495057;
@@ -66,12 +60,10 @@
   padding: 12px 15px;
   border-bottom: 1px solid #dee2e6;
 }
-
 .course-table-container td {
   padding: 10px 15px;
   border-bottom: 1px solid #e9ecef;
 }
-
 /* 🔵 Hàng được chọn (như ReactJS cơ bản trong mẫu) */
 .course-table-container tbody tr.selected {
   background-color: #e0f0ff; /* Nền xanh nhạt */
@@ -81,32 +73,27 @@
 .course-table-container tbody tr:last-child td {
   border-bottom: none; /* Loại bỏ viền dưới cho hàng cuối cùng */
 }
-
 /* 👨‍💻 Cột Khóa học (Ảnh + Tên) */
 .course-title-cell {
   display: flex;
   align-items: center;
   gap: 15px; /* Khoảng cách giữa ảnh và tên */
 }
-
 .course-image {
   border-radius: 4px;
   object-fit: cover;
   /* Kích thước: width={50} height={50} */
 }
-
 .course-name {
   font-weight: 500;
   color: #343a40;
 }
-
 /* 💰 Cột Giá (Price) */
 .price-cell {
   color: #dc3545; /* Màu đỏ */
   font-weight: 600;
   width: 120px; /* Định kích thước cột Giá */
 }
-
 /* ⚙️ Cột Hành động (Action) */
 .action-col {
   text-align: center;
@@ -115,7 +102,6 @@
 .action-cell {
   text-align: center;
 }
-
 .action-cell i {
   cursor: pointer;
   margin: 0 5px;
@@ -129,7 +115,6 @@
 .action-cell i.fa-trash:hover {
   color: #dc3545; /* Màu đỏ khi hover Xóa */
 }
-
 /* ⏪ Phần phân trang (Trước/Sau) */
 .pagination-controls {
   display: flex;
@@ -137,7 +122,6 @@
   gap: 10px;
   margin-top: 20px;
 }
-
 .pagination-controls button {
   padding: 8px 15px;
   border: 1px solid #007bff;
@@ -147,7 +131,6 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .pagination-controls .btn-prev {
   background-color: #007bff; /* Nút "Trước" màu xanh đậm như mẫu */
   color: #fff;

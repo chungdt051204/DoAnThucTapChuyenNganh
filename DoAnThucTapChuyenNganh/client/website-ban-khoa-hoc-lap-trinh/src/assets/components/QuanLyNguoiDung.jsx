@@ -209,7 +209,6 @@ export default function QuanLyNguoiDung() {
           </table>
         </div>
       </section>
-
       <Footer />
     </>
   );

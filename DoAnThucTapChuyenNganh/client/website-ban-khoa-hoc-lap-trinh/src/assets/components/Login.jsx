@@ -13,7 +13,6 @@ export default function Login() {
   // useRef để tham chiếu đến các giá trị input (Email và Mật khẩu)
   const email = useRef();
   const password = useRef();
-
   const handleSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn form submit mặc định
     // Kiểm tra validation client: bắt buộc điền đầy đủ thông tin

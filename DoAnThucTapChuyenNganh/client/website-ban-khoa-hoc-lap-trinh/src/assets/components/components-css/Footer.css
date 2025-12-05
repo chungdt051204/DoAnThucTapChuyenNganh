@@ -5,7 +5,6 @@
   font-family: "Poppins", sans-serif;
   margin-top: 20px;
 }
-
 .footer-container {
   width: 90%;
   max-width: 1100px;
@@ -16,41 +15,33 @@
     Khi không đủ chỗ, cột dư tự động xuống hàng mới.*/
   gap: 20px;
 }
-
 .footer-section {
   line-height: 1.5;
 }
-
 .footer-title {
   color: #333;
   font-size: 18px;
   margin-bottom: 12px;
   font-weight: 600;
 }
-
 .footer-section ul {
   list-style: none;
   padding: 0;
 }
-
 .footer-section ul li {
   margin: 6px 0;
 }
-
 .footer-section a {
   text-decoration: none;
   color: #333;
   transition: color 0.3s;
 }
-
 .footer-section a:hover {
   color: #0078ff;
 }
-
 .footer-social {
   margin-top: 10px;
 }
-
 .footer-social a {
   display: inline-block;
   color: #333;
@@ -58,12 +49,10 @@
   margin-right: 10px;
   transition: color 0.3s, transform 0.2s;
 }
-
 .footer-social a:hover {
   color: #0078ff;
   transform: scale(1.1);
 }
-
 .footer-bottom {
   border-top: 1px solid #333;
   text-align: center;

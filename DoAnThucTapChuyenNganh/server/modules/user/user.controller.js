@@ -132,7 +132,6 @@ exports.putStatusUser = async (req, res) => {
   }
 };
 //Router xử lý cập nhật thông tin cá nhân của người dùng
-
 exports.putUser = async (req, res) => {
   try {
     // Lấy ID người dùng từ tham số URL

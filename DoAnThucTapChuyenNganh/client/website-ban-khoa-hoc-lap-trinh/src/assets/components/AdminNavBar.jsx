@@ -31,7 +31,6 @@ export default function AdminNavBar() {
         <div className="logo">
           <img src="/rocket-icon.svg" alt="Logo" />
         </div>
-
         <ul className="menu">
           <li>
             <Link to="/admin">Dashboard</Link>

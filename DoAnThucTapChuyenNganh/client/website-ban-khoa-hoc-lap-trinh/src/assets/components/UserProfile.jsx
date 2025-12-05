@@ -81,24 +81,19 @@ export default function UserProfile() {
   return (
     <>
       <UserNavBar />
-
       <div className="profile-container">
         <h2 className="profile-title">Thông tin người dùng</h2>
-
         <div className="profile-avatar-wrapper">
           <img className="profile-avatar" src={avatar} alt="Avatar" />
         </div>
-
         <div className="profile-field">
           <label>Username:</label>
           <input type="text" value={user?.fullName || ""} readOnly />
         </div>
-
         <div className="profile-field">
           <label>Email:</label>
           <input type="email" value={user?.email || ""} readOnly />
         </div>
-
         <div className="profile-field">
           <label>Password:</label>
           <div className="password-wrapper">
@@ -116,7 +111,6 @@ export default function UserProfile() {
             </button>
           </div>
         </div>
-
         <button
           onClick={() => {
             dialog.current.showModal();

@@ -17,7 +17,6 @@ export default function QuanLyDanhMuc() {
   // quản lý lỗi + dữ liệu category cần sửa
   const [err, setErr] = useState("");
   const [categoryWithId, setCategoryWithId] = useState("");
-
   const handleAddSubmit = (e) => {
     // hàm chạy khi bấm nút "thêm"
     e.preventDefault(); // ngăn sự kiện submit mặc định
@@ -50,7 +49,6 @@ export default function QuanLyDanhMuc() {
         console.log(message);
       });
   };
-
   const handleClickUpdate = (id) => {
     fetch(`http://localhost:3000/category?id=${id}`)
       .then((res) => res.json())
@@ -59,10 +57,8 @@ export default function QuanLyDanhMuc() {
         updateDialog.current.showModal();
       });
   };
-
   const handleUpdateSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
-
     //  Gọi API Cập nhật
     // Gửi yêu cầu PUT đến API, kèm theo ID của danh mục cần cập nhật dưới dạng query parameter.
     fetch(`http://localhost:3000/category?id=${id}`, {
@@ -87,7 +83,6 @@ export default function QuanLyDanhMuc() {
         alert(message);
       });
   };
-
   const handleDelete = (id) => {
     // Gửi yêu cầu DELETE đến API, kèm theo ID của danh mục cần xóa dưới dạng query parameter
     fetch(`http://localhost:3000/category?id=${id}`, {
@@ -106,7 +101,6 @@ export default function QuanLyDanhMuc() {
         alert(message);
       });
   };
-
   return (
     <>
       <section>
@@ -154,7 +148,6 @@ export default function QuanLyDanhMuc() {
           </table>
         </div>
         <Footer />
-
         {/* Giao diện các bảng dialog */}
         <dialog ref={addDialog}>
           <h2>Thêm danh mục</h2>
