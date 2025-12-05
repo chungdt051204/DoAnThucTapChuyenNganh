@@ -1,4 +1,5 @@
 const categoryEntity = require("../../models/category.model");
+const courseEntity = require("../../models/course.model");
 //Router lấy dữ liệu danh mục trong database
 exports.getAllCategories = async (req, res) => {
   try {
@@ -56,13 +57,30 @@ exports.deleteCategory = async (req, res) => {
   try {
     //Lấy id danh mục gửi từ phía client bằng req.query
     const { id } = req.query;
-    //Xóa danh mục được chọn dựa vào id gửi từ phía client
-    await categoryEntity.deleteOne({ _id: id });
-    return res.status(200).json({
-      message: "Đã xóa danh mục có mã" + " " + id + " " + "thành công",
-    });
+    //Tìm khóa học tồn tại trong danh mục
+    const coursesWithCategoryId = await courseEntity.find({ categoryId: id });
+    //Nếu danh mục này có tồn tại khóa học thì không thể xóa
+    if (coursesWithCategoryId.length > 0) {
+      return res
+        .status(409)
+        .json({ message: "Danh mục này đang có khóa học không thể xóa" });
+    } else {
+      const result = await categoryEntity.deleteOne({ _id: id });
+      if (result.deletedCount === 0) {
+        // Danh mục không tồn tại để xóa
+        return res.status(404).json({
+          message: "Không tìm thấy danh mục có mã" + " " + id + " " + "để xóa.",
+        });
+      }
+      // Nếu deletedCount > 0 thông báo thành công
+      return res.status(200).json({
+        message: "Đã xóa danh mục có mã" + " " + id + " " + "thành công",
+      });
+    }
   } catch (error) {
-    console.error("Có lỗi xảy ra khi gọi hàm deleteCategory");
-    return res.status(500).json({ message: "Xóa thất bại" });
+    console.error("Lỗi khi xóa danh mục:", error);
+    return res.status(500).json({
+      message: "Lỗi máy chủ khi thực hiện xóa.",
+    });
   }
 };

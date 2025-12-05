@@ -3,11 +3,11 @@ import Footer from "./Footer";
 import { useEffect, useRef, useState } from "react";
 import "./components-css/QuanLyNguoiDung.css";
 export default function QuanLyNguoiDung() {
-  const [refresh, setRefresh] = useState(0);
-  const [users, setUsers] = useState([]);
-  const [usersWithRole, setUsersWithRole] = useState([]);
-  const roleSelectedRef = useRef();
-  const [roleSelected, setRoleSelected] = useState("");
+  const [refresh, setRefresh] = useState(0); // State dùng để kích hoạt tải lại dữ liệu khi giá trị thay đổi.
+  const [users, setUsers] = useState([]); // State lưu trữ danh sách tất cả người dùng (users).
+  const [usersWithRole, setUsersWithRole] = useState([]); // State lưu trữ danh sách người dùng đã được lọc theo vai trò
+  const [roleSelected, setRoleSelected] = useState(""); // State lưu trữ giá trị vai trò đang được chọn/lọc.
+  const roleSelectedRef = useRef(); // Tham chiếu đến phần tử DOM để lấy giá trị vai trò được chọn
   useEffect(() => {
     fetch("http://localhost:3000/users")
       .then((res) => {
@@ -40,28 +40,53 @@ export default function QuanLyNguoiDung() {
     }
   };
   const handleSetStatusUser = (user) => {
-    if (user.role === "admin") {
-      alert("Không thể thay đổi trạng thái của quản trị viên");
-      return;
-    } else {
-      const status = user.status === "active" ? "banned" : "active";
-      fetch(`http://localhost:3000/admin/user/${user._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: status }),
+    //Xác định trạng thái mới: Đảo ngược trạng thái hiện tại (active <-> banned)
+    const status = user.status === "active" ? "banned" : "active";
+    //Gửi yêu cầu PUT để cập nhật trạng thái người dùng
+    fetch(`http://localhost:3000/admin/user/${user._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json", //Báo hiệu dữ liệu gửi đi là JSON
+      },
+      body: JSON.stringify({ status: status }), //Gửi trạng thái mới trong body
+    })
+      .then((res) => {
+        if (res.ok) return res.json(); // Nếu status 2xx, parse JSON
+        throw res; // Nếu lỗi (4xx, 5xx), ném Response object
       })
-        .then((res) => {
-          if (res.ok) return res.json();
-          throw res;
-        })
-        .then(({ message }) => {
-          console.log(message);
-          setRefresh((prev) => prev + 1);
-        })
-        .catch();
-    }
+      .then(({ message }) => {
+        //Xử lý Thành công
+        console.log(message); // Log thông báo thành công
+        setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu danh sách
+      })
+      .catch(async (err) => {
+        // 4. Xử lý Lỗi
+        const { message } = await err.json(); //Lấy thông báo lỗi chi tiết từ body response
+        console.log(message); // Hiển thị thông báo lỗi
+      });
+  };
+  const handleDelete = (id) => {
+    //Gửi yêu cầu DELETE đến API, sử dụng ID người dùng trong URL path
+    fetch(`http://localhost:3000/admin/user/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        // Kiểm tra Response: Nếu thành công (status 2xx), parse JSON
+        if (res.ok) return res.json();
+        // Nếu lỗi (status 4xx, 5xx), ném Response object để xử lý lỗi
+        throw res;
+      })
+      .then(({ message }) => {
+        //  Xử lý thành công: Hiển thị thông báo
+        alert(message);
+        // Kích hoạt tải lại dữ liệu danh sách người dùng
+        setRefresh((prev) => prev + 1);
+      })
+      .catch(async (err) => {
+        //Xử lý Lỗi: Lấy thông báo lỗi chi tiết từ body của Response object
+        const { message } = await err.json();
+        alert(message); // Hiển thị thông báo lỗi
+      });
   };
   return (
     <>
@@ -127,7 +152,10 @@ export default function QuanLyNguoiDung() {
                           {value.role === "admin" ? (
                             ""
                           ) : (
-                            <button className="action-btn action-delete">
+                            <button
+                              onClick={() => handleDelete(value._id)}
+                              className="action-btn action-delete"
+                            >
                               Xóa
                             </button>
                           )}
@@ -167,7 +195,10 @@ export default function QuanLyNguoiDung() {
                               ? "Hủy vô hiệu hóa"
                               : "Vô hiệu hóa"}
                           </button>
-                          <button className="action-btn action-delete">
+                          <button
+                            onClick={() => handleDelete(value._id)}
+                            className="action-btn action-delete"
+                          >
                             Xóa
                           </button>
                         </td>

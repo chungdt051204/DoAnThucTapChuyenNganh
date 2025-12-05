@@ -1,288 +1,164 @@
+import { Link, useSearchParams } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
 import "./components-css/QuanLyKhoaHoc.css";
-
-/**
- * Helper function: Định dạng URL ảnh khóa học
- * - Nếu không có ảnh: trả về string rỗng
- * - Nếu ảnh là URL đầy đủ: trả về nguyên URL
- * - Nếu ảnh chỉ là tên file: thêm đường dẫn server vào
- */
-const getImageUrl = (image) => {
-  // Nếu không có ảnh, trả về chuỗi rỗng
-  if (!image) return "";
-  // Nếu image là URL đầy đủ (ví dụ: Cloudinary), trả về nguyên URL
-  if (image.includes("http")) return image;
-  // Nếu image chỉ là tên file trên server, mã hóa tên file để tránh lỗi URL
-  // (ví dụ: khoảng trắng hoặc ký tự đặc biệt trong tên file)
-  return `http://localhost:3000/images/course/${encodeURIComponent(image)}`;
-};
-
 export default function QuanLyKhoaHoc() {
-  // Lấy dữ liệu từ context: danh sách khóa học, danh mục, hàm refresh dữ liệu
   const { courses, categories, setRefresh } = useContext(AppContext);
-
-  // Refs để điều khiển dialog và input file
-  const addDialog = useRef(); // Dialog thêm khóa học
-  const updateDialog = useRef(); // Dialog cập nhật khóa học
-  const imageRef = useRef(); // Input file ảnh (dùng cho cả add và update)
-  const categoryFilterRef = useRef(); // Select filter danh mục
-
-  // State cho form thêm khóa học
-  const [addFormData, setAddFormData] = useState({
-    title: "",
-    categoryId: "0",
-    price: "",
-  });
-
-  // State cho form cập nhật khóa học
-  const [updateFormData, setUpdateFormData] = useState({
-    title: "",
-    categoryId: "0",
-    price: "",
-  });
-
-  // State cho lỗi validation
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const addDialog = useRef();
+  const updateDialog = useRef();
+  const [title, setTitle] = useState("");
+  const [categorySelected, setCategorySelected] = useState("");
+  const [price, setPrice] = useState("");
+  const addImage = useRef();
+  const updateImage = useRef();
+  const categoryFilterRef = useRef();
   const [errTitle, setErrTitle] = useState("");
   const [errCategory, setErrCategory] = useState("");
   const [errPrice, setErrPrice] = useState("");
-  const [errImage, setErrImage] = useState("");
-
-  // State cho lọc theo danh mục
+  const [errFile, setErrImage] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [coursesWithCategory_Id, setCoursesWithCategory_Id] = useState([]);
-
-  // State lưu khóa học đang được cập nhật
   const [courseWithId, setCourseWithId] = useState("");
-
   const handleCategorySelected = () => {
-    // Lấy giá trị danh mục từ select
     if (categoryFilterRef.current.value != 0) {
-      // Lưu danh mục đang chọn
       setCategoryId(categoryFilterRef.current.value);
-
-      // Gọi API lấy khóa học theo danh mục
       fetch(
-        `http://localhost:3000/courses/category?category_id=${categoryFilterRef.current.value}`
+        `http://localhost:3000/courses?category_id=${categoryFilterRef.current.value}`
       )
         .then((res) => {
           if (res.ok) return res.json();
           throw res;
         })
         .then((data) => {
-          // Lưu danh sách khóa học lọc theo danh mục
           setCoursesWithCategory_Id(data);
         })
         .catch((err) => {
           console.error(err);
         });
     } else {
-      // Nếu chọn "Lọc danh mục" (không chọn danh mục nào), hiển thị tất cả
       setCategoryId("");
     }
   };
-
   const handleAddSubmit = (e) => {
-    e.preventDefault();
-
-    // Xóa tất cả lỗi cũ
-    setErrTitle("");
-    setErrCategory("");
-    setErrPrice("");
-    setErrImage("");
-
-    // Validation: Kiểm tra tên khóa học
-    if (addFormData.title.trim() === "") {
+    e.preventDefault(); // Ngăn chặn hành vi submit form mặc định (tải lại trang)
+    // Validation (Kiểm tra dữ liệu đầu vào)
+    if (title === "") {
+      // Kiểm tra trường Tiêu đề
       setErrTitle("Vui lòng nhập tên khóa học");
       return;
-    }
-
-    // Validation: Kiểm tra danh mục
-    if (addFormData.categoryId === "0") {
+    } else if (categorySelected == 0) {
+      // Kiểm tra trường Danh mục
       setErrCategory("Bạn chưa chọn danh mục");
       return;
-    }
-
-    // Validation: Kiểm tra giá
-    if (addFormData.price.trim() === "") {
+    } else if (price === "") {
+      // Kiểm tra trường Giá
       setErrPrice("Vui lòng nhập giá");
       return;
-    }
-
-    // Validation: Kiểm tra ảnh
-    if (!imageRef.current.files[0]) {
-      setErrImage("Bạn chưa chọn ảnh");
+    } else if (!addImage.current.files[0]) {
+      // Kiểm tra file (Image) có tồn tại không
+      setErrImage("Bạn chưa chọn file");
       return;
     }
+    // Chuẩn bị và Gửi Request
+    const formData = new FormData(); // Tạo đối tượng FormData để gửi dữ liệu form và file
+    formData.append("title", title); // Thêm dữ liệu tiêu đề
+    formData.append("categoryId", categorySelected); // Thêm ID danh mục
+    formData.append("price", price); // Thêm giá
+    formData.append("image", addImage.current.files[0]); // Thêm file hình ảnh (lấy từ Ref)
 
-    // Tạo FormData để gửi file và dữ liệu form
-    const formData = new FormData();
-    formData.append("title", addFormData.title);
-    formData.append("categoryId", addFormData.categoryId);
-    formData.append("price", addFormData.price);
-    formData.append("image", imageRef.current.files[0]); // Backend sẽ dùng cho cả image và thumbnail
-
-    // Gửi POST request đến server
+    // Gửi yêu cầu POST đến API để thêm khóa học
     fetch("http://localhost:3000/admin/course", {
       method: "POST",
-      body: formData,
+      body: formData, // Đính kèm FormData
     })
       .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+        if (res.ok) return res.json(); // Nếu HTTP status 2xx, parse JSON
+        throw res; // Nếu status lỗi  ném Response object để xử lý lỗi
       })
       .then(({ message }) => {
-        // Thêm thành công
-        alert(message);
-
-        // Refresh danh sách khóa học
-        setRefresh((prev) => prev + 1);
-
-        // Đóng dialog
-        addDialog.current.close();
-
-        // Reset form
-        setAddFormData({ title: "", categoryId: "0", price: "" });
-        imageRef.current.value = "";
-        setErrTitle("");
-        setErrCategory("");
-        setErrPrice("");
-        setErrImage("");
+        // --- Xử lý Thành công (201 Created) ---
+        alert(message); // Hiển thị thông báo thành công từ server
+        setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu (refresh data)
+        addDialog.current.close(); // Đóng modal/dialog Thêm mới
       })
-      .catch((err) => {
-        console.error(err);
-        alert("Lỗi: " + (err.message || "Thêm khóa học thất bại"));
+      .catch(async (err) => {
+        const { message } = await err.json(); // Đọc body lỗi để lấy thông báo chi tiết
+        alert(message); // Hiển thị thông báo lỗi chi tiết
       });
   };
-  // Lấy thông tin khóa học từ server và mở dialog cập nhật
-  const handleClickUpdate = (courseId) => {
-    // Gọi API lấy thông tin chi tiết khóa học
-    fetch(`http://localhost:3000/course?id=${courseId}`)
+  const handleClickUpdate = (id) => {
+    fetch(`http://localhost:3000/course?id=${id}`)
       .then((res) => res.json())
       .then((data) => {
-        // Lưu khóa học đang cập nhật
         setCourseWithId(data);
-
-        // Điền dữ liệu vào form cập nhật
-        setUpdateFormData({
-          title: data.title,
-          categoryId: data.categoryId._id,
-          price: data.price,
-        });
-
-        // Reset file input và lỗi
-        imageRef.current.value = "";
-        setErrTitle("");
-        setErrCategory("");
-        setErrPrice("");
-        setErrImage("");
-
-        // Mở dialog cập nhật
         updateDialog.current.showModal();
       });
   };
-
-  // Xử lý submit form cập nhật khóa học
   const handleUpdateSubmit = (e) => {
-    e.preventDefault();
-
-    // Xóa tất cả lỗi cũ
-    setErrTitle("");
-    setErrCategory("");
-    setErrPrice("");
-    setErrImage("");
-
-    // Validation: Kiểm tra tên khóa học
-    if (updateFormData.title.trim() === "") {
-      setErrTitle("Vui lòng nhập tên khóa học");
-      return;
-    }
-
-    // Validation: Kiểm tra giá (chuyển số thành string trước khi trim)
-    if (
-      !updateFormData.price ||
-      updateFormData.price.toString().trim() === ""
-    ) {
-      setErrPrice("Vui lòng nhập giá");
-      return;
-    }
-
-    // Tạo FormData để gửi dữ liệu cập nhật
-    const formData = new FormData();
-    formData.append("title", updateFormData.title);
-    formData.append(
-      "categoryId",
-      updateFormData.categoryId || courseWithId.categoryId._id
-    );
-    formData.append("price", updateFormData.price);
-
-    // Chỉ append file ảnh nếu người dùng chọn file mới
-    // Backend sẽ tự động cập nhật cả image và thumbnail từ file này
-    if (imageRef.current.files[0]) {
-      formData.append("image", imageRef.current.files[0]);
-    }
-
-    // Gửi PUT request để cập nhật khóa học
-    fetch(`http://localhost:3000/admin/course?id=${courseWithId._id}`, {
+    e.preventDefault(); // Ngăn chặn submit form mặc định
+    // Chuẩn bị và Gửi Request
+    const formData = new FormData(); // Tạo FormData
+    // Thêm dữ liệu State
+    formData.append("title", title);
+    formData.append("categoryId", categorySelected);
+    formData.append("price", price);
+    // Thêm file hình ảnh mới (lấy từ Ref)
+    formData.append("image", updateImage.current.files[0]);
+    // Gửi yêu cầu PUT (Cập nhật) đến API, đính kèm ID khóa học vào query string
+    fetch(`http://localhost:3000/admin/course?id=${id}`, {
       method: "PUT",
-      body: formData,
+      body: formData, // Đính kèm FormData
     })
       .then((res) => {
-        // Xử lý lỗi từ server
-        if (!res.ok) {
-          return res.json().then((data) => {
-            throw new Error(data.message || "Cập nhật khóa học thất bại");
-          });
-        }
-        return res.json();
+        if (res.ok) return res.json(); // Nếu HTTP status 2xx, parse JSON
+        throw res; // Nếu status lỗi (4xx, 5xx), ném Response object
       })
       .then(({ message }) => {
-        // Cập nhật thành công
-        alert(message);
-
-        // Refresh danh sách khóa học
-        setRefresh((prev) => prev + 1);
-
-        // Đóng dialog
-        updateDialog.current.close();
-
-        // Reset form sau khi cập nhật thành công
-        setUpdateFormData({ title: "", categoryId: "0", price: "" });
-        imageRef.current.value = "";
+        // --- Xử lý Thành công ---
+        alert(message); // Hiển thị thông báo thành công
+        setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu
+        updateDialog.current.close(); // Đóng modal Cập nhật
       })
-      .catch((err) => {
-        console.error("Update error:", err);
-        alert("Lỗi: " + (err.message || "Cập nhật khóa học thất bại"));
+      .catch(async (err) => {
+        //Xử lý Lỗi
+        const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body
+        alert(message); // Hiển thị thông báo lỗi chi tiết
       });
   };
-  // Xóa khóa học
   const handleDelete = (id) => {
-    // Gửi DELETE request đến server
+    //Gửi yêu cầu DELETE đến API, đính kèm ID khóa học vào query string
     fetch(`http://localhost:3000/admin/course?id=${id}`, {
       method: "DELETE",
     })
       .then((res) => {
+        //Kiểm tra Response: Nếu thành công (status 2xx), parse JSON
         if (res.ok) return res.json();
+        // Nếu lỗi (status 4xx, 5xx), ném Response object để xử lý lỗi
         throw res;
       })
       .then(({ message }) => {
-        // Xóa thành công
+        // Xử lý thành công: Hiển thị thông báo
         alert(message);
-
-        // Refresh danh sách khóa học
+        // Cập nhật dữ liệu để component hiển thị danh sách mới
         setRefresh((prev) => prev + 1);
       })
-      .catch();
+      .catch(async (err) => {
+        // Xử lý lỗi: Lấy thông báo lỗi chi tiết từ body của Response object đã ném
+        const { message } = await err.json();
+        alert(message); // Hiển thị thông báo lỗi
+      });
   };
   return (
     <>
       <AdminNavBar />
       <div>
-        <div className="course-controls">
+        <div class="course-controls">
           <button
-            className="add-course-btn"
+            class="add-course-btn"
             onClick={() => {
               addDialog.current.showModal();
             }}
@@ -291,13 +167,13 @@ export default function QuanLyKhoaHoc() {
           </button>
           <input
             type="text"
-            className="course-search-input"
+            class="course-search-input"
             name=""
             id=""
             placeholder="Tìm khóa học"
           />
           <select
-            className="category-filter-select"
+            class="category-filter-select"
             ref={categoryFilterRef}
             onChange={handleCategorySelected}
           >
@@ -316,8 +192,7 @@ export default function QuanLyKhoaHoc() {
           <table>
             <thead>
               <tr>
-                <th className="course-col">Khóa học</th>
-                <th>Danh mục</th>
+                <th className="course-col">Khóa học</th> <th>Danh mục</th>
                 <th>Giá</th>
                 <th className="action-col">Hành động</th>
               </tr>
@@ -330,7 +205,7 @@ export default function QuanLyKhoaHoc() {
                       <tr key={index} className={isSelected}>
                         <td className="course-title-cell">
                           <img
-                            src={getImageUrl(value.image)}
+                            src={value.image}
                             alt=""
                             className="course-image"
                             width={50}
@@ -343,15 +218,15 @@ export default function QuanLyKhoaHoc() {
                           {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
                         </td>
                         <td className="action-cell">
-                          <i
-                            onClick={() => handleClickUpdate(value._id)}
-                            className="fa-solid fa-pen"
-                            style={{ cursor: "pointer" }}
-                          ></i>
+                          <Link to={`/admin/course?id=${value._id}`}>
+                            <i
+                              onClick={() => handleClickUpdate(value._id)}
+                              className="fa-solid fa-pen"
+                            ></i>
+                          </Link>
                           <i
                             onClick={() => handleDelete(value._id)}
                             className="fa-solid fa-trash"
-                            style={{ cursor: "pointer" }}
                           ></i>
                         </td>
                       </tr>
@@ -364,7 +239,7 @@ export default function QuanLyKhoaHoc() {
                       <tr key={index} className={isSelected}>
                         <td className="course-title-cell">
                           <img
-                            src={getImageUrl(value.image)}
+                            src={value.image}
                             alt=""
                             className="course-image"
                             width={50}
@@ -377,15 +252,15 @@ export default function QuanLyKhoaHoc() {
                           {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
                         </td>
                         <td className="action-cell">
-                          <i
-                            onClick={() => handleClickUpdate(value._id)}
-                            className="fa-solid fa-pen"
-                            style={{ cursor: "pointer" }}
-                          ></i>
+                          <Link to={`/admin/course?id=${value._id}`}>
+                            <i
+                              onClick={() => handleClickUpdate(value._id)}
+                              className="fa-solid fa-pen"
+                            ></i>
+                          </Link>
                           <i
                             onClick={() => handleDelete(value._id)}
                             className="fa-solid fa-trash"
-                            style={{ cursor: "pointer" }}
                           ></i>
                         </td>
                       </tr>
@@ -399,169 +274,122 @@ export default function QuanLyKhoaHoc() {
           </div>
         </div>
       </div>
-
       <dialog ref={addDialog}>
-        <form onSubmit={handleAddSubmit}>
+        <form action="" method="dialog" onSubmit={handleAddSubmit}>
           Tên khóa học:
           <input
             type="text"
-            value={addFormData.title}
             onChange={(e) => {
-              setAddFormData({ ...addFormData, title: e.target.value });
+              setTitle(e.target.value);
               setErrTitle("");
             }}
             placeholder="Nhập tên khóa học"
           />
-          {errTitle && <span className="error-message">{errTitle}</span>}
+          {errTitle && <span>{errTitle}</span>}
           <br />
           Danh mục:
           <select
-            value={addFormData.categoryId}
             onChange={(e) => {
-              setAddFormData({ ...addFormData, categoryId: e.target.value });
+              setCategorySelected(e.target.value);
               setErrCategory("");
             }}
           >
             <option value="0">Chọn danh mục</option>
             {categories.length > 0 &&
-              categories.map((value, index) => (
-                <option key={index} value={value._id}>
-                  {value.title}
-                </option>
-              ))}
+              categories.map((value, index) => {
+                return (
+                  <option key={index} value={value._id}>
+                    {value.title}
+                  </option>
+                );
+              })}
           </select>
-          {errCategory && <span className="error-message">{errCategory}</span>}
           <br />
-          Giá:
+          {errCategory && <span>{errCategory}</span>}
+          <br />
+          Giá:{" "}
           <input
-            type="text"
-            value={addFormData.price}
             onChange={(e) => {
-              setAddFormData({ ...addFormData, price: e.target.value });
+              setPrice(e.target.value);
               setErrPrice("");
             }}
+            type="text"
             placeholder="Nhập giá"
           />
-          {errPrice && <span className="error-message">{errPrice}</span>}
+          {errPrice && <span>{errPrice}</span>}
           <br />
-          Ảnh khóa học:
+          Image:
           <input
             type="file"
             onChange={() => {
               setErrImage("");
             }}
-            ref={imageRef}
+            ref={addImage}
           />
-          {errImage && <span className="error-message">{errImage}</span>}
           <br />
-          <button type="submit">Thêm</button>
-          <button
-            type="button"
-            onClick={() => {
-              addDialog.current.close();
-              setAddFormData({ title: "", categoryId: "0", price: "" });
-              imageRef.current.value = "";
-              setErrTitle("");
-              setErrCategory("");
-              setErrPrice("");
-              setErrImage("");
-            }}
-          >
-            Hủy
-          </button>
+          <button>Thêm</button>
         </form>
       </dialog>
-
       <dialog ref={updateDialog}>
-        <form onSubmit={handleUpdateSubmit}>
-          <h3>Cập nhật khóa học</h3>
-
-          {/* Course Title Input */}
-          <div>
-            <label>Tên khóa học:</label>
-            <input
-              type="text"
-              value={updateFormData.title}
-              onChange={(e) =>
-                setUpdateFormData({ ...updateFormData, title: e.target.value })
-              }
-              placeholder="Nhập tên khóa học"
-            />
-            {errTitle && <span className="error-message">{errTitle}</span>}
-          </div>
-
-          {/* Category Dropdown */}
-          <div>
-            <label>Danh mục:</label>
-            <select
-              value={updateFormData.categoryId}
-              onChange={(e) =>
-                setUpdateFormData({
-                  ...updateFormData,
-                  categoryId: e.target.value,
-                })
-              }
-            >
-              <option value={updateFormData.categoryId}>
-                {courseWithId?.categoryId?.title || "Chọn danh mục"}
-              </option>
-              {categories.length > 0 &&
-                categories.map((value, index) => (
+        <form action="" method="dialog" onSubmit={handleUpdateSubmit}>
+          Tên khóa học:
+          <input
+            type="text"
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setErrTitle("");
+            }}
+            defaultValue={courseWithId.title}
+          />
+          {errTitle && <span>{errTitle}</span>}
+          <br />
+          Danh mục:
+          <select
+            onChange={(e) => {
+              setCategorySelected(e.target.value);
+              setErrCategory("");
+            }}
+          >
+            <option value={courseWithId && courseWithId.categoryId._id}>
+              {courseWithId ? courseWithId.categoryId.title : "Chọn danh mục"}
+            </option>
+            {categories.length > 0 &&
+              categories.map((value, index) => {
+                return (
                   <option key={index} value={value._id}>
                     {value.title}
                   </option>
-                ))}
-            </select>
-            {errCategory && (
-              <span className="error-message">{errCategory}</span>
-            )}
-          </div>
-
-          {/* Price Input */}
-          <div>
-            <label>Giá:</label>
-            <input
-              type="text"
-              value={updateFormData.price}
-              onChange={(e) =>
-                setUpdateFormData({ ...updateFormData, price: e.target.value })
-              }
-              placeholder="Nhập giá"
-            />
-            {errPrice && <span className="error-message">{errPrice}</span>}
-          </div>
-
-          {/* Image File Input */}
-          <div>
-            <label>Ảnh khóa học:</label>
-            <input
-              type="file"
-              accept="image/*"
-              ref={imageRef}
-              onChange={() => setErrImage("")}
-            />
-            {errImage && <span className="error-message">{errImage}</span>}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="dialog-actions">
-            <button type="submit">Cập nhật</button>
-            <button
-              type="button"
-              onClick={() => {
-                updateDialog.current.close();
-                setErrTitle("");
-                setErrCategory("");
-                setErrPrice("");
-                setErrImage("");
-              }}
-            >
-              Hủy
-            </button>
-          </div>
+                );
+              })}
+          </select>
+          <br />
+          {errCategory && <span>{errCategory}</span>}
+          <br />
+          Giá:
+          <input
+            onChange={(e) => {
+              setPrice(e.target.value);
+              setErrPrice("");
+            }}
+            type="text"
+            defaultValue={courseWithId.price}
+          />
+          {errPrice && <span>{errPrice}</span>}
+          <br />
+          Image:
+          <input
+            type="file"
+            onChange={() => {
+              setErrImage("");
+            }}
+            ref={updateImage}
+          />
+          <br />
+          {errFile && <span>{errFile}</span>}
+          <br />
+          <button>Cập nhật</button>
         </form>
       </dialog>
-
       <Footer />
     </>
   );

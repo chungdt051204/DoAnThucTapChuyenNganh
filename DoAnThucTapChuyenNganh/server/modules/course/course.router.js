@@ -24,8 +24,7 @@ const upload = multer({ storage });
 router.get(`${prefix}/courses`, coursesController.getCourses); // Lấy tất cả hoặc lọc theo danh mục
 router.get(`${prefix}/course-free`, coursesController.getCoursesFree); // Lấy khóa học miễn phí
 router.get(`${prefix}/course-pre`, coursesController.getCoursesPre); // Lấy khóa học trả phí
-router.get(`${prefix}/course`, coursesController.getDetailCourse); // Lấy chi tiết khóa học
-router.get(`${prefix}/course`, coursesController.getCourseWithId); // Lấy khóa học với populate danh mục
+router.get(`${prefix}/course`, coursesController.getCourses); // Lấy chi tiết khóa học
 
 // Route tìm kiếm gợi ý
 router.get(
@@ -38,14 +37,14 @@ router.get(
 router.post(
   `${prefix}/admin/course`,
   upload.single("image"),
-  coursesController.postAddCourse
+  coursesController.postCourse
 );
 
 // PUT: Cập nhật khóa học (ảnh là tùy chọn, với upload.single("image") middleware)
 router.put(
   `${prefix}/admin/course`,
   upload.single("image"),
-  coursesController.putUpdateCourse
+  coursesController.putCourse
 );
 
 // DELETE: Xóa khóa học

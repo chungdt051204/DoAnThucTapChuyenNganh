@@ -118,7 +118,6 @@
   padding: 8px 12px;
   border-radius: 6px;
   border: 1px solid #ccc;
-  background: #f5f5f5;
   cursor: pointer;
 }
 .dialog-actions button[type="submit"] {

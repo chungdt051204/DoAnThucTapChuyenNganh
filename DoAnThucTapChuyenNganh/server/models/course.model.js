@@ -18,8 +18,8 @@ const courseSchema = new mongoose.Schema(
     price: { type: Number, required: true, min: 0 },
     rating: { type: Number, default: 0, min: 0, max: 5 }, // Điểm đánh giá trung bình
     totalLessons: { type: Number, default: 0 },
-    thumbnail: { type: String, required: true },
-    image: { type: String, required: true },
+    thumbnail: { type: String },
+    image: { type: String },
     objectives: [{ type: String }],
     requirements: [{ type: String }],
     lessons: [lessonSchema],

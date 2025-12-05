@@ -1,4 +1,5 @@
 const userEntity = require("../../models/user.model"); //Import userEntity để sử dụng
+const orderEntity = require("../../models/order.model"); //Import orderEntity để sử dụng
 const sessions = {}; //Tạo mảng sessions rỗng
 exports.postRegister = async (req, res) => {
   try {
@@ -114,13 +115,16 @@ exports.getUsersWithRole = async (req, res) => {
 };
 exports.putStatusUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { status } = req.body;
+    const { id } = req.params; // Lấy ID người dùng từ URL parameter
+    const { status } = req.body; // Lấy trạng thái mới từ request body
+    // Thực hiện lệnh Cập nhật: Tìm người dùng theo ID và thiết lập trường status mới
     await userEntity.updateOne({ _id: id }, { status: status });
+    // Trả về thành công (HTTP 200 OK)
     res.status(200).json({
       message: "Thay đổi trạng thái người dùng có id" + id + "thành công",
     });
   } catch (error) {
+    // Xử lý Lỗi: Ghi log lỗi và trả về lỗi máy chủ (HTTP 500)
     console.log("Có lỗi xảy ra khi thay đổi trạng thái người dùng", error);
     res
       .status(500)
@@ -128,27 +132,52 @@ exports.putStatusUser = async (req, res) => {
   }
 };
 //Router xử lý cập nhật thông tin cá nhân của người dùng
+
 exports.putUser = async (req, res) => {
   try {
-    const session = sessions[req.cookies.sessionId];
-    if (!session) {
-      return res.status(401).json({ message: "Người dùng chưa đăng nhập" });
+    // Lấy ID người dùng từ tham số URL
+    const { id } = req.params;
+    // Lấy thông tin cập nhật từ body của yêu cầu
+    const { newUserName, newPassword } = req.body;
+    // Tìm kiếm người dùng trong cơ sở dữ liệu bằng ID
+    const userWithId = await userEntity.findOne({ _id: id });
+    // Kiểm tra xem người dùng có tồn tại hay không
+    if (!userWithId) {
+      // Nếu không tìm thấy, trả về status 404 (Not Found)
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    } else {
+      //Nếu tìm thấy, thực hiện cập nhật thông tin
+      const result = await userEntity.updateOne(
+        {
+          //Điều kiện tìm kiếm: ID người dùng
+          _id: id,
+        },
+        {
+          // Trường cập nhật username: Nếu newUserName rỗng, giữ lại username cũ
+          username: newUserName === "" ? userWithId.username : newUserName,
+          // Trường cập nhật password: Nếu newPassword rỗng, giữ lại password cũ
+          password: newPassword === "" ? userWithId.password : newPassword,
+          // Trường cập nhật avatar: Nếu có file mới dùng tên file đó ngược lại giữ lại avatar cũ
+          avatar: req.file ? req.file.filename : userWithId.avatar,
+        }
+      );
+      // Kiểm tra xem có bản ghi nào được thay đổi hay không
+      if (result.modifiedCount === 0) {
+        // Nếu không có bản ghi nào được cập nhật
+        return res
+          .status(404)
+          .json({ message: "Không có dữ liệu nào được thêm mới" });
+      } else {
+        // Cập nhật thành công, trả về status 200 (OK)
+        return res
+          .status(200)
+          .json({ message: "Cập nhật thông tin người dùng thành công" });
+      }
     }
-
-    const userId = session.id;
-    const { fullName, password } = req.body;
-    const updateData = {};
-
-    if (fullName) updateData.fullName = fullName;
-    if (password) updateData.password = password;
-    if (req.file) updateData.avatar = req.file.filename;
-
-    await userEntity.updateOne({ _id: userId }, updateData);
-    const updatedUser = await userEntity.findOne({ _id: userId });
-
-    res.status(200).json({ message: "Cập nhật thành công", user: updatedUser });
   } catch (error) {
+    // Bắt và ghi log bất kỳ lỗi nào xảy ra trong quá trình cập nhật
     console.log("Có lỗi xảy ra khi cập nhật thông tin người dùng", error);
+    // Trả về status 500 nếu có lỗi xảy ra
     res.status(500).json({ message: "Cập nhật thông tin thất bại" });
   }
 };
@@ -160,4 +189,40 @@ exports.logout = (req, res) => {
     .header("Set-Cookie", `sessionId=; Max-Age =0; httpOnly`)
     .status(200)
     .json({ message: "Đăng xuất thành công" });
+};
+//Router xử lý xóa người dùng
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy ID người dùng từ URL parameter
+    //  Kiểm tra Ràng buộc Nghiệp vụ (Dependency Check) ---
+    // Tìm kiếm các đơn hàng có liên quan đến ID người dùng này
+    const userWithOrders = await orderEntity.find({ userId: id });
+    // Nếu người dùng có đơn hàng
+    if (userWithOrders.length > 0) {
+      // Trả về lỗi 409 Conflict (Xung đột) vì vi phạm tính toàn vẹn dữ liệu/nghiệp vụ
+      return res
+        .status(409)
+        .json({ message: "Người dùng này đã có đơn hàng không thể xóa" });
+    } else {
+      //  Thực hiện Xóa
+      // Xóa người dùng nếu không có đơn hàng liên quan
+      const result = await userEntity.deleteOne({ _id: id });
+      //  Xử lý Kết quả Xóa
+      if (result.deletedCount === 0) {
+        // Nếu deletedCount = 0: Không tìm thấy người dùng để xóa
+        return res
+          .status(404)
+          .json({ message: "Không tìm thấy người dùng để xóa" });
+      } else {
+        // Nếu deletedCount > 0: Xóa thành công
+        return res.status(200).json({
+          message: "Đã xóa tài khoản người dùng có id" + id + "thành công",
+        });
+      }
+    }
+  } catch (error) {
+    // Xử lý Lỗi hệ thống
+    console.log("Có lỗi xảy ra khi xóa người dùng", error);
+    res.status(500).json({ message: "Xóa người dùng thất bại" });
+  }
 };

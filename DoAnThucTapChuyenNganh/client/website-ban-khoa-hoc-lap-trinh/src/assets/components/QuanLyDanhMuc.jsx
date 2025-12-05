@@ -84,7 +84,7 @@ export default function QuanLyDanhMuc() {
       })
       .catch(async (err) => {
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
-        console.log(message);
+        alert(message);
       });
   };
 
@@ -103,7 +103,7 @@ export default function QuanLyDanhMuc() {
       })
       .catch(async (err) => {
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
-        console.log(message);
+        alert(message);
       });
   };
 

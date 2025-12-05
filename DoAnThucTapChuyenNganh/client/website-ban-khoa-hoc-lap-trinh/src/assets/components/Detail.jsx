@@ -1,15 +1,22 @@
-import { useEffect, useState, useContext } from "react";
+import ReactPlayer from "react-player";
+import { useEffect, useState, useContext, useRef } from "react";
 import AppContext from "./AppContext";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "./components-css/Detail.css";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 
 export default function GetDetailCourse() {
+  const navigate = useNavigate();
   const { user, isLogin } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
   const [searchParams] = useSearchParams(); // useSearch dùng để truy cập các tham số truy vấn (query string) trên URL.
   const id = searchParams.get("id"); // Lấy giá trị của tham số 'id' từ query string.
+  const lesson_order = searchParams.get("lesson_order"); // Lấy giá trị của tham số 'lesson_order' từ query string.
   const [course, setCourse] = useState(""); // useState lưu trữ dữ liệu chi tiết của khóa học.
+  const dialog = useRef();
+  const lesson = course.lessons
+    ? course.lessons.find((value) => value.order == lesson_order)
+    : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
 
   useEffect(() => {
     // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
@@ -144,11 +151,24 @@ export default function GetDetailCourse() {
                 href={`#lesson-${idx}`}
                 style={{ display: "block", marginBottom: 8 }}
               >
-                <div className="lesson-item">
+                <div
+                  onClick={() => {
+                    if (course.isFree === false) {
+                      alert("Bạn chưa mua khóa học");
+                      return;
+                    } else {
+                      navigate(`/course?id=${id}&lesson_order=${idx + 1}`);
+                      dialog.current.showModal();
+                    }
+                  }}
+                  className="lesson-item"
+                >
                   <div className="lesson-left">
                     <div className="play">▶</div>
                     <div className="lesson-title">
-                      {idx + 1}. {lesson.title}
+                      <p>
+                        {idx + 1}. {lesson.title}
+                      </p>
                     </div>
                   </div>
                   <div className="lesson-time">
@@ -159,7 +179,16 @@ export default function GetDetailCourse() {
             ))}
         </div>
       </div>
-
+      <dialog ref={dialog} className="video-dialog">
+        <div style={{ width: "700px", height: "350px", margin: "auto" }}>
+          <ReactPlayer
+            width={700}
+            height={350}
+            src={lesson && lesson.videoUrl}
+            controls="true"
+          ></ReactPlayer>
+        </div>
+      </dialog>
       <Footer></Footer>
     </>
   );

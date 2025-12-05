@@ -20,9 +20,10 @@ router.post(
 );
 router.post(`${prefix}/login`, userController.postLogin);
 router.get(`${prefix}/me`, userController.getUser);
-router.put(`${prefix}/me`, upload.single("avatar"), userController.putUser);
+router.put(`${prefix}/me/:id`, upload.single("avatar"), userController.putUser);
 router.get(`${prefix}/users`, userController.getAllUsers);
 router.get(`${prefix}/users/role`, userController.getUsersWithRole);
 router.put(`${prefix}/admin/user/:id`, userController.putStatusUser);
 router.delete(`${prefix}/me`, userController.logout);
+router.delete(`${prefix}/admin/user/:id`, userController.deleteUser);
 module.exports = router;
