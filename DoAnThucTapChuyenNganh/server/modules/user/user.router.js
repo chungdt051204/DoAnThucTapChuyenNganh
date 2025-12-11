@@ -13,6 +13,11 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage });
+router.get(`${prefix}/auth/google`, userController.getLoginGoogle);
+router.get(
+  `${prefix}/auth/google/callback`,
+  userController.getResultLoginGoogle
+);
 router.post(
   `${prefix}/register`,
   upload.single("avatar"),

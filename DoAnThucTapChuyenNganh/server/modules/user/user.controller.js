@@ -1,6 +1,11 @@
+const passport = require("passport");
 const userEntity = require("../../models/user.model"); //Import userEntity để sử dụng
 const orderEntity = require("../../models/order.model"); //Import orderEntity để sử dụng
 const sessions = {}; //Tạo mảng sessions rỗng
+exports.getLoginGoogle = passport.authenticate("google", {
+  scope: ["profile", "email"],
+  prompt: "select_account",
+});
 exports.postRegister = async (req, res) => {
   try {
     const { body } = req; //req.body lấy dữ liệu gửi từ phía client
@@ -17,6 +22,25 @@ exports.postRegister = async (req, res) => {
     res.status(500).json({ message: "Đăng ký tài khoản thất bại" });
   }
 };
+exports.getResultLoginGoogle = [
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: false,
+  }),
+  async (req, res) => {
+    const user = req.user;
+    const sessionId = Date.now().toString();
+    sessions[sessionId] = {
+      id: user._id,
+    };
+    res
+      .setHeader(
+        "Set-Cookie",
+        `sessionId=${sessionId}; max-age=3600; httpOnly; path=/`
+      )
+      .redirect("http://localhost:5173");
+  },
+];
 //Router xử lý chức năng đăng nhập
 // Hàm xử lý logic đăng nhập người dùng (POST /login).
 exports.postLogin = async (req, res) => {

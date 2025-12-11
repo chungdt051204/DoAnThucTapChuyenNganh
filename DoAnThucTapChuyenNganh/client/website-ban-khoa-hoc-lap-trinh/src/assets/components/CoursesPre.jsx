@@ -23,10 +23,13 @@ export default function CoursesPre() {
         <div className="course-pre-track">
           {coursesPre.length > 0 ? (
             coursesPre.map((value, index) => {
+              const image = value.image.includes("https")
+                ? value.image
+                : `http://localhost:3000/images/course/${value.image}`;
               return (
                 <div key={index} className="course-pre-item">
                   <Link to={`/course?id=${value._id}`}>
-                    <img src={value.image} alt="" width={150} height={200} />
+                    <img src={image} alt="" width={150} height={200} />
                   </Link>
                   <p>{value.title}</p>
                   <p className="price">{value.price} VND</p>

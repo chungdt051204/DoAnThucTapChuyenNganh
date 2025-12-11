@@ -3,7 +3,6 @@ const usersSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
-      required: true,
     },
     username: {
       type: String,
@@ -16,7 +15,6 @@ const usersSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     avatar: {
       type: String,
@@ -25,7 +23,6 @@ const usersSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
     },
     gender: {
       type: String,

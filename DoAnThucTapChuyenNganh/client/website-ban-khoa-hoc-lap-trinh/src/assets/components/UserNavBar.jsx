@@ -78,7 +78,9 @@ export default function UserNavBar() {
                     categories.map((value, index) => {
                       return (
                         <div className="categories-dropdown-item" key={index}>
-                          <Link to={`/courses?category_id=${value._id}`}>
+                          <Link
+                            to={`/courses/category?category_id=${value._id}`}
+                          >
                             <p>{value.title}</p>
                           </Link>
                         </div>
@@ -111,6 +113,16 @@ export default function UserNavBar() {
                   type="text"
                   placeholder="Nhập tên khóa học..."
                 />
+                <Link
+                  to={`/courses/search?search=${encodeURIComponent(
+                    inputValue
+                  )}`}
+                >
+                  <i
+                    style={{ cursor: "pointer" }}
+                    class="fa-solid fa-magnifying-glass"
+                  ></i>
+                </Link>
               </div>
               {inputValue !== "" && (
                 <div className="search-dropdown-menu">

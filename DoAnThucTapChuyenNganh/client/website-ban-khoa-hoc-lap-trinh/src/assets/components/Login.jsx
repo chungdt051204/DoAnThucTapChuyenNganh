@@ -3,6 +3,7 @@ import { useContext } from "react";
 import AppContext from "./AppContext";
 import "./components-css/Auth.css";
 import { useRef, useState } from "react";
+import LoginGoogle from "./LoginGoogle";
 export default function Login() {
   // useNavigate để điều hướng
   const navigate = useNavigate();
@@ -89,6 +90,7 @@ export default function Login() {
           {loginNotValid && <span>{loginNotValid}</span>}
           <button>Login</button>
         </form>
+        <LoginGoogle />
         <p>
           Chưa có tài khoản? <Link to="/Register">Đăng ký ngay</Link>
         </p>

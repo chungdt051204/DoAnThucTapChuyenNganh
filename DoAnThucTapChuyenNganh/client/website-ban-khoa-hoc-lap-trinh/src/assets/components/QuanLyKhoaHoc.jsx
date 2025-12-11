@@ -23,6 +23,7 @@ export default function QuanLyKhoaHoc() {
   const [categoryId, setCategoryId] = useState("");
   const [coursesWithCategory_Id, setCoursesWithCategory_Id] = useState([]);
   const [courseWithId, setCourseWithId] = useState("");
+
   const handleCategorySelected = () => {
     if (categoryFilterRef.current.value != 0) {
       setCategoryId(categoryFilterRef.current.value);
@@ -200,12 +201,15 @@ export default function QuanLyKhoaHoc() {
             <tbody>
               {!categoryId && courses.length > 0
                 ? courses.map((value, index) => {
+                    const image = value.image.includes("https")
+                      ? value.image
+                      : `http://localhost:3000/images/course/${value.image}`;
                     const isSelected = index === 0 ? "selected" : "";
                     return (
                       <tr key={index} className={isSelected}>
                         <td className="course-title-cell">
                           <img
-                            src={value.image}
+                            src={image}
                             alt=""
                             className="course-image"
                             width={50}
@@ -234,12 +238,15 @@ export default function QuanLyKhoaHoc() {
                   })
                 : coursesWithCategory_Id.length > 0 &&
                   coursesWithCategory_Id.map((value, index) => {
+                    const image1 = value.image.includes("https")
+                      ? value.image
+                      : `http://localhost:3000/images/course/${value.image}`;
                     const isSelected = index === 0 ? "selected" : "";
                     return (
                       <tr key={index} className={isSelected}>
                         <td className="course-title-cell">
                           <img
-                            src={value.image}
+                            src={image1}
                             alt=""
                             className="course-image"
                             width={50}
@@ -268,10 +275,6 @@ export default function QuanLyKhoaHoc() {
                   })}
             </tbody>
           </table>
-          <div className="pagination-controls">
-            <button className="btn-prev">Trước</button>
-            <button className="btn-next">Sau</button>
-          </div>
         </div>
       </div>
       <dialog ref={addDialog}>

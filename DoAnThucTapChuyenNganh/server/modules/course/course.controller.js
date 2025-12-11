@@ -4,6 +4,8 @@ exports.getCourses = async (req, res) => {
   try {
     //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
     const { category_id } = req.query;
+    //Lấy từ khóa tìm từ chuỗi query String nhận được bên phía client bằng req.query
+    const { search } = req.query;
     //Lấy id khóa học từ chuỗi query String nhận được bên phía client bằng req.query
     const { id } = req.query;
     if (category_id) {
@@ -12,6 +14,14 @@ exports.getCourses = async (req, res) => {
         .find({ categoryId: category_id })
         .populate("categoryId"); //populate tương tự JOIN bên sql
       res.status(200).json(coursesWithCategoryId); //Gửi dữ liệu về cho phía client
+    } else if (search) {
+      // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
+      // $regex: biểu thức chính quy
+      // $options: "i" = case-insensitive
+      const coursesWithSearch = await courseEntity.find({
+        title: { $regex: search, $options: "i" },
+      });
+      res.status(200).json(coursesWithSearch);
     } else if (id) {
       //Nếu có id thì lọc theo id của khóa học
       const coursesWithId = await courseEntity

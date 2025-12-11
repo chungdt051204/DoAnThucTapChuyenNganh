@@ -1,0 +1,2 @@
+# Bỏ qua tệp cấu hình môi trường trong thư mục server
+/server/.env
