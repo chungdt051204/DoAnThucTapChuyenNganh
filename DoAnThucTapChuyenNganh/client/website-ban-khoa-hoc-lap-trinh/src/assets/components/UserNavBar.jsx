@@ -120,7 +120,7 @@ export default function UserNavBar() {
                 >
                   <i
                     style={{ cursor: "pointer" }}
-                    class="fa-solid fa-magnifying-glass"
+                    className="fa-solid fa-magnifying-glass"
                   ></i>
                 </Link>
               </div>

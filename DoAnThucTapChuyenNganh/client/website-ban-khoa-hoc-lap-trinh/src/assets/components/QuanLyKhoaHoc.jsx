@@ -157,9 +157,9 @@ export default function QuanLyKhoaHoc() {
     <>
       <AdminNavBar />
       <div>
-        <div class="course-controls">
+        <div className="course-controls">
           <button
-            class="add-course-btn"
+            className="add-course-btn"
             onClick={() => {
               addDialog.current.showModal();
             }}
@@ -168,13 +168,13 @@ export default function QuanLyKhoaHoc() {
           </button>
           <input
             type="text"
-            class="course-search-input"
+            className="course-search-input"
             name=""
             id=""
             placeholder="Tìm khóa học"
           />
           <select
-            class="category-filter-select"
+            className="category-filter-select"
             ref={categoryFilterRef}
             onChange={handleCategorySelected}
           >

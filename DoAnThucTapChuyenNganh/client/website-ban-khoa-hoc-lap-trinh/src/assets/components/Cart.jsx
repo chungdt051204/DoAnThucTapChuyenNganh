@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
 import UserNavBar from "./UserNavBar";
@@ -141,7 +142,9 @@ export default function Cart() {
                         <span className="label">Tổng cộng sản phẩm:</span>
                         <p className="amount">{sum} VND</p>
                       </div>
-                      <button className="btn-buy">Mua Hàng</button>
+                      <button className="btn-buy">
+                        <Link to="/payment">Mua hàng</Link>
+                      </button>
                     </div>
                   </div>
                 </td>

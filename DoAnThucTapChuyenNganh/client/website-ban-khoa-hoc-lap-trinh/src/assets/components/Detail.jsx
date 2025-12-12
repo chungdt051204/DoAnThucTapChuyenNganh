@@ -1,4 +1,4 @@
-import ReactPlayer from "react-player";
+// import ReactPlayer from "react-player";
 import { useEffect, useState, useContext, useRef } from "react";
 import AppContext from "./AppContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -169,12 +169,12 @@ export default function GetDetailCourse() {
       </div>
       <dialog ref={dialog} className="video-dialog">
         <div style={{ width: "700px", height: "350px", margin: "auto" }}>
-          <ReactPlayer
+          {/* <ReactPlayer
             width={700}
             height={350}
             src={lesson && lesson.videoUrl}
             controls="true"
-          ></ReactPlayer>
+          ></ReactPlayer> */}
         </div>
       </dialog>
       <Footer></Footer>

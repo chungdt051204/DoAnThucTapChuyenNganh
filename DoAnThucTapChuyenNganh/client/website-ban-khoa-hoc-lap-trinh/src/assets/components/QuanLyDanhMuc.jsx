@@ -131,14 +131,14 @@ export default function QuanLyDanhMuc() {
                         <Link to={`/admin/category?id=${value._id}`}>
                           <i
                             onClick={() => handleClickUpdate(value._id)}
-                            class="fa-solid fa-pen"
+                            className="fa-solid fa-pen"
                           ></i>
                         </Link>
                       </td>
                       <td>
                         <i
                           onClick={() => handleDelete(value._id)}
-                          class="fa-solid fa-trash"
+                          className="fa-solid fa-trash"
                         ></i>
                       </td>
                     </tr>

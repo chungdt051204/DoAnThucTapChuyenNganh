@@ -13,6 +13,7 @@ import QuanLyNguoiDung from "./assets/components/QuanLyNguoiDung";
 import Cart from "./assets/components/Cart";
 import UserProfile from "./assets/components/UserProfile";
 import QuanLyDonHang from "./assets/components/QuanLyDonHang";
+import ThanhToan from "./assets/components/ThanhToan";
 
 function App() {
   const [user, setUser] = useState("");
@@ -86,6 +87,7 @@ function App() {
           <Route path="/admin/course" element={<QuanLyKhoaHoc />} />
           <Route path="/admin/user" element={<QuanLyNguoiDung />} />
           <Route path="/admin/order" element={<QuanLyDonHang />} />
+          <Route path="/payment" element={<ThanhToan />} />
         </Routes>
       </AppContext.Provider>
     </>

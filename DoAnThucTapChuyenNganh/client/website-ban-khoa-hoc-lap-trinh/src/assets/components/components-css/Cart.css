@@ -161,4 +161,14 @@ tfoot td {
   border-radius: 6px;
   cursor: pointer;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.btn-buy a {
+  color: inherit; /* Lấy màu của button, không còn màu tím */
+  text-decoration: none; /* Bỏ gạch chân */
+}
+
+.btn-buy a:visited {
+  color: inherit; /* Chặn màu tím khi đã click */
 }
