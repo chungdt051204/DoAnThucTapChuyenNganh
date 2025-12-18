@@ -1,82 +1,50 @@
-const orderEntity = require("../../models/order.model"); //Import orderEntity từ model
-const orderItemEntity = require("../../models/orderItem.model"); //Import oderItemEntity từ model
+const cartEntity = require("../../models/cart.model"); //Import cartEntity từ thư mục models
 //Router xử lý chức năng thêm khóa học và giỏ hàng
 exports.postCart = async (req, res) => {
   try {
     //Lấy dữ liệu gửi từ phía client bằng req.body
     const { body } = req;
-    //Kiểm tra xem người dùng có đơn hàng trạng thái cart chưa
-    const orderInDatabase = await orderEntity.findOne({
+    //Kiểm tra xem người dùng đã có giỏ hàng chưa
+    const cartInDatabase = await cartEntity.findOne({
       userId: body.userId,
-      status: "cart",
     });
-    //Nếu chưa có thì tạo đơn hàng trạng thái cart và thêm khóa học với chi tiết đơn hàng
-    if (!orderInDatabase) {
-      //Thêm đơn hàng
-      const order = await orderEntity.create({
+    //Nếu chưa có thì tạo giỏ hàng và thêm khóa học được chọn vào giỏ hàng
+    if (!cartInDatabase) {
+      //Tạo giỏ hàng và khóa học đầu tiên vào
+      await cartEntity.create({
         userId: body.userId,
-        totalAmount: body.coursePrice,
+        items: [
+          {
+            courseId: body.courseId,
+          },
+        ],
       });
-      //Thêm khóa học vào chi tiết đơn hàng
-      const currentOrderId = order._id; //Lấy orderId vừa mới thêm
-      await orderItemEntity.create({
-        orderId: currentOrderId,
-        courseId: body.courseId,
-        courseName: body.courseName,
-        priceAtPurchase: body.coursePrice,
-      });
-      res
-        .status(200)
-        .json(
-          "Thêm khóa học" +
-            " " +
-            body.courseName +
-            " " +
-            "vào giỏ hàng thành công"
-        );
+      res.status(200).json("Đã thêm khóa học vào giỏ hàng thành công");
     }
-    //Ngược lại nếu người dùng đã có đơn hàng trạng thái cart
+    //Ngược lại nếu người dùng đã có giỏ hàng
     else {
-      //Lấy dữ liệu orderId từ đơn hàng trạng thái cart hiện tại của người dùng trong database
+      //Lấy dữ liệu cartId từ giỏ hàng hiện tại của người dùng trong database
       //Kiểm tra xem khóa học này đã nằm trong giỏ hàng chưa
-      const courseInOrderItem = await orderItemEntity.findOne({
-        orderId: orderInDatabase._id,
-        courseId: body.courseId,
+      const courseInCart = await cartEntity.findOne({
+        _id: cartInDatabase._id,
+        "items.courseId": body.courseId, //Tìm xem có bất kỳ phần tử nào trong mảng có courseId này không
       });
-      //Nếu người dùng chưa có khóa học này trong giỏ hàng thì thêm vào giỏ hàng và cập nhật lại totalAmount
-      //cho đơn hàng
-      if (!courseInOrderItem) {
-        await orderItemEntity.create({
-          orderId: orderInDatabase._id,
-          courseId: body.courseId,
-          courseName: body.courseName,
-          priceAtPurchase: body.coursePrice,
-        });
-        //Tính tổng tiền tất cả khóa học trong đơn hàng
-        let tong = 0;
-        const orderItemsInOrder = await orderItemEntity.find({
-          orderId: orderInDatabase._id,
-        });
-        //Duyệt vòng lặp
-        orderItemsInOrder.forEach((value) => {
-          tong = tong + parseFloat(value.priceAtPurchase);
-          return tong;
-        });
-        //Cập nhật lại tổng tiền cho đơn hàng của người dùng
-        await orderEntity.updateOne({
-          userId: body.userId,
-          totalAmount: tong.toString(),
-        });
-        res
-          .status(200)
-          .json(
-            "Đã thêm khóa học" +
-              " " +
-              body.courseName +
-              " " +
-              "vào giỏ hàng thành công"
-          );
-      } else {
+      //Nếu người dùng chưa có khóa học này trong giỏ hàng thì thêm khóa học này vào giỏ hàng hiện tại
+      if (!courseInCart) {
+        await cartEntity.updateOne(
+          { _id: cartInDatabase._id },
+          {
+            $push: {
+              items: {
+                courseId: body.courseId,
+              },
+            }, //Dùng push để thêm 1 khóa học sau các khóa học trong giỏ hàng($push chỉ dùng Object không dùng mảng)
+          }
+        );
+        res.status(200).json("Đã thêm khóa học vào giỏ hàng thành công");
+      }
+      //Nếu có khóa học trong giỏ hàng rồi thì không được thêm nữa
+      else {
         res
           .status(409)
           .json({ message: "Khóa học này đã tồn tại trong giỏ hàng" });
@@ -91,26 +59,29 @@ exports.postCart = async (req, res) => {
 exports.getCartItem = async (req, res) => {
   //Lấy id người dùng gửi từ phía client bằng req.query
   const { user_id } = req.query;
-  //Tìm kiếm đơn hàng có userId bằng id người dùng gửi từ phía client
-  const order = await orderEntity.findOne({ userId: user_id });
-  const orderItems = await orderItemEntity
-    .find({ orderId: order._id })
-    .populate("courseId"); //Sử dụng popullate để tham chiếu đến collection course và lấy toàn bộ thuộc tính
-  if (!orderItems)
-    return res.status(404).json({ message: "Giỏ hàng của bạn hiện đang rỗng" });
-  else return res.status(200).json(orderItems);
+  //Tìm kiếm giỏ hàng có userId bằng id người dùng gửi từ phía client
+  const cart = await cartEntity
+    .findOne({ userId: user_id })
+    .populate("items.courseId");
+  res.status(200).json(cart);
 };
 //Router xử lý chức năng xóa nhiều khóa học trong giỏ hàng
 exports.deleteCartItems = async (req, res) => {
+  //Lấy id người dùng gửi từ phía client bằng req.query
+  const { user_id } = req.query;
   //Lấy mảng chứa id khóa học gửi từ phía client bằng req.body
-  const { orderIdItemsSelected } = req.body;
-  await orderItemEntity.deleteMany({ _id: { $in: orderIdItemsSelected } });
-  //Dùng toán tử $in để cho phép xóa nhiều phần tử trong database có id thuộc mảng orderIdItemsSelected
+  const { cartItemSelected } = req.body;
+  //Xóa các item được chọn trong giỏ hàng bằng cách cập nhật lại item trong giỏ hàng
+  //Dùng $push để xóa các item và $in lấy ra các item được chọn để xóa
+  await cartEntity.updateOne(
+    { userId: user_id },
+    { $pull: { items: { _id: { $in: cartItemSelected } } } }
+  );
   res.status(200).json({
     message:
       "Đã xóa" +
       " " +
-      orderIdItemsSelected.length +
+      cartItemSelected.length +
       " " +
       "khóa học ra khỏi giỏ hàng thành công",
   });

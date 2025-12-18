@@ -6,21 +6,21 @@
   --muted: #5b6b7a;
   --pill: #ffe6a8;
 }
-/* Reset nhỏ */
+
 .course-card,
 .course-card * {
   box-sizing: border-box;
   font-family: Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   text-decoration: none;
 }
-/* wrapper */
+
 .course-card {
   max-width: 920px;
   margin: 28px auto;
   padding: 24px;
   background: transparent;
 }
-/* Hero area: thumbnail left + right price box */
+
 .course-hero {
   display: grid;
   grid-template-columns: 1fr 220px;
@@ -61,7 +61,7 @@
   display: inline-block;
   margin: 6px auto 0;
 }
-/* main title/summary */
+
 .course-title {
   font-size: 1.45rem;
   font-weight: 700;
@@ -73,14 +73,14 @@
   margin-bottom: 12px;
   font-size: 0.95rem;
 }
-/* Info grid: description + two columns of card boxes */
+
 .info-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 18px;
 }
-/* Big rounded pale box for description and features */
+
 .info-card {
   background: var(--card);
   padding: 18px;
@@ -89,25 +89,25 @@
   box-shadow: 0 6px 18px rgba(10, 20, 40, 0.03);
   color: var(--primary);
 }
-/* Two-column list inside info-card */
+
 .info-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
-/* headings inside info */
+
 .info-card h3 {
   margin: 0 0 8px;
   font-size: 1.05rem;
 }
-/* list style */
+
 .info-card ul {
   padding-left: 18px;
   margin: 6px 0 0;
   color: #2e3b4a;
   line-height: 1.5;
 }
-/* Lessons block */
+
 .lessons {
   margin-top: 6px;
 }
@@ -115,25 +115,25 @@
   font-weight: 700;
   margin: 6px 0 10px;
 }
-/* lesson item */
+
 .lesson-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: white;
   padding: 10px 12px;
-  border-radius: 999px; /* pill */
+  border-radius: 999px;
   border: 1px solid rgba(10, 30, 60, 0.06);
   margin-bottom: 10px;
   box-shadow: 0 6px 18px rgba(10, 20, 40, 0.03);
 }
-/* left part (title + icon) */
+
 .lesson-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-/* play circle */
+
 .play {
   min-width: 36px;
   min-height: 36px;
@@ -145,7 +145,7 @@
   color: var(--primary);
   background: var(--bg);
 }
-/* lesson title style */
+
 .lesson-title {
   font-weight: 600;
   color: #213249;
@@ -154,7 +154,7 @@
   text-overflow: ellipsis;
   max-width: 520px;
 }
-/* duration on right */
+
 .lesson-time {
   font-size: 0.85rem;
   color: var(--muted);
@@ -162,7 +162,7 @@
   min-width: 50px;
   text-align: right;
 }
-/* extra polish: link hover */
+
 .lesson-item a {
   text-decoration: none;
   color: inherit;

@@ -107,12 +107,12 @@ export default function QuanLyDanhMuc() {
         <AdminNavBar />
         <div style={{ margin: "100px 50px" }}>
           <button
-            style={{ marginBottom: "20px" }}
+            className="btn-add-category"
             onClick={() => {
-              addDialog.current.showModal(); // mở dialog thêm
+              addDialog.current.showModal();
             }}
           >
-            Thêm danh mục
+            + Thêm danh mục
           </button>
           <table className="category-table" border={1}>
             <thead>
@@ -130,6 +130,7 @@ export default function QuanLyDanhMuc() {
                       <td>
                         <Link to={`/admin/category?id=${value._id}`}>
                           <i
+                            style={{ color: "blue" }}
                             onClick={() => handleClickUpdate(value._id)}
                             className="fa-solid fa-pen"
                           ></i>
@@ -137,6 +138,7 @@ export default function QuanLyDanhMuc() {
                       </td>
                       <td>
                         <i
+                          style={{ color: "red" }}
                           onClick={() => handleDelete(value._id)}
                           className="fa-solid fa-trash"
                         ></i>

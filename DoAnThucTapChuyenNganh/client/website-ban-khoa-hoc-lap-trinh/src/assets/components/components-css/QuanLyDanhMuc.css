@@ -1,11 +1,47 @@
+.btn-add-category {
+  /* Layout & Size */
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+
+  /* Typography */
+  font-family: "Inter", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+
+  /* Styling */
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+
+  /* Animation */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hiệu ứng khi rê chuột vào */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4);
+  filter: brightness(1.1);
+}
+
+/* Hiệu ứng khi nhấn giữ */
+.btn:active {
+  transform: translateY(0);
+  filter: brightness(0.9);
+}
 .category-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 5px;
 }
 .category-table th {
+  border-radius: 5px !important;
   background-color: #f8f8f8;
   color: #333;
   padding: 10px 15px;
@@ -39,13 +75,13 @@ dialog {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background-color: #fff;
 }
-/* 3. Đảm bảo backdrop (lớp nền mờ) chiếm toàn màn hình */
+
 dialog::backdrop {
-  background-color: rgba(0, 0, 0, 0.5); /* Màu đen trong suốt 50% */
+  background-color: rgba(0, 0, 0, 0.5);
 }
-/* 4. Thiết kế các thành phần bên trong (để nó trông đẹp hơn) */
+
 dialog h2 {
-  margin-top: 0; /* Bỏ khoảng cách trên mặc định */
+  margin-top: 0;
   margin-bottom: 20px;
   font-size: 1.5em;
   color: #333;
@@ -57,12 +93,12 @@ dialog input[type="text"] {
   margin-bottom: 15px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  box-sizing: border-box; /* Đảm bảo padding không làm tăng chiều rộng tổng thể */
+  box-sizing: border-box;
 }
 dialog button {
   width: 100%;
   padding: 10px;
-  background-color: #007bff; /* Màu xanh dương nổi bật */
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;

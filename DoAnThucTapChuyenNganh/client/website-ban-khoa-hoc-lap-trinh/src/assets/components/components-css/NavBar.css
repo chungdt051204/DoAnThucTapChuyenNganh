@@ -12,13 +12,14 @@ body {
   background: linear-gradient(rgb(255, 255, 255) 10%, rgb(219, 237, 255));
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 50px 40px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .logo img {
   width: 70px;
   height: 70px;
+  margin-left: 30px;
   transition: transform 0.3s;
 
   &:hover {
@@ -44,7 +45,7 @@ body {
   color: #0078ff;
   transform: scale(1.1);
 }
-/* Container chính */
+
 .categories-dropdown {
   position: relative;
 }
@@ -55,7 +56,7 @@ body {
   font-weight: 500;
   cursor: pointer;
 }
-/* Dropdown menu */
+
 .categories-dropdown-menu {
   position: absolute;
   min-width: 180px;
@@ -76,7 +77,7 @@ body {
     transform: translateY(0);
   }
 }
-/* Items */
+
 .categories-dropdown-menu div {
   padding: 10px 15px;
   cursor: pointer;
@@ -135,13 +136,105 @@ body {
   font-size: 14px;
   gap: 20px;
 }
-.auth a:hover {
-  color: #0078ff;
+/* Container chính */
+.user-dropdown {
+  position: relative;
+  display: inline-block;
 }
-.auth > .userProfile {
+
+/* Nút kích hoạt dropdown */
+.user-trigger {
   display: flex;
   align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50px;
+  transition: background 0.3s;
 }
-.auth > .userProfile > a > img {
+
+.user-trigger:hover {
+  background-color: #f1f5f9;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.icon-arrow {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Menu Dropdown */
+.user-dropdown-menu {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 220px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f1f5f9;
+  padding: 8px 0;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header bên trong menu */
+
+/* Các link trong menu */
+.menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.menu-link i {
+  width: 16px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.menu-link:hover {
+  color: #2563eb;
+}
+
+.menu-link:hover i {
+  color: #2563eb;
+}
+
+/* Nút đăng xuất */
+.logout {
+  color: #ef4444;
+}
+
+.logout:hover {
+  background-color: #fef2f2;
+  color: #ef4444 !important;
+}
+
+.logout:hover i {
+  color: #ef4444 !important;
 }

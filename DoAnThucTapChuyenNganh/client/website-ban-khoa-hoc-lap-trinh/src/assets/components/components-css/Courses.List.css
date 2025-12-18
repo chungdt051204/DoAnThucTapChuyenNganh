@@ -46,7 +46,7 @@
   color: #666;
   font-size: 13px;
 }
-/* content card wrapper (khung trắng) */
+
 .courses-list-content {
   background: #fff;
   border-radius: 10px;
@@ -54,46 +54,45 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 6px 18px rgba(23, 30, 40, 0.04);
 }
-/* ======= GRID: 3 columns, evenly spaced ======= */
-/* Nếu component của bạn xuất ra class .course-pre-track thì rule này sẽ apply */
+
 .courses-list-content .course-pre-track {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 items / row */
-  gap: 28px 24px; /* dọc x ngang */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 24px;
   align-items: start;
   padding: 10px;
   box-sizing: border-box;
 }
-/* CARD: đảm bảo dàn đều, card có chiều cao giống nhau theo nội dung */
+
 .course-pre-item {
   display: flex;
   flex-direction: column;
-  align-items: center; /* căn giữa nội dung */
+  align-items: center;
   text-align: center;
   gap: 10px;
   padding: 10px;
   box-sizing: border-box;
-  min-height: 240px; /* giữ đồng đều chiều cao card */
+  min-height: 240px;
 }
-/* Ảnh: giữ tỉ lệ vuông, full-width của card, max-height để không quá to */
+
 .course-pre-item img {
   width: 100%;
   height: auto;
-  aspect-ratio: 1 / 1; /* vuông */
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 6px 16px rgba(18, 24, 30, 0.04);
   transition: transform 220ms ease;
 }
-/* Nếu JSX có width/height attributes, đảm bảo CSS override: */
+
 .course-pre-item img[width],
 .course-pre-item img[height] {
   width: 100% !important;
   height: auto !important;
   aspect-ratio: 1 / 1;
 }
-/* Tên khoá học: cho tối đa 2 dòng, căn đều */
+
 .course-pre-item > p:first-of-type {
   margin: 0;
   font-size: 14px;
@@ -106,15 +105,15 @@
   text-overflow: ellipsis;
   min-height: 42px;
 }
-/* Giá: nằm ở dưới cùng của card nếu cần */
+
 .course-pre-item > p:last-of-type {
   margin: 6px 0 0;
   color: #d21b2b;
   font-weight: 700;
   font-size: px;
-  margin-top: auto; /* kéo giá xuống chân card nếu còn không gian */
+  margin-top: auto;
 }
-/* Hover nhẹ lift ảnh */
+
 .course-pre-item:hover img {
   transform: translateY(-6px) scale(1.02);
 }

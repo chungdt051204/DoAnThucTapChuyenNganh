@@ -7,11 +7,15 @@ const usersSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
+      trim: true,
+      lowercase: true,
     },
     email: {
       type: String,
       required: true,
       unique: true, //Để tránh trùng email khi đăng ký
+      trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -23,10 +27,11 @@ const usersSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
+      trim: true,
     },
     gender: {
       type: String,
-      enum: ["nam", "nữ", "chưa chọn"],
+      enum: ["nam", "nữ", "khác"],
       default: "chưa chọn",
     },
     dateOfBirth: {
@@ -40,7 +45,7 @@ const usersSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "banned"],
+      enum: ["active", "inactive"],
       default: "active",
     },
   },
@@ -48,4 +53,4 @@ const usersSchema = new mongoose.Schema(
     timestamps: true, //MongoDB tự thêm createdAt và updatedAt
   }
 );
-module.exports = mongoose.model("userEntity", usersSchema, "user");
+module.exports = mongoose.model("userEntity", usersSchema, "users");

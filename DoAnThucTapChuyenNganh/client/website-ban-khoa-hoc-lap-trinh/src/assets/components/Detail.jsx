@@ -1,4 +1,5 @@
-// import ReactPlayer from "react-player";
+import ReactPlayer from "react-player";
+import { toast } from "react-toastify";
 import { useEffect, useState, useContext, useRef } from "react";
 import AppContext from "./AppContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -8,15 +9,18 @@ import Footer from "./Footer";
 
 export default function GetDetailCourse() {
   const navigate = useNavigate();
-  const { user, isLogin } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
+  const { user, isLogin, refresh, setRefresh } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
   const [searchParams] = useSearchParams(); // useSearch dùng để truy cập các tham số truy vấn (query string) trên URL.
   const id = searchParams.get("id"); // Lấy giá trị của tham số 'id' từ query string.
   const lesson_order = searchParams.get("lesson_order"); // Lấy giá trị của tham số 'lesson_order' từ query string.
   const [course, setCourse] = useState(""); // useState lưu trữ dữ liệu chi tiết của khóa học.
   const dialog = useRef();
+  const [courseIdInCart, setCourseIdInCart] = useState([]);
+  const [courseIdInEnrollment, setCourseIdInEnrollment] = useState([]);
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
     : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
+
   useEffect(() => {
     // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
     fetch(`http://localhost:3000/course?id=${id}`)
@@ -27,7 +31,42 @@ export default function GetDetailCourse() {
       .then((data) => {
         setCourse(data); // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
       });
-  }, [id]); // Dependency array: useEffect sẽ chạy lại mỗi khi ID khóa học trên URL thay đổi.
+  }, [id, refresh]); // Dependency array: useEffect sẽ chạy lại mỗi khi ID khóa học trên URL thay đổi.
+  useEffect(() => {
+    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
+    fetch(`http://localhost:3000/cart?user_id=${user._id}`)
+      .then((res) => {
+        if (res.ok) return res.json(); // Nếu thành công parse JSON.
+        throw res; // Nếu thất bại, ném response để xử lý lỗi.
+      })
+      .then((data) => {
+        setCourseIdInCart(
+          data.items.length &&
+            data.items.map((value) => {
+              return value.courseId._id;
+            })
+        );
+        // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+      });
+  }, [user._id, refresh]);
+  useEffect(() => {
+    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
+    fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
+      .then((res) => {
+        if (res.ok) return res.json(); // Nếu thành công parse JSON.
+        throw res; // Nếu thất bại, ném response để xử lý lỗi.
+      })
+      .then((data) => {
+        console.log(data);
+        setCourseIdInEnrollment(
+          data.length &&
+            data.map((value) => {
+              return value.courseId._id;
+            })
+        );
+        // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+      });
+  }, [user._id, refresh]);
   const handleClick = () => {
     // Kiểm tra Bắt buộc Đăng nhập
     if (!isLogin) {
@@ -49,8 +88,6 @@ export default function GetDetailCourse() {
       body: JSON.stringify({
         userId: user._id,
         courseId: course._id,
-        courseName: course.title,
-        coursePrice: course.price,
       }),
     })
       .then((res) => {
@@ -58,7 +95,9 @@ export default function GetDetailCourse() {
         throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
       .then((message) => {
-        alert(message); // Hiển thị thông báo thành công từ server
+        setRefresh((prev) => prev + 1);
+        toast.success(message);
+        // Hiển thị thông báo thành công từ server
       })
       .catch(async (err) => {
         // Xử lý lỗi (ví dụ: khóa học đã có trong giỏ hàng)
@@ -88,9 +127,18 @@ export default function GetDetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            <button onClick={handleClick}>
-              {course.price > 0 ? <p>Thêm vào giỏ</p> : <p>Học ngay</p>}
-            </button>
+            {course.price > 0 &&
+            //TH1: Khóa học đã được mua
+            courseIdInEnrollment.length > 0 &&
+            courseIdInEnrollment.includes(course._id) ? (
+              <button disabled>Đã kích hoạt</button>
+            ) : //TH2: Khóa học đã được thêm vào giỏ hàng
+            courseIdInCart.length > 0 && courseIdInCart.includes(course._id) ? (
+              <button disabled>Đã thêm vào giỏ hàng</button>
+            ) : (
+              //TH3: Chưa thao tác
+              <button onClick={handleClick}>Thêm vào giỏ</button>
+            )}
           </div>
         </div>
         <h2 className="course-title">{course.title}</h2>
@@ -141,7 +189,7 @@ export default function GetDetailCourse() {
               >
                 <div
                   onClick={() => {
-                    if (course.isFree === false) {
+                    if (!courseIdInEnrollment.includes(course._id)) {
                       alert("Bạn chưa mua khóa học");
                       return;
                     } else {
@@ -169,12 +217,12 @@ export default function GetDetailCourse() {
       </div>
       <dialog ref={dialog} className="video-dialog">
         <div style={{ width: "700px", height: "350px", margin: "auto" }}>
-          {/* <ReactPlayer
+          <ReactPlayer
             width={700}
             height={350}
             src={lesson && lesson.videoUrl}
             controls="true"
-          ></ReactPlayer> */}
+          ></ReactPlayer>
         </div>
       </dialog>
       <Footer></Footer>

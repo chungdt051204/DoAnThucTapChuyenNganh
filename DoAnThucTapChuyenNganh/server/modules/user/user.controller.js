@@ -1,6 +1,6 @@
 const passport = require("passport");
 const userEntity = require("../../models/user.model"); //Import userEntity để sử dụng
-const orderEntity = require("../../models/order.model"); //Import orderEntity để sử dụng
+
 const sessions = {}; //Tạo mảng sessions rỗng
 exports.getLoginGoogle = passport.authenticate("google", {
   scope: ["profile", "email"],

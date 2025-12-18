@@ -6,8 +6,10 @@ export default function UserNavBar() {
   const navigate = useNavigate(); // useNavigate dùng để điều hướng
   // Sử dụng Context để truy cập và quản lý các giá trị/hàm toàn cục của ứng dụng:
   const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
-  const [onClick, setOnClick] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
-  const [inputValue, setInputValue] = useState(""); // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm (dùng để kiểm soát input).
+  const [categoryClicked, setCategoryClicked] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
+  const [avatarClicked, setAvatarClicked] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm (dùng để kiểm soát input).
   const [coursesWithSearchSuggestion, setCoursesWithSearchSuggestion] =
     useState([]); // useState lưu trữ danh sách các khóa học được gợi ý dựa trên nội dung tìm kiếm.
   const inputRef = useRef(); // useRef dùng để tham chiếu trực tiếp đến phần tử input để lấy giá trị.
@@ -62,17 +64,19 @@ export default function UserNavBar() {
         <div className="logo">
           <img src="/rocket-icon.svg" alt="Logo" />
         </div>
-
         <ul className="menu">
+          <li></li>
           <li>
             <Link to="/">Trang chủ</Link>
           </li>
           <li>
             <div className="categories-dropdown">
               <Link to="#">
-                <p onClick={() => setOnClick((prev) => !prev)}>Danh mục</p>
+                <p onClick={() => setCategoryClicked((prev) => !prev)}>
+                  Danh mục
+                </p>
               </Link>
-              {onClick && (
+              {categoryClicked && (
                 <div className="categories-dropdown-menu">
                   {categories.length > 0 &&
                     categories.map((value, index) => {
@@ -147,30 +151,60 @@ export default function UserNavBar() {
               )}
             </div>
           </li>
-        </ul>
-        <div className="auth">
-          {isLogin ? (
-            <div className="userProfile">
-              <Link to="/profile">
-                <img
-                  src={
-                    user && user.avatar && user.avatar.includes("https")
-                      ? user.avatar
-                      : user && user.avatar
-                      ? `http://localhost:3000/images/user/${user.avatar}`
-                      : ""
-                  }
-                  alt=""
-                  width={50}
-                  height={50}
-                />
+          <li className="nav-user-item">
+            {isLogin ? (
+              <div className="user-dropdown">
+                {/* Phần hiển thị avatar và nút bấm */}
+                <div
+                  className="user-trigger"
+                  onClick={() => setAvatarClicked((prev) => !prev)}
+                >
+                  <img
+                    src={
+                      user?.avatar?.includes("https")
+                        ? user.avatar
+                        : user?.avatar
+                        ? `http://localhost:3000/images/user/${user.avatar}`
+                        : "https://via.placeholder.com/50" // ảnh mặc định nếu lỗi
+                    }
+                    alt="avatar"
+                    className="user-avatar"
+                  />
+                  <i
+                    className={`fa-solid fa-angle-${
+                      avatarClicked ? "up" : "down"
+                    } icon-arrow`}
+                  ></i>
+                </div>
+
+                {/* Menu dropdown */}
+                {avatarClicked && (
+                  <div className="user-dropdown-menu">
+                    <Link to="/profile" className="menu-link">
+                      <i className="fa-regular fa-user"></i> Thông tin cá nhân
+                    </Link>
+                    <Link to="/my-courses" className="menu-link">
+                      <i className="fa-solid fa-graduation-cap"></i> Khóa học
+                      của tôi
+                    </Link>
+                    <Link to="/my-orders" className="menu-link">
+                      <i className="fa-solid fa-receipt"></i> Đơn hàng của tôi
+                    </Link>
+                    <hr />
+                    <div className="menu-link logout" onClick={handleLogout}>
+                      <i className="fa-solid fa-arrow-right-from-bracket"></i>{" "}
+                      Đăng xuất
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="login-btn">
+                Đăng nhập
               </Link>
-              <Link onClick={handleLogout}>Đăng xuất</Link>
-            </div>
-          ) : (
-            <Link to="/login">Đăng nhập</Link>
-          )}
-        </div>
+            )}
+          </li>
+        </ul>
       </nav>
     </>
   );

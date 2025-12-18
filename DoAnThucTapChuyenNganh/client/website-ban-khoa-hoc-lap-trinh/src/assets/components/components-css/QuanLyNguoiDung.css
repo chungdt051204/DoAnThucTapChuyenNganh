@@ -2,7 +2,7 @@
   margin-top: 50px;
   margin-bottom: 30px;
 }
-/* Thiết lập chung và Container */
+
 .user-management-container {
   max-width: 900px;
   margin: 30px auto;
@@ -10,7 +10,7 @@
   background-color: #f7f8f9;
   font-family: Arial, sans-serif;
 }
-/* Bộ lọc (Dropdown) */
+
 .role-filter-section {
   margin-bottom: 20px;
 }
@@ -21,7 +21,7 @@
   background-color: #fff;
   font-size: 14px;
   color: #333;
-  /* Tùy chỉnh mũi tên dropdown */
+
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -31,11 +31,11 @@
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-/* Đảm bảo bảng hiển thị tốt trên thiết bị nhỏ */
+
 .table-responsive {
   overflow-x: auto;
 }
-/* Bảng người dùng */
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -49,9 +49,9 @@
   padding: 12px 15px;
   text-align: left;
   font-size: 14px;
-  border-bottom: 1px solid #e9ecef; /* Đường kẻ nhẹ */
+  border-bottom: 1px solid #e9ecef;
 }
-/* Header của bảng */
+
 .users-table thead {
   background-color: #f0f2f5;
 }
@@ -59,17 +59,16 @@
   font-weight: bold;
   color: #495057;
 }
-/* Cột Hành động */
+
 .action-column {
-  white-space: nowrap; /* Giữ các nút trên cùng một dòng */
+  white-space: nowrap;
   width: 1%;
 }
-/* Dòng trong bảng */
+
 .table-row:last-child td {
   border-bottom: none;
 }
-/* Lưu ý: Các thẻ <p> chứa Trạng thái (status) đang sử dụng style inline (color: red/green) */
-/* Nút Hành động chung */
+
 .action-btn {
   padding: 6px 10px;
   margin-right: 5px;
@@ -81,27 +80,27 @@
   font-weight: 500;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-/* Nút Vô hiệu hóa (Deactivate) */
+
 .action-deactivate {
-  background-color: #007bff; /* Xanh dương */
+  background-color: #007bff;
   color: #fff;
   border-color: #007bff;
 }
 .action-deactivate:hover {
   background-color: #0056b3;
 }
-/* Nút Hủy vô hiệu hóa (Reactivate) */
+
 .action-reactivate {
-  background-color: #28a745; /* Xanh lá */
+  background-color: #28a745;
   color: #fff;
   border-color: #28a745;
 }
 .action-reactivate:hover {
   background-color: #1e7e34;
 }
-/* Nút Xóa (Delete) */
+
 .action-delete {
-  background-color: #f8f9fa; /* Xám trắng */
+  background-color: #f8f9fa;
   color: #333;
   border: 1px solid #ccc;
 }

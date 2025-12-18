@@ -1,5 +1,5 @@
 const courseEntity = require("../../models/course.model"); //Import courseEntity từ model
-const orderItemEntity = require("../../models/orderItem.model");
+
 exports.getCourses = async (req, res) => {
   try {
     //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query

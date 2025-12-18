@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
@@ -7,15 +6,23 @@ import "./components-css/Cart.css";
 
 export default function Cart() {
   const { user } = useContext(AppContext);
-  const [cartItems, setCartItems] = useState([]);
-  const [orderItemsSelected, setOrderItemsSelected] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [cartItemSelected, setCartItemSelected] = useState([]);
   const [refresh, setRefresh] = useState(0);
+  const dialog = useRef();
+  const fullNameRef = useRef();
+  const phoneRef = useRef();
   let sum = 0;
   {
-    cartItems.forEach((value) => {
-      sum = sum + parseFloat(value.priceAtPurchase.$numberDecimal);
-      return sum;
-    });
+    {
+      cart.items &&
+        cart.items.length > 0 &&
+        cart.items.forEach((value) => {
+          if (cartItemSelected.includes(value._id))
+            sum = sum + parseFloat(value.courseId.price);
+          return sum;
+        });
+    }
   }
   useEffect(() => {
     fetch(`http://localhost:3000/cart?user_id=${user._id}`)
@@ -24,42 +31,79 @@ export default function Cart() {
         throw res;
       })
       .then((data) => {
-        console.log(data);
-        setCartItems(data);
+        console.log(data.items);
+        setCart(data);
       });
   }, [user._id, refresh]);
   const handleChange = (id) => {
-    // Nếu id khóa học chưa tồn tại trong mảng orderItemsSelected => khóa học chưa được chọn
-    //Thì thêm id khóa học vào mảng orderItemsSelected
-    if (!orderItemsSelected.includes(id)) {
-      setOrderItemsSelected([...orderItemsSelected, id]);
+    // Nếu id khóa học chưa tồn tại trong mảng cartItemSelected => khóa học chưa được chọn
+    //Thì thêm id khóa học vào mảng cartItemSelected
+    if (!cartItemSelected.includes(id)) {
+      setCartItemSelected([...cartItemSelected, id]);
     }
-    //Nếu id khóa học đã tồn tại trong mảng orderItemsSelected => bỏ chọn khóa học
-    //Thì xóa id khóa học đó ra khỏi mảng orderItemsSelected bằng phương thức filter trả về mảng mới không
+    //Nếu id khóa học đã tồn tại trong mảng cartItemSelected => bỏ chọn khóa học
+    //Thì xóa id khóa học đó ra khỏi mảng cartItemSelected bằng phương thức filter trả về mảng mới không
     //lấy id khóa học đó
     else {
-      const newArr = orderItemsSelected.filter((value) => value != id);
-      setOrderItemsSelected(newArr);
+      const newArr = cartItemSelected.filter((value) => value != id);
+      setCartItemSelected(newArr);
     }
   };
   const handleDelete = () => {
-    fetch("http://localhost:3000/cart-items", {
+    fetch(`http://localhost:3000/cart?user_id=${user._id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ orderIdItemsSelected: orderItemsSelected }),
+      body: JSON.stringify({ cartItemSelected: cartItemSelected }),
     })
       .then((res) => {
         if (res.ok) return res.json();
         throw res;
       })
       .then(({ message }) => {
-        setOrderItemsSelected([]);
-        setRefresh((prev) => prev + 1);
+        setCartItemSelected([]);
         alert(message);
+        setRefresh((prev) => prev + 1);
       })
       .catch();
+  };
+  const handleOpenPurchaseDialog = () => {
+    if (cartItemSelected.length == 0) {
+      alert("Bạn chưa chọn khóa học cần mua");
+      return;
+    }
+    dialog.current.showModal();
+  };
+  const handleSubmit = (e) => {
+    const orderItemSelected = cart.items.filter((value) =>
+      cartItemSelected.includes(value._id)
+    );
+    e.preventDefault();
+    fetch("http://localhost:3000/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user._id,
+        fullName: fullNameRef.current.value,
+        phone: phoneRef.current.value,
+        orderItemSelected: orderItemSelected,
+        totalAmount: sum,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then(({ message }) => {
+        alert(message);
+      })
+      .catch(async (err) => {
+        const { message } = await err.json();
+        console.log(message);
+      });
   };
   return (
     <>
@@ -76,8 +120,9 @@ export default function Cart() {
             </thead>
             <tbody>
               {/* Row 1 */}
-              {cartItems.length > 0 &&
-                cartItems.map((value, index) => {
+              {cart.items &&
+                cart.items.length > 0 &&
+                cart.items.map((value, index) => {
                   return (
                     <tr key={index}>
                       <td className="col-product">
@@ -92,8 +137,8 @@ export default function Cart() {
                           {/* Checked chỉ đúng khi checkbox đc chọn */}
                           <input
                             type="checkbox"
-                            // checkbox được chọn là khi trong mảng onItemsSelected có chứa id của khóa học
-                            checked={orderItemsSelected.includes(value._id)}
+                            // checkbox được chọn là khi trong mảng cartItemSelected có chứa id của khóa học
+                            checked={cartItemSelected.includes(value._id)}
                             onChange={() => handleChange(value._id)}
                           />
                           <div className="product-cell">
@@ -107,16 +152,14 @@ export default function Cart() {
                             </div>
                             <div className="product-info">
                               <div className="product-name">
-                                {value.courseName}
+                                {value.courseId.title}
                               </div>
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="col-price">
-                        <p style={{ color: "red" }}>
-                          {value.priceAtPurchase.$numberDecimal} VND
-                        </p>
+                        <p style={{ color: "red" }}>{value.courseId.price}</p>
                       </td>
                       <td className="col-action">
                         <a style={{ color: "red" }}>Xóa</a>
@@ -139,11 +182,16 @@ export default function Cart() {
                     </div>
                     <div className="right-summary">
                       <div className="total">
-                        <span className="label">Tổng cộng sản phẩm:</span>
-                        <p className="amount">{sum} VND</p>
+                        <span className="label">Tổng tiền:</span>
+                        <p style={{ color: "red" }}>
+                          {sum > 0 ? sum + " " + "VNĐ" : "0 VNĐ"}
+                        </p>
                       </div>
-                      <button className="btn-buy">
-                        <Link to="/payment">Mua hàng</Link>
+                      <button
+                        onClick={handleOpenPurchaseDialog}
+                        className="btn-buy"
+                      >
+                        Mua hàng
                       </button>
                     </div>
                   </div>
@@ -152,6 +200,69 @@ export default function Cart() {
             </tfoot>
           </table>
         </div>
+        <dialog ref={dialog} className="cart-dialog">
+          <div className="dialog-container">
+            <h2 className="dialog-title">Xác nhận đơn hàng</h2>
+            <form method="dialog" onSubmit={handleSubmit} className="cart-form">
+              <div className="input-group">
+                <input
+                  type="text"
+                  ref={fullNameRef}
+                  placeholder="Họ và tên"
+                  required
+                />
+                <input
+                  type="text"
+                  ref={phoneRef}
+                  placeholder="Số điện thoại"
+                  required
+                />
+              </div>
+              <div className="table-container">
+                <table className="cart-table">
+                  <thead>
+                    <tr>
+                      <th>Khóa học</th>
+                      <th style={{ textAlign: "right" }}>Giá</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cart.items?.map((value, index) => {
+                      if (cartItemSelected.includes(value._id)) {
+                        return (
+                          <tr key={index}>
+                            <td className="course-info">
+                              <img src={value.courseId.image} alt="" />
+                              <span>{value.courseId.title}</span>
+                            </td>
+                            <td className="price-cell">
+                              {value.courseId.price.toLocaleString()}đ
+                            </td>
+                          </tr>
+                        );
+                      }
+                      return null;
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="total-box">
+                <span>Tổng cộng:</span>
+                <strong>{sum.toLocaleString()} VND</strong>
+              </div>
+              <div className="btn-group">
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => dialog.current.close()}
+                >
+                  Hủy
+                </button>
+                <button className="btn-submit">Thanh toán ngay</button>
+              </div>
+            </form>
+          </div>
+        </dialog>
         <Footer />
       </section>
     </>
