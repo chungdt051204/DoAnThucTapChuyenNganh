@@ -1,10 +1,16 @@
 const categoryEntity = require("../../models/category.model");
 const courseEntity = require("../../models/course.model");
 //Router lấy dữ liệu danh mục trong database
-exports.getAllCategories = async (req, res) => {
+exports.getCategory = async (req, res) => {
   try {
+    //Lấy id danh mục gửi từ phía client bằng req.query
+    const { id } = req.query;
+    if (id) {
+      const categoryWithId = await categoryEntity.findOne({ _id: id });
+      res.status(200).json({ data: categoryWithId });
+    }
     const categories = await categoryEntity.find();
-    return res.status(200).json(categories);
+    return res.status(200).json({ data: categories });
   } catch (error) {
     console.error("Có lỗi xảy ra khi gọi hàm getAllCategories");
     return res.status(500).json({ message: "Lấy dữ liệu danh mục thất bại" });
@@ -22,21 +28,7 @@ exports.postCategory = async (req, res) => {
     return res.status(500).json({ message: "Thêm thất bại" });
   }
 };
-//Router lấy dữ liệu danh mục theo id
-exports.getCategoryWithId = async (req, res) => {
-  try {
-    //Lấy id danh mục gửi từ phía client bằng req.query
-    const { id } = req.query;
-    //Tìm kiếm danh mục có id bằng id danh mục gửi từ phía client
-    const category = await categoryEntity.findOne({ _id: id });
-    res.status(200).json(category);
-  } catch (error) {
-    console.error("Có lỗi xảy ra khi gọi hàm getCategoryWithId");
-    return res
-      .status(500)
-      .json({ message: "Lấy dữ liệu danh mục theo Id thất bại" });
-  }
-};
+
 //Router cập nhật danh mục
 exports.putCategory = async (req, res) => {
   try {

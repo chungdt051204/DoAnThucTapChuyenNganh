@@ -8,7 +8,7 @@ exports.getEnrollment = async (req, res) => {
           userId: user_id,
         })
         .populate("courseId");
-      res.status(200).json(enrollmentsWithUserId);
+      res.status(200).json({ data: enrollmentsWithUserId });
     }
   } catch (error) {}
 };

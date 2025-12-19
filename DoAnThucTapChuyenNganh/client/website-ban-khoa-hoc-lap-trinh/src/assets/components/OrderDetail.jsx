@@ -3,6 +3,8 @@ import AppContext from "./AppContext";
 import Footer from "./Footer";
 import UserNavBar from "./UserNavBar";
 import { useSearchParams } from "react-router-dom";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 
 export default function OrderDetail() {
   const [searchParams] = useSearchParams();
@@ -10,16 +12,12 @@ export default function OrderDetail() {
   const { refresh } = useContext(AppContext);
   const [orderWithOrderId, setOrderWithOrderId] = useState("");
   useEffect(() => {
-    fetch(`http://localhost:3000/orders?order_id=${id}`)
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then((data) => {
-        console.log(data);
-        setOrderWithOrderId(data);
-      })
-      .catch();
+    if (id) {
+      fetchAPI({
+        url: `${url}/order?order_id=${id}`,
+        setData: setOrderWithOrderId,
+      });
+    }
   }, [id, refresh]);
   return (
     <>

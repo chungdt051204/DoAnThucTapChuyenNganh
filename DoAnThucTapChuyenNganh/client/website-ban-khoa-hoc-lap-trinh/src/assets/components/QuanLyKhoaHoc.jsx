@@ -1,47 +1,58 @@
-import { Link, useSearchParams } from "react-router-dom";
-import { useContext, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
 import "./components-css/QuanLyKhoaHoc.css";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 export default function QuanLyKhoaHoc() {
-  const { courses, categories, setRefresh } = useContext(AppContext);
+  const navigate = useNavigate();
+  const { courses, setCourses, categories, refresh, setRefresh } =
+    useContext(AppContext);
   const [searchParams] = useSearchParams();
+  const search = searchParams.get("search");
+  const category_id = searchParams.get("category_id");
   const id = searchParams.get("id");
   const addDialog = useRef();
   const updateDialog = useRef();
-  const [title, setTitle] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [categorySelected, setCategorySelected] = useState("");
+  const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const addImage = useRef();
   const updateImage = useRef();
-  const categoryFilterRef = useRef();
   const [errTitle, setErrTitle] = useState("");
   const [errCategory, setErrCategory] = useState("");
   const [errPrice, setErrPrice] = useState("");
   const [errFile, setErrImage] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [coursesWithCategory_Id, setCoursesWithCategory_Id] = useState([]);
   const [courseWithId, setCourseWithId] = useState("");
 
-  const handleCategorySelected = () => {
-    if (categoryFilterRef.current.value != 0) {
-      setCategoryId(categoryFilterRef.current.value);
-      fetch(
-        `http://localhost:3000/courses?category_id=${categoryFilterRef.current.value}`
-      )
-        .then((res) => {
-          if (res.ok) return res.json();
-          throw res;
-        })
-        .then((data) => {
-          setCoursesWithCategory_Id(data);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+  useEffect(() => {
+    if (search) {
+      fetchAPI({
+        url: `${url}/course?search=${search}`,
+        setData: setCourses,
+      });
+    } else if (category_id) {
+      fetchAPI({
+        url: `${url}/course?category_id=${category_id}`,
+        setData: setCourses,
+      });
     } else {
-      setCategoryId("");
+      fetchAPI({ url: `${url}/course`, setData: setCourses });
+    }
+  }, [refresh, setCourses, category_id, search]);
+  const handleClickSearch = () => {
+    if (searchValue) navigate(`/admin/course?search=${searchValue}`);
+    else navigate("/admin/course");
+  };
+  const handleCategorySelected = (value) => {
+    setCategorySelected(value);
+    if (value) {
+      navigate(`/admin/course?category_id=${value}`);
+    } else {
+      navigate("/admin/course");
     }
   };
   const handleAddSubmit = (e) => {
@@ -72,7 +83,7 @@ export default function QuanLyKhoaHoc() {
     formData.append("image", addImage.current.files[0]); // Thêm file hình ảnh (lấy từ Ref)
 
     // Gửi yêu cầu POST đến API để thêm khóa học
-    fetch("http://localhost:3000/admin/course", {
+    fetch("http://localhost:3000/course", {
       method: "POST",
       body: formData, // Đính kèm FormData
     })
@@ -92,12 +103,8 @@ export default function QuanLyKhoaHoc() {
       });
   };
   const handleClickUpdate = (id) => {
-    fetch(`http://localhost:3000/course?id=${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCourseWithId(data);
-        updateDialog.current.showModal();
-      });
+    fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourseWithId });
+    updateDialog.current.showModal();
   };
   const handleUpdateSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn submit form mặc định
@@ -110,7 +117,7 @@ export default function QuanLyKhoaHoc() {
     // Thêm file hình ảnh mới (lấy từ Ref)
     formData.append("image", updateImage.current.files[0]);
     // Gửi yêu cầu PUT (Cập nhật) đến API, đính kèm ID khóa học vào query string
-    fetch(`http://localhost:3000/admin/course?id=${id}`, {
+    fetch(`http://localhost:3000/course?id=${id}`, {
       method: "PUT",
       body: formData, // Đính kèm FormData
     })
@@ -132,7 +139,7 @@ export default function QuanLyKhoaHoc() {
   };
   const handleDelete = (id) => {
     //Gửi yêu cầu DELETE đến API, đính kèm ID khóa học vào query string
-    fetch(`http://localhost:3000/admin/course?id=${id}`, {
+    fetch(`http://localhost:3000/course?id=${id}`, {
       method: "DELETE",
     })
       .then((res) => {
@@ -168,15 +175,15 @@ export default function QuanLyKhoaHoc() {
           </button>
           <input
             type="text"
+            onChange={(e) => setSearchValue(e.target.value)}
             className="course-search-input"
-            name=""
-            id=""
             placeholder="Tìm khóa học"
           />
+          <button onClick={handleClickSearch}>Tìm</button>
           <select
             className="category-filter-select"
-            ref={categoryFilterRef}
-            onChange={handleCategorySelected}
+            value={categorySelected}
+            onChange={(e) => handleCategorySelected(e.target.value)}
           >
             <option value="">Lọc danh mục</option>
             {categories.length > 0 &&
@@ -194,85 +201,48 @@ export default function QuanLyKhoaHoc() {
             <thead>
               <tr>
                 <th className="course-col">Khóa học</th> <th>Danh mục</th>
-                <th>Giá</th>
+                <th className="course-col">Giá</th>
                 <th className="action-col">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {!categoryId && courses.length > 0
-                ? courses.map((value, index) => {
-                    const image = value.image.includes("https")
-                      ? value.image
-                      : `http://localhost:3000/images/course/${value.image}`;
-                    const isSelected = index === 0 ? "selected" : "";
-                    return (
-                      <tr key={index} className={isSelected}>
-                        <td className="course-title-cell">
-                          <img
-                            src={image}
-                            alt=""
-                            className="course-image"
-                            width={50}
-                            height={50}
-                          />
-                          <span className="course-name">{value.title}</span>
-                        </td>
-                        <td>{value.categoryId.title}</td>
-                        <td className="price-cell">
-                          {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
-                        </td>
-                        <td className="action-cell">
-                          <Link to={`/admin/course?id=${value._id}`}>
-                            <i
-                              onClick={() => handleClickUpdate(value._id)}
-                              className="fa-solid fa-pen"
-                            ></i>
-                          </Link>
+              {courses.length > 0 &&
+                courses.map((value, index) => {
+                  const image = value.image.includes("https")
+                    ? value.image
+                    : `http://localhost:3000/images/course/${value.image}`;
+                  const isSelected = index === 0 ? "selected" : "";
+                  return (
+                    <tr key={index} className={isSelected}>
+                      <td className="course-title-cell">
+                        <img
+                          src={image}
+                          alt=""
+                          className="course-img"
+                          width={50}
+                          height={50}
+                        />
+                        <span className="course-name">{value.title}</span>
+                      </td>
+                      <td>{value.categoryId.title}</td>
+                      <td className="price-cell">
+                        {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
+                      </td>
+                      <td className="action-cell">
+                        <Link to={`/admin/course?id=${value._id}`}>
                           <i
-                            onClick={() => handleDelete(value._id)}
-                            className="fa-solid fa-trash"
+                            onClick={() => handleClickUpdate(value._id)}
+                            className="fa-solid fa-pen"
                           ></i>
-                        </td>
-                      </tr>
-                    );
-                  })
-                : coursesWithCategory_Id.length > 0 &&
-                  coursesWithCategory_Id.map((value, index) => {
-                    const image1 = value.image.includes("https")
-                      ? value.image
-                      : `http://localhost:3000/images/course/${value.image}`;
-                    const isSelected = index === 0 ? "selected" : "";
-                    return (
-                      <tr key={index} className={isSelected}>
-                        <td className="course-title-cell">
-                          <img
-                            src={image1}
-                            alt=""
-                            className="course-image"
-                            width={50}
-                            height={50}
-                          />
-                          <span className="course-name">{value.title}</span>
-                        </td>
-                        <td>{value.categoryId.title}</td>
-                        <td className="price-cell">
-                          {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
-                        </td>
-                        <td className="action-cell">
-                          <Link to={`/admin/course?id=${value._id}`}>
-                            <i
-                              onClick={() => handleClickUpdate(value._id)}
-                              className="fa-solid fa-pen"
-                            ></i>
-                          </Link>
-                          <i
-                            onClick={() => handleDelete(value._id)}
-                            className="fa-solid fa-trash"
-                          ></i>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        </Link>
+                        <i
+                          onClick={() => handleDelete(value._id)}
+                          className="fa-solid fa-trash"
+                        ></i>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

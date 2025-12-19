@@ -1,18 +1,9 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
+import AppContext from "./AppContext";
 import "./components-css/CoursesPre.css";
 export default function CoursesPre() {
-  const [coursesPre, setCoursesPre] = useState([]);
-  useEffect(() => {
-    fetch("http://localhost:3000/course-pre")
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then((data) => {
-        setCoursesPre(data);
-      });
-  }, []);
+  const { courses } = useContext(AppContext);
   return (
     <>
       <section
@@ -21,20 +12,22 @@ export default function CoursesPre() {
       >
         <h2>Khóa học trả phí</h2>
         <div className="course-pre-track">
-          {coursesPre.length > 0 ? (
-            coursesPre.map((value, index) => {
-              const image = value.image.includes("https")
-                ? value.image
-                : `http://localhost:3000/images/course/${value.image}`;
-              return (
-                <div key={index} className="course-pre-item">
-                  <Link to={`/course?id=${value._id}`}>
-                    <img src={image} alt="" width={150} height={200} />
-                  </Link>
-                  <p>{value.title}</p>
-                  <p className="price">{value.price} VND</p>
-                </div>
-              );
+          {courses.length > 0 ? (
+            courses.map((value, index) => {
+              if (!value.isFree) {
+                const image = value.image.includes("https")
+                  ? value.image
+                  : `http://localhost:3000/images/course/${value.image}`;
+                return (
+                  <div key={index} className="course-pre-item">
+                    <Link to={`/course?id=${value._id}`}>
+                      <img src={image} alt="" width={150} height={200} />
+                    </Link>
+                    <p>{value.title}</p>
+                    <p className="price">{value.price} VND</p>
+                  </div>
+                );
+              }
             })
           ) : (
             <p>Không có khóa học nào để hiển thị</p>

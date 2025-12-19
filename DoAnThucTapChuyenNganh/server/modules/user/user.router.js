@@ -24,11 +24,10 @@ router.post(
   userController.postRegister
 );
 router.post(`${prefix}/login`, userController.postLogin);
-router.get(`${prefix}/me`, userController.getUser);
+router.get(`${prefix}/me`, userController.getMe);
 router.put(`${prefix}/me/:id`, upload.single("avatar"), userController.putUser);
-router.get(`${prefix}/users`, userController.getAllUsers);
-router.get(`${prefix}/users/role`, userController.getUsersWithRole);
-router.put(`${prefix}/admin/user/:id`, userController.putStatusUser);
+router.get(`${prefix}/user`, userController.getUser);
+router.put(`${prefix}/user/:id`, userController.putStatusUser);
 router.delete(`${prefix}/me`, userController.logout);
-router.delete(`${prefix}/admin/user/:id`, userController.deleteUser);
+router.delete(`${prefix}/user/:id`, userController.deleteUser);
 module.exports = router;

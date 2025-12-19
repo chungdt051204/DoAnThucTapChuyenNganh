@@ -3,21 +3,20 @@ import { Link } from "react-router-dom";
 import AppContext from "./AppContext";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 
 export default function MyCourses() {
-  const { user } = useContext(AppContext);
+  const { user, refresh } = useContext(AppContext);
   const [myCourses, setMyCourses] = useState([]);
   useEffect(() => {
-    fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
-      .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công parse JSON.
-        throw res; // Nếu thất bại, ném response để xử lý lỗi.
-      })
-      .then((data) => {
-        console.log(data);
-        setMyCourses(data);
+    if (user) {
+      fetchAPI({
+        url: `${url}/enrollment?user_id=${user._id}`,
+        setData: setMyCourses,
       });
-  }, [user._id]);
+    }
+  }, [user, refresh]);
   return (
     <>
       <UserNavBar />

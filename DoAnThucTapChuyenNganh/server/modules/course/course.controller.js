@@ -1,19 +1,25 @@
 const courseEntity = require("../../models/course.model"); //Import courseEntity từ model
 
-exports.getCourses = async (req, res) => {
+exports.getCourse = async (req, res) => {
   try {
+    //Lấy id khóa học từ chuỗi query String nhận được bên phía client bằng req.query
+    const { id } = req.query;
     //Lấy id danh mục từ chuỗi query String nhận được bên phía client bằng req.query
     const { category_id } = req.query;
     //Lấy từ khóa tìm từ chuỗi query String nhận được bên phía client bằng req.query
     const { search } = req.query;
-    //Lấy id khóa học từ chuỗi query String nhận được bên phía client bằng req.query
-    const { id } = req.query;
-    if (category_id) {
+    //Nếu có id thì lọc theo id của khóa học
+    if (id) {
+      const coursesWithId = await courseEntity
+        .findOne({ _id: id })
+        .populate("categoryId"); //populate tương tự JOIN bên sql
+      res.status(200).json({ data: coursesWithId }); //Gửi dữ liệu về cho phía client
+    } else if (category_id) {
       //Nếu có category_id thì lọc theo danh mục
       const coursesWithCategoryId = await courseEntity
         .find({ categoryId: category_id })
         .populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json(coursesWithCategoryId); //Gửi dữ liệu về cho phía client
+      res.status(200).json({ data: coursesWithCategoryId }); //Gửi dữ liệu về cho phía client
     } else if (search) {
       // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
       // $regex: biểu thức chính quy
@@ -21,63 +27,15 @@ exports.getCourses = async (req, res) => {
       const coursesWithSearch = await courseEntity.find({
         title: { $regex: search, $options: "i" },
       });
-      res.status(200).json(coursesWithSearch);
-    } else if (id) {
-      //Nếu có id thì lọc theo id của khóa học
-      const coursesWithId = await courseEntity
-        .findOne({ _id: id })
-        .populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json(coursesWithId); //Gửi dữ liệu về cho phía client
+      res.status(200).json({ data: coursesWithSearch });
     } else {
       //Không có query String thì lấy tất cả
       const courses = await courseEntity.find().populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json(courses); //Gửi dữ liệu về cho phía client
+      res.status(200).json({ data: courses }); //Gửi dữ liệu về cho phía client
     }
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
     res.status(500).json({ message: "Lấy dữ liệu khóa học thất bại" });
-  }
-};
-//Router lấy dữ liệu các khóa học miễn phí
-exports.getCoursesFree = async (req, res) => {
-  try {
-    // Tìm tất cả khóa học có isFree = true
-    const courses = await courseEntity.find({ isFree: true });
-    res.status(200).json(courses);
-  } catch (error) {
-    console.log("Có lỗi xảy ra khi xử lý hàm getCoursesFree");
-    res.status(500).json({ message: "Lấy dữ liệu khóa học miễn phí thất bại" });
-  }
-};
-//Router lấy dữ liệu các khóa học trả phí
-exports.getCoursesPre = async (req, res) => {
-  try {
-    // Tìm tất cả khóa học có isFree = false
-    const courses = await courseEntity.find({ isFree: false });
-    res.status(200).json(courses);
-  } catch (error) {
-    console.log("Có lỗi xảy ra khi xử lý hàm getCoursesPre");
-    res.status(500).json({ message: "Lấy dữ liệu khóa học trả phí thất bại" });
-  }
-};
-//Tìm kiếm gần đúng các khóa học dựa vào gợi ý tìm kiếm
-exports.getCoursesWithSearchSuggestion = async (req, res) => {
-  try {
-    // Lấy từ khóa tìm kiếm từ query parameter
-    const { title } = req.query;
-
-    // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
-    // $regex: biểu thức chính quy
-    // $options: "i" = case-insensitive
-    const courses = await courseEntity.find({
-      title: { $regex: title, $options: "i" },
-    });
-    res.status(200).json(courses);
-  } catch (error) {
-    console.log("Có lỗi xảy ra khi xử lý hàm getCoursesWithSearchSuggestion");
-    res.status(500).json({
-      message: "Lấy dữ liệu khóa học dựa trên gợi ý tìm kiếm thất bại",
-    });
   }
 };
 //Router thêm khóa học mới

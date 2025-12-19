@@ -6,6 +6,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import "./components-css/Detail.css";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 
 export default function GetDetailCourse() {
   const navigate = useNavigate();
@@ -22,51 +24,48 @@ export default function GetDetailCourse() {
     : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
 
   useEffect(() => {
-    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
-    fetch(`http://localhost:3000/course?id=${id}`)
-      .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công parse JSON.
-        throw res; // Nếu thất bại, ném response để xử lý lỗi.
-      })
-      .then((data) => {
-        setCourse(data); // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
-      });
-  }, [id, refresh]); // Dependency array: useEffect sẽ chạy lại mỗi khi ID khóa học trên URL thay đổi.
+    fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourse });
+  }, [id]);
   useEffect(() => {
-    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
-    fetch(`http://localhost:3000/cart?user_id=${user._id}`)
-      .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công parse JSON.
-        throw res; // Nếu thất bại, ném response để xử lý lỗi.
-      })
-      .then((data) => {
-        setCourseIdInCart(
-          data.items.length &&
-            data.items.map((value) => {
-              return value.courseId._id;
-            })
-        );
-        // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
-      });
-  }, [user._id, refresh]);
+    if (user) {
+      // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
+      fetch(`http://localhost:3000/cart?user_id=${user._id}`)
+        .then((res) => {
+          if (res.ok) return res.json(); // Nếu thành công parse JSON.
+          throw res; // Nếu thất bại, ném response để xử lý lỗi.
+        })
+        .then(({ data }) => {
+          console.log(data);
+          setCourseIdInCart(
+            data.items.length &&
+              data.items.map((value) => {
+                return value.courseId._id;
+              })
+          );
+          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+        });
+    }
+  }, [user, refresh]);
   useEffect(() => {
-    // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
-    fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
-      .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công parse JSON.
-        throw res; // Nếu thất bại, ném response để xử lý lỗi.
-      })
-      .then((data) => {
-        console.log(data);
-        setCourseIdInEnrollment(
-          data.length &&
-            data.map((value) => {
-              return value.courseId._id;
-            })
-        );
-        // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
-      });
-  }, [user._id, refresh]);
+    if (user) {
+      // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
+      fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
+        .then((res) => {
+          if (res.ok) return res.json(); // Nếu thành công parse JSON.
+          throw res; // Nếu thất bại, ném response để xử lý lỗi.
+        })
+        .then(({ data }) => {
+          console.log(data);
+          setCourseIdInEnrollment(
+            data.length &&
+              data.map((value) => {
+                return value.courseId._id;
+              })
+          );
+          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+        });
+    }
+  }, [user, refresh]);
   const handleClick = () => {
     // Kiểm tra Bắt buộc Đăng nhập
     if (!isLogin) {
@@ -94,7 +93,7 @@ export default function GetDetailCourse() {
         if (res.ok) return res.json(); // Nếu thành công parse JSON
         throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
-      .then((message) => {
+      .then(({ message }) => {
         setRefresh((prev) => prev + 1);
         toast.success(message);
         // Hiển thị thông báo thành công từ server

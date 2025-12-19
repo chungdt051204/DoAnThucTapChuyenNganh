@@ -19,7 +19,9 @@ exports.postCart = async (req, res) => {
           },
         ],
       });
-      res.status(200).json("Đã thêm khóa học vào giỏ hàng thành công");
+      res
+        .status(200)
+        .json({ message: "Đã thêm khóa học vào giỏ hàng thành công" });
     }
     //Ngược lại nếu người dùng đã có giỏ hàng
     else {
@@ -41,7 +43,9 @@ exports.postCart = async (req, res) => {
             }, //Dùng push để thêm 1 khóa học sau các khóa học trong giỏ hàng($push chỉ dùng Object không dùng mảng)
           }
         );
-        res.status(200).json("Đã thêm khóa học vào giỏ hàng thành công");
+        res
+          .status(200)
+          .json({ message: "Đã thêm khóa học vào giỏ hàng thành công" });
       }
       //Nếu có khóa học trong giỏ hàng rồi thì không được thêm nữa
       else {
@@ -63,7 +67,7 @@ exports.getCartItem = async (req, res) => {
   const cart = await cartEntity
     .findOne({ userId: user_id })
     .populate("items.courseId");
-  res.status(200).json(cart);
+  res.status(200).json({ data: cart });
 };
 //Router xử lý chức năng xóa nhiều khóa học trong giỏ hàng
 exports.deleteCartItems = async (req, res) => {

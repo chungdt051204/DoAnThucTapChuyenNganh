@@ -1,49 +1,39 @@
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
-import { useEffect, useRef, useState } from "react";
+import { fetchAPI } from "../service/api";
+import { useEffect, useState, useContext } from "react";
+import AppContext from "./AppContext";
 import "./components-css/QuanLyNguoiDung.css";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { url } from "../../App";
 export default function QuanLyNguoiDung() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role");
+  const { users, setUsers } = useContext(AppContext);
   const [refresh, setRefresh] = useState(0); // State dùng để kích hoạt tải lại dữ liệu khi giá trị thay đổi.
-  const [users, setUsers] = useState([]); // State lưu trữ danh sách tất cả người dùng (users).
-  const [usersWithRole, setUsersWithRole] = useState([]); // State lưu trữ danh sách người dùng đã được lọc theo vai trò
   const [roleSelected, setRoleSelected] = useState(""); // State lưu trữ giá trị vai trò đang được chọn/lọc.
-  const roleSelectedRef = useRef(); // Tham chiếu đến phần tử DOM để lấy giá trị vai trò được chọn
+
   useEffect(() => {
-    fetch("http://localhost:3000/users")
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch();
-  }, [refresh]);
-  const handleRoleSelected = () => {
-    if (roleSelectedRef.current.value != "") {
-      setRoleSelected(roleSelectedRef.current.value);
-      fetch(
-        `http://localhost:3000/users/role?role=${roleSelectedRef.current.value}`
-      )
-        .then((res) => {
-          if (res.ok) return res.json();
-          throw res;
-        })
-        .then((data) => {
-          console.log(data);
-          setUsersWithRole(data);
-          setRefresh((prev) => prev + 1);
-        })
-        .catch();
+    if (role) {
+      fetchAPI({ url: `${url}/user?role=${role}`, setData: setUsers });
     } else {
-      setRoleSelected("");
+      fetchAPI({ url: `${url}/user`, setData: setUsers });
+    }
+  }, [refresh, setUsers, role]);
+  const handleRoleSelected = (value) => {
+    setRoleSelected(value);
+    if (value) {
+      navigate(`/admin/user?role=${value}`);
+    } else {
+      navigate("/admin/user");
     }
   };
   const handleSetStatusUser = (user) => {
     //Xác định trạng thái mới: Đảo ngược trạng thái hiện tại (active <-> banned)
     const status = user.status === "active" ? "banned" : "active";
     //Gửi yêu cầu PUT để cập nhật trạng thái người dùng
-    fetch(`http://localhost:3000/admin/user/${user._id}`, {
+    fetch(`http://localhost:3000/user/${user._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json", //Báo hiệu dữ liệu gửi đi là JSON
@@ -67,7 +57,7 @@ export default function QuanLyNguoiDung() {
   };
   const handleDelete = (id) => {
     //Gửi yêu cầu DELETE đến API, sử dụng ID người dùng trong URL path
-    fetch(`http://localhost:3000/admin/user/${id}`, {
+    fetch(`http://localhost:3000/user/${id}`, {
       method: "DELETE",
     })
       .then((res) => {
@@ -93,8 +83,8 @@ export default function QuanLyNguoiDung() {
       <AdminNavBar />
       <section className="user-management" style={{ margin: "50px" }}>
         <select
-          onChange={handleRoleSelected}
-          ref={roleSelectedRef}
+          value={roleSelected}
+          onChange={(e) => handleRoleSelected(e.target.value)}
           className="role-select"
           style={{ marginBottom: "20px" }}
         >
@@ -114,97 +104,54 @@ export default function QuanLyNguoiDung() {
               </tr>
             </thead>
             <tbody>
-              {!roleSelected && users.length > 0
-                ? users.map((value, index) => {
-                    return (
-                      <tr key={index} className="table-row">
-                        <td>{value.username}</td>
-                        <td>{value.email}</td>
-                        <td>{value.role}</td>
-                        <td>
-                          {/* Dùng style inline cho trạng thái */}
-                          <p
-                            style={{
-                              color:
-                                value.status === "banned" ? "red" : "green",
-                            }}
-                          >
-                            {value.status}
-                          </p>
-                        </td>
-                        <td className="action-column">
-                          {value.role === "admin" ? (
-                            ""
-                          ) : (
-                            <button
-                              onClick={() => handleSetStatusUser(value)}
-                              className={`action-btn ${
-                                value.status === "banned"
-                                  ? "action-reactivate"
-                                  : "action-deactivate"
-                              }`}
-                            >
-                              {value.status === "banned"
-                                ? "Hủy vô hiệu hóa"
-                                : "Vô hiệu hóa"}
-                            </button>
-                          )}
-                          {value.role === "admin" ? (
-                            ""
-                          ) : (
-                            <button
-                              onClick={() => handleDelete(value._id)}
-                              className="action-btn action-delete"
-                            >
-                              Xóa
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })
-                : usersWithRole.length > 0 &&
-                  usersWithRole.map((value, index) => {
-                    return (
-                      <tr key={index} className="table-row">
-                        <td>{value.username}</td>
-                        <td>{value.email}</td>
-                        <td>{value.role}</td>
-                        <td>
-                          {/* Dùng style inline cho trạng thái */}
-                          <p
-                            style={{
-                              color:
-                                value.status === "banned" ? "red" : "green",
-                            }}
-                          >
-                            {value.status}
-                          </p>
-                        </td>
-                        <td className="action-column">
+              {users.length > 0 &&
+                users.map((value, index) => {
+                  return (
+                    <tr key={index} className="table-row">
+                      <td>{value.username}</td>
+                      <td>{value.email}</td>
+                      <td>{value.role}</td>
+                      <td>
+                        {/* Dùng style inline cho trạng thái */}
+                        <p
+                          style={{
+                            color: value.status === "banned" ? "red" : "green",
+                          }}
+                        >
+                          {value.status}
+                        </p>
+                      </td>
+                      <td className="action-column">
+                        {value.role === "admin" ? (
+                          ""
+                        ) : (
                           <button
                             onClick={() => handleSetStatusUser(value)}
-                            // Giữ lại class cho nút Hành động
                             className={`action-btn ${
-                              value.status == "banned"
+                              value.status === "banned"
                                 ? "action-reactivate"
                                 : "action-deactivate"
                             }`}
                           >
-                            {value.status == "banned"
+                            {value.status === "banned"
                               ? "Hủy vô hiệu hóa"
                               : "Vô hiệu hóa"}
                           </button>
+                        )}
+                        {value.role === "admin" ? (
+                          ""
+                        ) : (
                           <button
                             onClick={() => handleDelete(value._id)}
                             className="action-btn action-delete"
                           >
                             Xóa
                           </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

@@ -76,7 +76,7 @@
   align-items: center;
   gap: 15px;
 }
-.course-image {
+.course-img {
   border-radius: 4px;
   object-fit: cover;
 }

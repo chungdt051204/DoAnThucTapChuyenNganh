@@ -2,11 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/NavBar.css";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 export default function UserNavBar() {
   const navigate = useNavigate(); // useNavigate dùng để điều hướng
   // Sử dụng Context để truy cập và quản lý các giá trị/hàm toàn cục của ứng dụng:
   const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
-  const [categoryClicked, setCategoryClicked] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
+  const [isHovered, setIsHovered] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
   const [avatarClicked, setAvatarClicked] = useState(false);
   const [inputValue, setInputValue] = useState("");
   // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm (dùng để kiểm soát input).
@@ -17,20 +19,12 @@ export default function UserNavBar() {
     // Cập nhật state inputValue với giá trị hiện tại của ô input
     setInputValue(inputRef.current.value);
     // Gọi API Tìm kiếm Gợi ý
-    fetch(
-      // Gửi yêu cầu GET đến API
-      `http://localhost:3000/courses/search/suggestion?title=${encodeURIComponent(
+    fetchAPI({
+      url: `${url}/course/search/suggestion?search=${encodeURIComponent(
         inputRef.current.value
-      )}`
-    )
-      .then((res) => {
-        if (res.ok) return res.json(); // Nếu phản hồi thành công (2xx), chuyển đổi sang JSON
-        throw res; // Nếu thất bại, ném response
-      })
-      .then((data) => {
-        // Cập nhật state với dữ liệu danh sách khóa học được gợi ý nhận từ server
-        setCoursesWithSearchSuggestion(data);
-      });
+      )}`,
+      setData: setCoursesWithSearchSuggestion,
+    });
   };
   const handleLogout = () => {
     // Gửi yêu cầu DELETE đến endpoint /me trên server
@@ -70,13 +64,15 @@ export default function UserNavBar() {
             <Link to="/">Trang chủ</Link>
           </li>
           <li>
-            <div className="categories-dropdown">
-              <Link to="#">
-                <p onClick={() => setCategoryClicked((prev) => !prev)}>
-                  Danh mục
-                </p>
+            <div
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="categories-dropdown"
+            >
+              <Link>
+                <p>Danh mục</p>
               </Link>
-              {categoryClicked && (
+              {isHovered && (
                 <div className="categories-dropdown-menu">
                   {categories.length > 0 &&
                     categories.map((value, index) => {

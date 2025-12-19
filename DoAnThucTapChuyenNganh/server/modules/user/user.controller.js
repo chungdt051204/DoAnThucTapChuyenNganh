@@ -91,7 +91,7 @@ exports.postLogin = async (req, res) => {
   }
 };
 //Router lấy thông tin user sau khi đã đăng nhập
-exports.getUser = async (req, res) => {
+exports.getMe = async (req, res) => {
   try {
     const session = sessions[req.cookies.sessionId];
     //Nếu không tồn tại session => Người dùng chưa đăng nhập
@@ -103,40 +103,29 @@ exports.getUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Không tìm thấy người dùng" });
       //Ngược lại thì gửi thôn tin của user cho phía client
-    } else return res.status(200).json(user);
+    } else return res.status(200).json({ data: user });
   } catch (error) {
     console.log("Có lỗi xảy ra khi lấy thông tin người dùng", error);
     res.status(500).json({ message: "Lấy thông tin người dùng thất bại" });
   }
 };
 //Router lấy dữ liệu tất cả người dùng trong database
-exports.getAllUsers = async (req, res) => {
-  try {
-    const users = await userEntity.find();
-    res.status(200).json(users);
-  } catch (error) {
-    console.log("Có lỗi xảy ra khi lấy dữ liệu tất cả người dùng", error);
-    res
-      .status(500)
-      .json({ message: "Lấy thông tin tất cả người dùng thất bại" });
-  }
-};
-//Router lấy dữ liệu người dùng dựa vào vai trò
-exports.getUsersWithRole = async (req, res) => {
+exports.getUser = async (req, res) => {
   try {
     const { role } = req.query;
-    const users = await userEntity.find({ role: role });
-    res.status(200).json(users);
+    if (role) {
+      const usersWithRole = await userEntity.find({ role: role });
+      res.status(200).json({ data: usersWithRole });
+    } else {
+      const users = await userEntity.find();
+      res.status(200).json({ data: users });
+    }
   } catch (error) {
-    console.log(
-      "Có lỗi xảy ra khi lấy dữ liệu người dùng dựa vào vai trò",
-      error
-    );
-    res
-      .status(500)
-      .json({ message: "Lấy thông tin người dùng dựa vào vai trò thất bại" });
+    console.log("Có lỗi xảy ra khi gọi hàm getUser", error);
+    res.status(500).json({ message: "Lấy danh sách người dùng thất bại" });
   }
 };
+
 exports.putStatusUser = async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID người dùng từ URL parameter

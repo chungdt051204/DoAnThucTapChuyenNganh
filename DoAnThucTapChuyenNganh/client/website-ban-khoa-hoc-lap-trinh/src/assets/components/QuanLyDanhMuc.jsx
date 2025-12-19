@@ -4,6 +4,8 @@ import AppContext from "./AppContext";
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
 import "./components-css/QuanLyDanhMuc.css";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 
 export default function QuanLyDanhMuc() {
   const { categories, setRefresh } = useContext(AppContext); // lấy danh mục từ useContext
@@ -50,12 +52,8 @@ export default function QuanLyDanhMuc() {
       });
   };
   const handleClickUpdate = (id) => {
-    fetch(`http://localhost:3000/category?id=${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setCategoryWithId(data);
-        updateDialog.current.showModal();
-      });
+    fetchAPI({ url: `${url}/category?id=${id}`, setData: setCategoryWithId });
+    updateDialog.current.showModal();
   };
   const handleUpdateSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.

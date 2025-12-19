@@ -52,13 +52,13 @@ exports.getOrders = async (req, res) => {
       const orderWithOrderId = await orderEntity
         .findOne({ _id: order_id })
         .populate("items.courseId");
-      res.status(200).json(orderWithOrderId);
+      res.status(200).json({ data: orderWithOrderId });
     } else if (user_id) {
       const ordersWithUserId = await orderEntity.find({ userId: user_id });
-      res.status(200).json(ordersWithUserId);
+      res.status(200).json({ data: ordersWithUserId });
     } else {
       const orders = await orderEntity.find();
-      res.status(200).json(orders);
+      res.status(200).json({ data: orders });
     }
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getOrder");

@@ -3,5 +3,5 @@ const router = express.Router();
 const orderController = require("./order.controller");
 const prefix = "";
 router.post(`${prefix}/order`, orderController.postOrder);
-router.get(`${prefix}/orders`, orderController.getOrders);
+router.get(`${prefix}/order`, orderController.getOrders);
 module.exports = router;

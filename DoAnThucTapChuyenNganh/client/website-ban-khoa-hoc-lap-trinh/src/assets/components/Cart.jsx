@@ -3,10 +3,12 @@ import AppContext from "./AppContext";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 import "./components-css/Cart.css";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 
 export default function Cart() {
   const { user } = useContext(AppContext);
-  const [cart, setCart] = useState([]);
+  const [myCart, setMyCart] = useState("");
   const [cartItemSelected, setCartItemSelected] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const dialog = useRef();
@@ -15,9 +17,9 @@ export default function Cart() {
   let sum = 0;
   {
     {
-      cart.items &&
-        cart.items.length > 0 &&
-        cart.items.forEach((value) => {
+      myCart.items &&
+        myCart.items.length > 0 &&
+        myCart.items.forEach((value) => {
           if (cartItemSelected.includes(value._id))
             sum = sum + parseFloat(value.courseId.price);
           return sum;
@@ -25,16 +27,10 @@ export default function Cart() {
     }
   }
   useEffect(() => {
-    fetch(`http://localhost:3000/cart?user_id=${user._id}`)
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
-      })
-      .then((data) => {
-        console.log(data.items);
-        setCart(data);
-      });
-  }, [user._id, refresh]);
+    if (user) {
+      fetchAPI({ url: `${url}/cart?user_id=${user._id}`, setData: setMyCart });
+    }
+  }, [user, refresh]);
   const handleChange = (id) => {
     // Nếu id khóa học chưa tồn tại trong mảng cartItemSelected => khóa học chưa được chọn
     //Thì thêm id khóa học vào mảng cartItemSelected
@@ -76,7 +72,7 @@ export default function Cart() {
     dialog.current.showModal();
   };
   const handleSubmit = (e) => {
-    const orderItemSelected = cart.items.filter((value) =>
+    const orderItemSelected = myCart.items.filter((value) =>
       cartItemSelected.includes(value._id)
     );
     e.preventDefault();
@@ -120,9 +116,9 @@ export default function Cart() {
             </thead>
             <tbody>
               {/* Row 1 */}
-              {cart.items &&
-                cart.items.length > 0 &&
-                cart.items.map((value, index) => {
+              {myCart.items &&
+                myCart.items.length > 0 &&
+                myCart.items.map((value, index) => {
                   return (
                     <tr key={index}>
                       <td className="col-product">
@@ -227,7 +223,7 @@ export default function Cart() {
                     </tr>
                   </thead>
                   <tbody>
-                    {cart.items?.map((value, index) => {
+                    {myCart.items?.map((value, index) => {
                       if (cartItemSelected.includes(value._id)) {
                         return (
                           <tr key={index}>

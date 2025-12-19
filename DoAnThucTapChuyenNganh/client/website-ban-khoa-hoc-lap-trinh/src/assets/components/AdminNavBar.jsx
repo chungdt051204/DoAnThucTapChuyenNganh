@@ -61,9 +61,11 @@ export default function AdminNavBar() {
             <div className="userProfile">
               <img
                 src={
-                  user && user.avatar.includes("https")
+                  user?.avatar?.includes("https")
                     ? user.avatar
-                    : `http://localhost:3000/images/${user.avatar}`
+                    : user?.avatar
+                    ? `http://localhost:3000/images/user/${user.avatar}`
+                    : "https://via.placeholder.com/50" // ảnh mặc định nếu lỗi
                 }
                 alt=""
                 width={50}

@@ -24,11 +24,13 @@ export default function Carousel() {
       <div className="carousel-track" ref={carousel}>
         {courses.length > 0 &&
           courses.map((value, index) => {
-            return (
-              <div key={index} className="carousel-item">
-                <img src={value.thumbnail} alt="" width={1100} height={500} />
-              </div>
-            );
+            if (value.isFeatured) {
+              return (
+                <div key={index} className="carousel-item">
+                  <img src={value.thumbnail} alt="" width={1100} height={500} />
+                </div>
+              );
+            }
           })}
       </div>
     </>
