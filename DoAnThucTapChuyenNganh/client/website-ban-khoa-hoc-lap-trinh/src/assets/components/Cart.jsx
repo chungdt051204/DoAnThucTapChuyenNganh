@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import "./components-css/Cart.css";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
   const { user } = useContext(AppContext);
@@ -14,6 +15,7 @@ export default function Cart() {
   const dialog = useRef();
   const fullNameRef = useRef();
   const phoneRef = useRef();
+  const navigate = useNavigate();
   let sum = 0;
   if (myCart?.items?.length > 0) {
     myCart?.items?.forEach((value) => {
@@ -90,6 +92,7 @@ export default function Cart() {
       })
       .then(({ message }) => {
         alert(message);
+        navigate("/");
       })
       .catch(async (err) => {
         const { message } = await err.json();
