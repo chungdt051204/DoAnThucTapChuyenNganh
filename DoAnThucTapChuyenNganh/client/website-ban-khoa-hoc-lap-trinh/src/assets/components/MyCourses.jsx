@@ -5,7 +5,7 @@ import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
-import "./MyCourses.css";
+import "./components-css/MyCourses.css";
 
 export default function MyCourses() {
   const { user, refresh } = useContext(AppContext);
@@ -32,17 +32,25 @@ export default function MyCourses() {
                 ? value.courseId.image
                 : `http://localhost:3000/images/course/${value.courseId.image}`;
               return (
-                <div key={index} className="course-card">
+                <div key={index} className="my-courses-course-card">
                   <Link
                     to={`/course?id=${value.courseId._id}`}
-                    className="course-link"
+                    className="my-courses-course-link"
                   >
-                    <img src={image} alt="" className="course-image" />
+                    <img
+                      src={image}
+                      alt=""
+                      className="my-courses-course-image"
+                    />
                   </Link>
-                  <div className="course-info">
-                    <p className="course-title">{value.courseId.title}</p>
+                  <div className="my-courses-course-info">
+                    <p className="my-courses-course-title">
+                      {value.courseId.title}
+                    </p>
                     <Link to={`/course?id=${value.courseId._id}`}>
-                      <button className="course-button">Vào học ngay</button>
+                      <button className="my-courses-course-button">
+                        Vào học ngay
+                      </button>
                     </Link>
                   </div>
                 </div>
