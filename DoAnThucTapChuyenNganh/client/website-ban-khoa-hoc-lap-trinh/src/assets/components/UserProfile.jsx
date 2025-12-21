@@ -7,6 +7,10 @@ import "./components-css/UserProfile.css";
 export default function UserProfile() {
   // Lấy giá trị 'user'  và 'setRefresh' từ AppContext (Context API của React)
   const { user, setRefresh } = useContext(AppContext);
+  if (!user) {
+    return <div>Đang tải thông tin người dùng...</div>;
+  }
+
   // Khai báo state để lưu trữ giá trị tên người dùng mới từ input form
   const [newUsername, setNewUsername] = useState("");
   // Khai báo state để lưu trữ giá trị mật khẩu mới từ input form

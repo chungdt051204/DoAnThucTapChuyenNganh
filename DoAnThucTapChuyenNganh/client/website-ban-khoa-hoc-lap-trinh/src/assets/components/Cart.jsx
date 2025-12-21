@@ -8,23 +8,18 @@ import { url } from "../../App";
 
 export default function Cart() {
   const { user } = useContext(AppContext);
-  const [myCart, setMyCart] = useState("");
+  const [myCart, setMyCart] = useState({ items: [] });
   const [cartItemSelected, setCartItemSelected] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const dialog = useRef();
   const fullNameRef = useRef();
   const phoneRef = useRef();
   let sum = 0;
-  {
-    {
-      myCart.items &&
-        myCart.items.length > 0 &&
-        myCart.items.forEach((value) => {
-          if (cartItemSelected.includes(value._id))
-            sum = sum + parseFloat(value.courseId.price);
-          return sum;
-        });
-    }
+  if (myCart?.items?.length > 0) {
+    myCart?.items?.forEach((value) => {
+      if (cartItemSelected.includes(value._id))
+        sum += parseFloat(value.courseId.price);
+    });
   }
   useEffect(() => {
     if (user) {
@@ -72,7 +67,7 @@ export default function Cart() {
     dialog.current.showModal();
   };
   const handleSubmit = (e) => {
-    const orderItemSelected = myCart.items.filter((value) =>
+    const orderItemSelected = (myCart?.items || []).filter((value) =>
       cartItemSelected.includes(value._id)
     );
     e.preventDefault();
@@ -116,9 +111,8 @@ export default function Cart() {
             </thead>
             <tbody>
               {/* Row 1 */}
-              {myCart.items &&
-                myCart.items.length > 0 &&
-                myCart.items.map((value, index) => {
+              {myCart?.items?.length > 0 &&
+                myCart?.items?.map((value, index) => {
                   return (
                     <tr key={index}>
                       <td className="col-product">
@@ -223,7 +217,7 @@ export default function Cart() {
                     </tr>
                   </thead>
                   <tbody>
-                    {myCart.items?.map((value, index) => {
+                    {myCart?.items?.map((value, index) => {
                       if (cartItemSelected.includes(value._id)) {
                         return (
                           <tr key={index}>
