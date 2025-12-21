@@ -97,9 +97,9 @@ export default function Cart() {
       });
   };
   return (
-    <>
-      <section>
-        <UserNavBar />
+    <div className="page-layout">
+      <UserNavBar />
+      <div className="main-content">
         <div className="cart" style={{ margin: "100px 50px" }}>
           <table className="cart-table">
             <thead>
@@ -253,8 +253,8 @@ export default function Cart() {
             </form>
           </div>
         </dialog>
-        <Footer />
-      </section>
-    </>
+      </div>
+      <Footer />
+    </div>
   );
 }
