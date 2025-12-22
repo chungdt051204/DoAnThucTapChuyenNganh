@@ -72,10 +72,6 @@ export default function GetDetailCourse() {
       alert("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
       return; // Dừng hàm ngay lập tức
     }
-    //  Kiểm tra Khóa học Miễn phí
-    if (course.isFree == true) {
-      return; // Dừng hàm vì không cần thêm khóa học miễn phí vào giỏ hàng
-    }
     //  Gọi API Thêm vào Giỏ hàng
     fetch("http://localhost:3000/cart", {
       // Gửi yêu cầu POST đến endpoint /cart
@@ -126,9 +122,7 @@ export default function GetDetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            {course.price > 0 &&
-            //TH1: Khóa học đã được mua
-            courseIdInEnrollment.length > 0 &&
+            {courseIdInEnrollment.length > 0 &&
             courseIdInEnrollment.includes(course._id) ? (
               <button disabled>Đã kích hoạt</button>
             ) : //TH2: Khóa học đã được thêm vào giỏ hàng
