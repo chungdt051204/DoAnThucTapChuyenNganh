@@ -8,34 +8,41 @@ exports.getCourse = async (req, res) => {
     const { category_id } = req.query;
     //Lấy từ khóa tìm từ chuỗi query String nhận được bên phía client bằng req.query
     const { search } = req.query;
+    //Lấy mức giá từ chuỗi query String nhận được bên phía client bằng req.query
+    const { price } = req.query;
     //Nếu có id thì lọc theo id của khóa học
     if (id) {
       const coursesWithId = await courseEntity
         .findOne({ _id: id })
         .populate("categoryId"); //populate tương tự JOIN bên sql
       res.status(200).json({ data: coursesWithId }); //Gửi dữ liệu về cho phía client
-    } else if (category_id) {
-      //Nếu có category_id thì lọc theo danh mục
-      const coursesWithCategoryId = await courseEntity
-        .find({ categoryId: category_id })
-        .populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json({ data: coursesWithCategoryId }); //Gửi dữ liệu về cho phía client
-    } else if (search) {
-      // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
-      // $regex: biểu thức chính quy
-      // $options: "i" = case-insensitive
-      const coursesWithSearch = await courseEntity.find({
-        title: { $regex: search, $options: "i" },
-      });
-      res.status(200).json({ data: coursesWithSearch });
-    } else {
-      //Không có query String thì lấy tất cả
-      const courses = await courseEntity.find().populate("categoryId"); //populate tương tự JOIN bên sql
-      res.status(200).json({ data: courses }); //Gửi dữ liệu về cho phía client
     }
+    //Tạo đối tượng query rỗng
+    let query = {};
+    //Nếu có category_id thì thêm vào query
+    if (category_id) {
+      query.categoryId = category_id;
+    }
+    //Nếu có search thì thêm vào query
+    if (search) {
+      query.title = { $regex: search, $options: "i" };
+      // Tìm kiếm gần đúng bằng regex (không phân biệt hoa/thường)
+    }
+    //Nếu có price thì thêm vào query
+    if (price) {
+      if (price === "low") query.price = { $lte: 200000 };
+      if (price === "medium") query.price = { $gte: 200000, $lte: 400000 };
+      if (price === "high") query.price = { $gte: 400000 };
+    }
+    const coursesWithQueryString = await courseEntity
+      .find(query)
+      .populate("categoryId");
+    res.status(200).json({ data: coursesWithQueryString });
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
-    res.status(500).json({ message: "Lấy dữ liệu khóa học thất bại" });
+    res
+      .status(500)
+      .json({ message: "Lấy dữ liệu khóa học thất bại", error: error.message });
   }
 };
 //Router thêm khóa học mới

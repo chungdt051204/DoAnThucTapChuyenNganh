@@ -65,3 +65,37 @@ exports.getOrders = async (req, res) => {
     res.status(500).json({ message: "Lấy dữ liệu đơn hàng thất bại" });
   }
 };
+exports.getDailyRevenue = async (req, res) => {
+  const dailyRevenue = await orderEntity.aggregate([
+    {
+      //Toán tử $group để nhóm dữ liệu
+      $group: {
+        //Điều kiện nhóm: _id là ngày tạo đơn hàng
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        //Tính tổng tiền theo điều kiện nhóm
+        totalAmount: { $sum: "$totalAmount" },
+      },
+    },
+    { $sort: { _id: 1 } }, //Sắp xếp tăng dần theo ngày mua
+  ]);
+  res.status(200).json({ data: dailyRevenue });
+};
+exports.getBestSellerCourses = async (req, res) => {
+  const bestSellerCourses = await orderEntity.aggregate([
+    //Trải phẳng mảng items (nếu items là array)
+    { $unwind: "$items" },
+    {
+      //Nhóm theo mã khóa học
+      $group: {
+        _id: "$items.courseId",
+        courseName: { $first: "$items.courseName" }, // Lấy tên đầu tiên tìm thấy trong nhóm
+        totalSold: { $sum: 1 },
+      },
+    },
+    //Lấy giới hạn 5 khóa học bán được nhiều nhất
+    {
+      $limit: 5,
+    },
+  ]);
+  res.status(200).json({ data: bestSellerCourses });
+};

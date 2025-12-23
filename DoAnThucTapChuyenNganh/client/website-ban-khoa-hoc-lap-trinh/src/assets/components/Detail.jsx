@@ -66,7 +66,7 @@ export default function GetDetailCourse() {
         });
     }
   }, [user, refresh]);
-  const handleClick = () => {
+  const handleAddCart = () => {
     // Kiểm tra Bắt buộc Đăng nhập
     if (!isLogin) {
       alert("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
@@ -95,7 +95,7 @@ export default function GetDetailCourse() {
         // Hiển thị thông báo thành công từ server
       })
       .catch(async (err) => {
-        // Xử lý lỗi (ví dụ: khóa học đã có trong giỏ hàng)
+        // Xử lý lỗi
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
         alert(message); // Hiển thị thông báo lỗi
       });
@@ -122,16 +122,19 @@ export default function GetDetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            {courseIdInEnrollment.length > 0 &&
-            courseIdInEnrollment.includes(course._id) ? (
-              <button disabled>Đã kích hoạt</button>
-            ) : //TH2: Khóa học đã được thêm vào giỏ hàng
-            courseIdInCart.length > 0 && courseIdInCart.includes(course._id) ? (
-              <button disabled>Đã thêm vào giỏ hàng</button>
-            ) : (
-              //TH3: Chưa thao tác
-              <button onClick={handleClick}>Thêm vào giỏ</button>
-            )}
+            {!course.isFree > 0 &&
+              //TH1: Khóa học đã được mua
+              (courseIdInEnrollment.length > 0 &&
+              courseIdInEnrollment.includes(course._id) ? (
+                <button disabled>Đã kích hoạt</button>
+              ) : //TH2: Khóa học đã được thêm vào giỏ hàng
+              courseIdInCart.length > 0 &&
+                courseIdInCart.includes(course._id) ? (
+                <button disabled>Đã thêm vào giỏ hàng</button>
+              ) : (
+                //TH3: Chưa thao tác
+                <button onClick={handleAddCart}>Thêm vào giỏ</button>
+              ))}
           </div>
         </div>
         <h2 className="course-title">{course.title}</h2>
@@ -178,11 +181,14 @@ export default function GetDetailCourse() {
               <a
                 key={idx}
                 href={`#lesson-${idx}`}
-                style={{ display: "block", marginBottom: 8 }}
+                style={{ display: "block", marginBottom: "8px" }}
               >
                 <div
                   onClick={() => {
-                    if (!courseIdInEnrollment.includes(course._id)) {
+                    if (
+                      !courseIdInEnrollment.includes(course._id) &&
+                      !course.isFree
+                    ) {
                       alert("Bạn chưa mua khóa học");
                       return;
                     } else {

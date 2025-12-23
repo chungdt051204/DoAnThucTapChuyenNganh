@@ -6,35 +6,60 @@ import { url } from "../../App";
 import "./components-css/CoursesWithQueryString.css";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
+import PriceFilter from "./PriceFilter";
 export default function CoursesWithQueryString({ text }) {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const category_id = searchParams.get("category_id");
   const search = searchParams.get("search");
+  const priceRange = searchParams.get("price");
   const { categories, refresh } = useContext(AppContext);
   const [coursesWithQueryString, setCoursesWithQueryString] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+  const [priceSelected, setPriceSelected] = useState("");
   useEffect(() => {
-    if (category_id && categories.length > 0) {
-      fetchAPI({
-        url: `${url}/course?category_id=${category_id}`,
-        setData: setCoursesWithQueryString,
-      });
-      const categoryWithId = categories.find(
-        (value) => value._id === category_id
-      );
-      setCategoryName(categoryWithId.title);
-    } else if (search) {
-      fetchAPI({
-        url: `${url}/course?search=${encodeURIComponent(search)}`,
-        setData: setCoursesWithQueryString,
-      });
+    const params = new URLSearchParams();
+    if (category_id) {
+      params.append("category_id", category_id);
+      //Lấy ra tên danh mục được chọn
+      const title =
+        categories.length > 0 &&
+        categories.map((value) => {
+          if (value._id === category_id) return value.title;
+        });
+      setCategoryName(title);
     }
-  }, [refresh, category_id, search, setCoursesWithQueryString, categories]);
+    if (search) params.append("search", search);
+    if (priceRange) params.append("price", priceRange);
+    fetchAPI({
+      url: `${url}/course?${params.toString()}`,
+      setData: setCoursesWithQueryString,
+    });
+  }, [
+    refresh,
+    category_id,
+    search,
+    priceRange,
+    setCoursesWithQueryString,
+    categories,
+  ]);
+  const handlePriceChange = (value) => {
+    setPriceSelected(value);
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (value) nextParams.set("price", value);
+      else nextParams.delete("price");
+      return nextParams;
+    });
+  };
   return (
     <>
       <UserNavBar />
       <div className="course-page">
         <div className="container">
+          <PriceFilter
+            selectedValue={priceSelected}
+            onPriceChange={handlePriceChange}
+          />
           <header className="page-header">
             <div className="header-info">
               <h1 className="page-title">

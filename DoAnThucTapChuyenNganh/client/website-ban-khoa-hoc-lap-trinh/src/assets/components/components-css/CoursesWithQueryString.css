@@ -1,5 +1,5 @@
-Tổng thể .course-page {
-  padding: 50px 0;
+.course-page {
+  padding: 50px;
   color: #333;
   font-family: sans-serif;
 }
@@ -38,7 +38,7 @@ Tổng thể .course-page {
 
 /* ===== CARD ===== */
 .course-item {
-  width: 200px; /* ⬅️ tăng width */
+  width: 220px; /* ⬅️ tăng width */
   background: #fff;
   border-radius: 14px;
   overflow: hidden;

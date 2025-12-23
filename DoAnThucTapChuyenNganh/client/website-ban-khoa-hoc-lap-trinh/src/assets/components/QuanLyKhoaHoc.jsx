@@ -1,23 +1,28 @@
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
-import AdminNavBar from "./AdminNavBar";
-import Footer from "./Footer";
-import "./components-css/QuanLyKhoaHoc.css";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import AdminNavBar from "./AdminNavBar";
+import PriceFilter from "./PriceFilter";
+import CategoryFilter from "./CategoryFilter";
+import Footer from "./Footer";
+import "./components-css/QuanLyKhoaHoc.css";
+
 export default function QuanLyKhoaHoc() {
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { courses, setCourses, categories, refresh, setRefresh } =
     useContext(AppContext);
-  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
   const search = searchParams.get("search");
   const category_id = searchParams.get("category_id");
-  const id = searchParams.get("id");
+  const priceRange = searchParams.get("price");
   const addDialog = useRef();
   const updateDialog = useRef();
+  const [courseWithId, setCourseWithId] = useState("");
   const [searchValue, setSearchValue] = useState("");
   const [categorySelected, setCategorySelected] = useState("");
+  const [priceSelected, setPriceSelected] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const addImage = useRef();
@@ -26,37 +31,46 @@ export default function QuanLyKhoaHoc() {
   const [errCategory, setErrCategory] = useState("");
   const [errPrice, setErrPrice] = useState("");
   const [errFile, setErrImage] = useState("");
-  const [courseWithId, setCourseWithId] = useState("");
 
   useEffect(() => {
-    if (search) {
-      fetchAPI({
-        url: `${url}/course?search=${search}`,
-        setData: setCourses,
-      });
-    } else if (category_id) {
-      fetchAPI({
-        url: `${url}/course?category_id=${category_id}`,
-        setData: setCourses,
-      });
-    } else {
-      fetchAPI({ url: `${url}/course`, setData: setCourses });
-    }
-  }, [refresh, setCourses, category_id, search]);
+    const params = new URLSearchParams();
+    if (search) params.append("search", encodeURIComponent(search));
+    if (category_id) params.append("category_id", category_id);
+    if (priceRange) params.append("price", priceRange);
+    fetchAPI({
+      url: `${url}/course?${params.toString()}`,
+      setData: setCourses,
+    });
+    setSearchValue("");
+  }, [refresh, setCourses, category_id, search, priceRange]);
   const handleClickSearch = () => {
-    if (searchValue) navigate(`/admin/course?search=${searchValue}`);
-    else navigate("/admin/course");
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (searchValue) nextParams.set("search", searchValue);
+      else nextParams.delete("search");
+      return nextParams;
+    });
   };
-  const handleCategorySelected = (value) => {
+  const handleCategoryChange = (value) => {
     setCategorySelected(value);
-    if (value) {
-      navigate(`/admin/course?category_id=${value}`);
-    } else {
-      navigate("/admin/course");
-    }
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (value) nextParams.set("category_id", value);
+      else nextParams.delete("category_id");
+      return nextParams;
+    });
+  };
+  const handlePriceChange = (value) => {
+    setPriceSelected(value);
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (value) nextParams.set("price", value);
+      else nextParams.delete("price");
+      return nextParams;
+    });
   };
   const handleAddSubmit = (e) => {
-    e.preventDefault(); // Ngăn chặn hành vi submit form mặc định (tải lại trang)
+    e.preventDefault(); // Ngăn chặn hành vi submit form mặc định của trình duyệt
     // Validation (Kiểm tra dữ liệu đầu vào)
     if (title === "") {
       // Kiểm tra trường Tiêu đề
@@ -92,9 +106,8 @@ export default function QuanLyKhoaHoc() {
         throw res; // Nếu status lỗi  ném Response object để xử lý lỗi
       })
       .then(({ message }) => {
-        // --- Xử lý Thành công (201 Created) ---
         alert(message); // Hiển thị thông báo thành công từ server
-        setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu (refresh data)
+        setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu
         addDialog.current.close(); // Đóng modal/dialog Thêm mới
       })
       .catch(async (err) => {
@@ -110,20 +123,20 @@ export default function QuanLyKhoaHoc() {
     e.preventDefault(); // Ngăn chặn submit form mặc định
     // Chuẩn bị và Gửi Request
     const formData = new FormData(); // Tạo FormData
-    // Thêm dữ liệu State
+    // Thêm dữ liệu State vô formData
     formData.append("title", title);
     formData.append("categoryId", categorySelected);
     formData.append("price", price);
     // Thêm file hình ảnh mới (lấy từ Ref)
     formData.append("image", updateImage.current.files[0]);
-    // Gửi yêu cầu PUT (Cập nhật) đến API, đính kèm ID khóa học vào query string
+    // Gửi yêu cầu PUT đến API, đính kèm ID khóa học vào query string
     fetch(`http://localhost:3000/course?id=${id}`, {
       method: "PUT",
       body: formData, // Đính kèm FormData
     })
       .then((res) => {
         if (res.ok) return res.json(); // Nếu HTTP status 2xx, parse JSON
-        throw res; // Nếu status lỗi (4xx, 5xx), ném Response object
+        throw res; // Nếu status lỗi, ném Response object
       })
       .then(({ message }) => {
         // Xử lý Thành công
@@ -145,7 +158,7 @@ export default function QuanLyKhoaHoc() {
       .then((res) => {
         //Kiểm tra Response: Nếu thành công (status 2xx), parse JSON
         if (res.ok) return res.json();
-        // Nếu lỗi (status 4xx, 5xx), ném Response object để xử lý lỗi
+        // Nếu lỗi, ném Response object để xử lý lỗi
         throw res;
       })
       .then(({ message }) => {
@@ -175,26 +188,20 @@ export default function QuanLyKhoaHoc() {
           </button>
           <input
             type="text"
+            value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
             className="course-search-input"
             placeholder="Tìm khóa học"
           />
           <button onClick={handleClickSearch}>Tìm</button>
-          <select
-            className="category-filter-select"
-            value={categorySelected}
-            onChange={(e) => handleCategorySelected(e.target.value)}
-          >
-            <option value="">Lọc danh mục</option>
-            {categories.length > 0 &&
-              categories.map((value, index) => {
-                return (
-                  <option key={index} value={value._id}>
-                    {value.title}
-                  </option>
-                );
-              })}
-          </select>
+          <CategoryFilter
+            selectedValue={categorySelected}
+            onCategoryChange={handleCategoryChange}
+          />
+          <PriceFilter
+            selectedValue={priceSelected}
+            onPriceChange={handlePriceChange}
+          />
         </div>
         <div className="course-table-container">
           <table>

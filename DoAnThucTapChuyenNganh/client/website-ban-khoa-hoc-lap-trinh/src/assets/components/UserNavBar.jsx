@@ -157,13 +157,12 @@ export default function UserNavBar() {
                 >
                   <img
                     src={
-                      user?.avatar?.includes("https")
+                      user.avatar.includes("https")
                         ? user.avatar
-                        : user?.avatar
-                        ? `http://localhost:3000/images/user/${user.avatar}`
-                        : "https://via.placeholder.com/50" // ảnh mặc định nếu lỗi
+                        : `http://localhost:3000/images/user/${user.avatar}`
                     }
                     alt="avatar"
+                    referrerPolicy="no-referrer"
                     className="user-avatar"
                   />
                   <i

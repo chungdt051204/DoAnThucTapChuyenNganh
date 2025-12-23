@@ -1,2 +1,3 @@
 # Bỏ qua tệp cấu hình môi trường trong thư mục server
 /server/.env
+/client/website-ban-khoa-hoc-lap-trinh/node_modules
