@@ -8,6 +8,7 @@
 .course-free-component > .course-free-track {
   display: flex;
   gap: 15px;
+  justify-content: space-around;
 }
 .course-free-track > .course-free-item {
   width: 150px;
