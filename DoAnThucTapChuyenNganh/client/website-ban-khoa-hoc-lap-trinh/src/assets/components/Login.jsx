@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useRef, useState } from "react";
 import { useContext } from "react";
 import AppContext from "./AppContext";
-import "./components-css/Auth.css";
-import { useRef, useState } from "react";
+import { toast } from "react-toastify";
 import LoginGoogle from "./LoginGoogle";
+import "./components-css/Auth.css";
+
 export default function Login() {
   // useNavigate để điều hướng
   const navigate = useNavigate();
@@ -11,12 +13,14 @@ export default function Login() {
   const { setIsLogin, setUser } = useContext(AppContext);
   // useState lưu trữ và hiển thị thông báo lỗi đăng nhập
   const [loginNotValid, setLoginNotValid] = useState("");
-  // useRef để tham chiếu đến các giá trị input (Email và Mật khẩu)
+  // useRef để tham chiếu đến các giá trị input
   const email = useRef();
   const password = useRef();
+
+  //Xử lý gửi form
   const handleSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn form submit mặc định
-    // Kiểm tra validation client: bắt buộc điền đầy đủ thông tin
+    // Kiểm tra validation client
     if (email.current.value === "" || password.current.value === "") {
       setLoginNotValid("Vui lòng điền đầy đủ thông tin");
       return; // Dừng nếu thiếu thông tin
@@ -47,17 +51,20 @@ export default function Login() {
             return;
           } else {
             // Nếu OK: báo thành công, cập nhật trạng thái đăng nhập
-            alert(data.message);
-            setIsLogin(true); // Điều hướng: Admin -> /admin, User -> /
-            navigate(data.user.role === "admin" ? "/admin" : "/");
+            toast.success(data.message);
+            setIsLogin(true);
+            setTimeout(() => {
+              // Điều hướng: Admin -> /admin, User -> /
+              navigate(data.user.role === "admin" ? "/admin" : "/");
+            }, 1000);
           }
         })
         .catch(async (err) => {
-          // Xử lý lỗi từ server (thường là 401 - Unauthorized)
+          // Xử lý lỗi từ server
           if (err.status === 401) {
             // Lấy thông báo lỗi cụ thể từ body response
             const { message } = await err.json();
-            setLoginNotValid(message); // Hiển thị lỗi (vd: Sai mật khẩu)
+            setLoginNotValid(message); // Hiển thị lỗi
           }
         });
     }

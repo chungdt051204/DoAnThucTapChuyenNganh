@@ -1,34 +1,35 @@
-import AdminNavBar from "./AdminNavBar";
-import Footer from "./Footer";
-import { fetchAPI } from "../service/api";
+import { useSearchParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import AppContext from "./AppContext";
-import "./components-css/QuanLyNguoiDung.css";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import AdminNavBar from "./AdminNavBar";
+import Footer from "./Footer";
+import "./components-css/QuanLyNguoiDung.css";
+
 export default function QuanLyNguoiDung() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams(); //Xử dụng useSearchParams để cập nhật queryString và lấy dữ liệu queryString
   const role = searchParams.get("role");
-  const { users, setUsers } = useContext(AppContext);
-  const [refresh, setRefresh] = useState(0); // State dùng để kích hoạt tải lại dữ liệu khi giá trị thay đổi.
-  const [roleSelected, setRoleSelected] = useState(""); // State lưu trữ giá trị vai trò đang được chọn/lọc.
+  const { users, setUsers, refresh, setRefresh } = useContext(AppContext);
+  const [roleSelected, setRoleSelected] = useState(""); // State lưu trữ giá trị vai trò đang được chọn.
 
   useEffect(() => {
-    if (role) {
-      fetchAPI({ url: `${url}/user?role=${role}`, setData: setUsers });
-    } else {
-      fetchAPI({ url: `${url}/user`, setData: setUsers });
-    }
+    const params = new URLSearchParams();
+    if (role) params.append("role", role);
+    fetchAPI({ url: `${url}/user?${params.toString()}`, setData: setUsers });
   }, [refresh, setUsers, role]);
+  //Xử lý chọn vai trò
   const handleRoleSelected = (value) => {
     setRoleSelected(value);
-    if (value) {
-      navigate(`/admin/user?role=${value}`);
-    } else {
-      navigate("/admin/user");
-    }
+    setSearchParams((prev) => {
+      const nextParams = new URLSearchParams(prev);
+      if (value) nextParams.set("role", value);
+      else nextParams.delete("role");
+      return nextParams;
+    });
   };
+  //Xử lý cập nhật trạng thái người dùng
   const handleSetStatusUser = (user) => {
     //Xác định trạng thái mới: Đảo ngược trạng thái hiện tại (active <-> banned)
     const status = user.status === "active" ? "banned" : "active";
@@ -41,8 +42,8 @@ export default function QuanLyNguoiDung() {
       body: JSON.stringify({ status: status }), //Gửi trạng thái mới trong body
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu status 2xx, parse JSON
-        throw res; // Nếu lỗi (4xx, 5xx), ném Response object
+        if (res.ok) return res.json(); // Nếu thành công, parse JSON
+        throw res; // Nếu lỗi, ném Response object
       })
       .then(({ message }) => {
         //Xử lý Thành công
@@ -50,11 +51,12 @@ export default function QuanLyNguoiDung() {
         setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu danh sách
       })
       .catch(async (err) => {
-        // 4. Xử lý Lỗi
+        //Xử lý Lỗi
         const { message } = await err.json(); //Lấy thông báo lỗi chi tiết từ body response
         console.log(message); // Hiển thị thông báo lỗi
       });
   };
+  //Xử lý xóa người dùng
   const handleDelete = (id) => {
     //Gửi yêu cầu DELETE đến API, sử dụng ID người dùng trong URL path
     fetch(`http://localhost:3000/user/${id}`, {
@@ -68,14 +70,14 @@ export default function QuanLyNguoiDung() {
       })
       .then(({ message }) => {
         //  Xử lý thành công: Hiển thị thông báo
-        alert(message);
+        toast.success(message);
         // Kích hoạt tải lại dữ liệu danh sách người dùng
         setRefresh((prev) => prev + 1);
       })
       .catch(async (err) => {
         //Xử lý Lỗi: Lấy thông báo lỗi chi tiết từ body của Response object
         const { message } = await err.json();
-        alert(message); // Hiển thị thông báo lỗi
+        toast.error(message); // Hiển thị thông báo lỗi
       });
   };
   return (

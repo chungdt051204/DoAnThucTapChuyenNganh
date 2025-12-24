@@ -1,17 +1,19 @@
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
+import { toast } from "react-toastify";
 import "./components-css/Auth.css";
+
 export default function Register() {
-  const navigate = useNavigate(); // Hook chuyển hướng trang sau khi đăng ký thành công.
-  // State Quản lý Lỗi (Hiển thị thông báo lỗi)
-  // Các state này dùng để lưu trữ và hiển thị thông báo lỗi kiểm tra đầu vào (validation).
+  const navigate = useNavigate(); // Hook chuyển hướng trang sau
+  // State quản lý lỗi
+  // Các state này dùng để lưu trữ và hiển thị thông báo lỗi kiểm tra đầu vào
   const [fullNameNotValid, setFullNameNotValid] = useState();
   const [usernameNotValid, setUsernameNotValid] = useState();
   const [emailNotValid, setEmailNotValid] = useState();
   const [passwordNotValid, setPasswordNotValid] = useState();
   const [verifyPasswordNotValid, setVerifyPasswordNotValid] = useState();
   const [phoneNotValid, setPhoneNotValid] = useState();
-  // useRef Quản lý Input (Truy cập giá trị form)
+  // useRef quản lý input
   // Các ref này dùng để truy cập trực tiếp giá trị hiện tại của các trường input
   const fullName = useRef();
   const username = useRef();
@@ -23,12 +25,13 @@ export default function Register() {
   const male = useRef();
   const female = useRef();
   const dateOfBirth = useRef();
+
   // Hàm Xử lý Gửi Form
   const handleSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
-    const formData = new FormData(); // Tạo đối tượng để đóng gói dữ liệu form, bao gồm file (avatar).
+    const formData = new FormData(); // Tạo đối tượng để đóng gói dữ liệu form, bao gồm file
     //  Đóng gói Dữ liệu Form
-    // Gắn dữ liệu từ các trường input (thông qua ref) vào đối tượng formData.
+    // Gắn dữ liệu từ các trường input vào đối tượng formData.
     formData.append("fullName", fullName.current.value);
     formData.append("username", username.current.value);
     formData.append("email", email.current.value);
@@ -40,7 +43,7 @@ export default function Register() {
       : female.current.value; // Xác định giá trị gender.
     formData.append("gender", gender);
     formData.append("dateOfBirth", dateOfBirth.current.value);
-    // Kiểm tra Validation (Kiểm tra đầu vào phía client)
+    // Kiểm tra Validation
     // Thực hiện kiểm tra từng trường. Nếu có lỗi, đặt thông báo lỗi tương ứng và dừng hàm
     if (fullName.current.value === "") {
       setFullNameNotValid("Họ tên không được bỏ trống");
@@ -69,21 +72,24 @@ export default function Register() {
       setPhoneNotValid("Số điện thoại hợp lệ phải có đủ 10 số");
       return;
     } else {
-      //Gọi API Đăng ký (Nếu Validation thành công)
+      //Gọi API Đăng ký
       fetch("http://localhost:3000/register", {
         method: "POST",
-        body: formData, // Gửi dữ liệu formData (bao gồm cả file)
+        body: formData, // Gửi dữ liệu formData
       })
         .then((res) => {
           if (res.ok) return res.json();
           throw res; // Nếu không OK, ném response để xử lý lỗi backend
         })
         .then(({ message }) => {
-          alert(message); // Hiển thị thông báo thành công
-          navigate("/login"); // Chuyển hướng đến trang đăng nhập
+          // Hiển thị thông báo thành công
+          toast.success(message);
+          setTimeout(() => {
+            navigate("/login"); // Chuyển hướng đến trang đăng nhập
+          }, 1000);
         })
         .catch(async (err) => {
-          // Xử lý Lỗi từ Backend (Ví dụ: Email đã tồn tại)
+          // Xử lý Lỗi từ Backend
           if (err.status === 400) {
             const { message } = await err.json();
             setEmailNotValid(message); // Hiển thị lỗi trả về từ server
@@ -175,7 +181,13 @@ export default function Register() {
               Nữ
             </div>
             <div className="avatar-group">
-              <input type="file" name="avatar" ref={avatar} />
+              <input
+                type="file"
+                name="avatar"
+                ref={avatar}
+                className="custom-file-input"
+                accept=".jpg, .jpeg, .png"
+              />
             </div>
             <button>Đăng ký</button>
           </form>

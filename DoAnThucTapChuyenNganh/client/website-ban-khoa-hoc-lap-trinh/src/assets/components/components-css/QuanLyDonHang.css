@@ -61,3 +61,37 @@
   background: #fef3c7;
   color: #92400e;
 }
+/* Loại bỏ gạch chân mặc định của thẻ Link */
+.order-detail-link {
+  text-decoration: none;
+}
+
+.btn-detail-sm {
+  /* Layout & Font */
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  /* Màu sắc & Viền */
+  background-color: transparent;
+  color: #2563eb; /* Màu xanh đậm chuyên nghiệp */
+  border: 1px solid #2563eb;
+  border-radius: 4px;
+
+  /* Hiệu ứng */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi di chuột vào */
+.btn-detail-sm:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Hiệu ứng khi nhấn */
+.btn-detail-sm:active {
+  transform: scale(0.96);
+}

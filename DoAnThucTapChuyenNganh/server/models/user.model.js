@@ -32,7 +32,7 @@ const usersSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["nam", "nữ", "khác"],
-      default: "chưa chọn",
+      default: "khác",
     },
     dateOfBirth: {
       type: Date,

@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import AppContext from "./AppContext";
+import "./components-css/Filter.css";
 export default function CategoryFilter({ onCategoryChange, selectedValue }) {
   const { categories } = useContext(AppContext);
   return (
     <>
       <select
-        className="category-filter-select"
+        className="form-select"
         value={selectedValue}
         onChange={(e) => onCategoryChange(e.target.value)}
       >

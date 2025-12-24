@@ -37,7 +37,7 @@
 }
 .course-side {
   border-radius: 8px;
-  padding: 14px;
+  padding: 20px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -45,13 +45,13 @@
   min-height: 120px;
   align-items: stretch;
   text-align: center;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 .course-side .level {
   font-size: 0.95rem;
   color: var(--primary);
   font-weight: 700;
-  text-align: left;
+  text-align: center;
 }
 .course-side .price {
   color: red;
@@ -60,6 +60,66 @@
   font-weight: 700;
   display: inline-block;
   margin: 6px auto 0;
+}
+/* Lớp cơ sở (Base) cho tất cả nút khóa học */
+.btn-course {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Khoảng cách giữa icon và chữ */
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%; /* Hoặc để auto tùy layout */
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* TH3: Nút chính (Chưa mua - Thêm vào giỏ) */
+.btn-primary {
+  background-color: #2563eb; /* Xanh đậm chuyên nghiệp */
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Style chung cho trạng thái Disabled (Đã mua / Đã trong giỏ) */
+.btn-course:disabled {
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* TH1: Nút đã kích hoạt (Thường dùng màu xanh lá hoặc xám nhẹ) */
+.btn-activated {
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #10b981;
+}
+
+/* TH2: Nút đã có trong giỏ (Thường dùng màu vàng hoặc cam nhạt) */
+.btn-in-cart {
+  background-color: #fff7ed;
+  color: #ea580c;
+  border: 1px solid #fdba74;
+}
+
+/* Thêm icon nếu cần (Sử dụng FontAwesome) */
+.btn-course i {
+  font-size: 16px;
 }
 
 .course-title {

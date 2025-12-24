@@ -25,7 +25,7 @@ form > .form-group {
 .form-group > input {
   width: 100%;
   padding: 5px;
-  margin: 8px 0;
+  margin: 5px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -93,4 +93,36 @@ form > .avatar-group {
 form > span {
   font-size: 14px;
   color: red;
+}
+.avatar-group {
+  margin: 10px 0;
+}
+
+.custom-file-input {
+  font-size: 13px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.custom-file-input::file-selector-button {
+  background-color: #f1f5f9;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4b5563;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.custom-file-input::file-selector-button:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.custom-file-input::file-selector-button:active {
+  background-color: #d1d5db;
 }

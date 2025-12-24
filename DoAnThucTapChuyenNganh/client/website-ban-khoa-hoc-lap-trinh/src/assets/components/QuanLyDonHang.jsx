@@ -54,8 +54,11 @@ function QuanLyDonHang() {
                       </span>
                     </td>
                     <td>
-                      <Link to={`/admin/order/detail?id=${value._id}`}>
-                        <button>Xem chi tiết</button>
+                      <Link
+                        to={`/admin/order/detail?id=${value._id}`}
+                        className="order-detail-link"
+                      >
+                        <button className="btn-detail-sm">Xem chi tiết</button>
                       </Link>
                     </td>
                   </tr>

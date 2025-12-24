@@ -1,11 +1,15 @@
-const passport = require("passport");
+const passport = require("passport"); //Import thư viện passport để sử dụng
 const userEntity = require("../../models/user.model"); //Import userEntity để sử dụng
+const orderEntity = require("../../models/order.model");
+const enrollmentEntity = require("../../models/enrollment.model"); //Import enrollmentEntity để sử dụng
 
 const sessions = {}; //Tạo mảng sessions rỗng
+//Hàm chuyển hướng đến trang đăng nhập google
 exports.getLoginGoogle = passport.authenticate("google", {
-  scope: ["profile", "email"],
-  prompt: "select_account",
+  scope: ["profile", "email"], //Lấy giá trị profile và email
+  prompt: "select_account", //Mỗi lần chuyển đến trang đăng nhập google, người dùng có thể chọn tài khoản khác
 });
+//Hàm xử lý chức năng đăng ký
 exports.postRegister = async (req, res) => {
   try {
     const { body } = req; //req.body lấy dữ liệu gửi từ phía client
@@ -18,10 +22,13 @@ exports.postRegister = async (req, res) => {
     await userEntity.create({ ...body, avatar: req.file && req.file.filename });
     return res.status(200).json({ message: "Đăng ký tài khoản thành công" });
   } catch (error) {
-    console.log("Có lỗi xảy ra khi xử lý hàm postRegister", error);
-    res.status(500).json({ message: "Đăng ký tài khoản thất bại" });
+    console.log("Có lỗi xảy ra khi xử lý hàm postRegister");
+    res
+      .status(500)
+      .json({ message: "Đăng ký tài khoản thất bại", error: error.message });
   }
 };
+//Hàm xử lý kết quả đăng nhập google
 exports.getResultLoginGoogle = [
   passport.authenticate("google", {
     failureRedirect: "/login",
@@ -38,24 +45,21 @@ exports.getResultLoginGoogle = [
         "Set-Cookie",
         `sessionId=${sessionId}; max-age=3600; httpOnly; path=/`
       )
-      .redirect("http://localhost:5173");
+      .redirect("http://localhost:5173"); //Đăng nhập google thành công thì set cookie và chuyển hướng về trang chủ
   },
 ];
-//Router xử lý chức năng đăng nhập
-// Hàm xử lý logic đăng nhập người dùng (POST /login).
+//Hàm xử lý chức năng đăng nhập
 exports.postLogin = async (req, res) => {
   try {
     // Lấy dữ liệu email và password gửi từ client
     const { body } = req;
-
-    // Xác thực Người dùng
+    // Xác thực người dùng
     // Tìm kiếm trong database người dùng khớp với cả email và password
     const user = await userEntity.findOne({
       email: body.email,
       password: body.password,
     });
-
-    // Xử lý Lỗi Xác thực
+    // Xử lý lỗi xác thực
     // Nếu không tìm thấy người dùng
     if (!user) {
       // Trả về lỗi 401 (Unauthorized) và thông báo
@@ -64,12 +68,11 @@ exports.postLogin = async (req, res) => {
         .json({ message: "Tên đăng nhập hoặc mật khẩu không chính xác" });
     } else {
       // Thiết lập Phiên (Session)
-      // Nếu đăng nhập thành công:
+      // Nếu đăng nhập thành công
       const sessionId = Date.now().toString(); // Tạo ID phiên duy nhất (luôn là chuỗi)
       sessions[sessionId] = {
         id: user._id, // Lưu ID người dùng vào phiên trên server
       };
-
       // Tạo và Gửi Cookie
       return (
         res
@@ -85,12 +88,14 @@ exports.postLogin = async (req, res) => {
     }
   } catch (error) {
     // Xử lý Lỗi Server
-    console.log("Có lỗi xảy ra khi xử lý hàm postLogin", error);
+    console.log("Có lỗi xảy ra khi xử lý hàm postLogin");
     // Trả về lỗi 500 nếu có lỗi hệ thống.
-    res.status(500).json({ message: "Đăng nhập thất bại" });
+    res
+      .status(500)
+      .json({ message: "Đăng nhập thất bại", error: error.message });
   }
 };
-//Router lấy thông tin user sau khi đã đăng nhập
+//Hàm lấy thông tin user sau khi đã đăng nhập
 exports.getMe = async (req, res) => {
   try {
     const session = sessions[req.cookies.sessionId];
@@ -105,46 +110,55 @@ exports.getMe = async (req, res) => {
       //Ngược lại thì gửi thôn tin của user cho phía client
     } else return res.status(200).json({ data: user });
   } catch (error) {
-    console.log("Có lỗi xảy ra khi lấy thông tin người dùng", error);
-    res.status(500).json({ message: "Lấy thông tin người dùng thất bại" });
+    console.log("Có lỗi xảy ra khi lấy thông tin người dùng");
+    res.status(500).json({
+      message: "Lấy thông tin người dùng thất bại",
+      error: error.message,
+    });
   }
 };
-//Router lấy dữ liệu tất cả người dùng trong database
+//Hàm lấy thông tin user trong database
 exports.getUser = async (req, res) => {
   try {
+    //Lấy vai trò gửi từ phía client bằng req.query
     const { role } = req.query;
+    //Tạo mảng query rỗng
+    let query = {};
+    //Nếu có vai trò
     if (role) {
-      const usersWithRole = await userEntity.find({ role: role });
-      res.status(200).json({ data: usersWithRole });
-    } else {
-      const users = await userEntity.find();
-      res.status(200).json({ data: users });
+      query.role = role; //Thêm role vào mảng query
     }
+    const users = await userEntity.find(query);
+    res.status(200).json({ data: users });
   } catch (error) {
-    console.log("Có lỗi xảy ra khi gọi hàm getUser", error);
-    res.status(500).json({ message: "Lấy danh sách người dùng thất bại" });
+    console.log("Có lỗi xảy ra khi gọi hàm getUser");
+    res.status(500).json({
+      message: "Lấy danh sách người dùng thất bại",
+      error: error.message,
+    });
   }
 };
-
+//Hàm xử lý chức năng cập nhật trạng thái người dùng
 exports.putStatusUser = async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID người dùng từ URL parameter
     const { status } = req.body; // Lấy trạng thái mới từ request body
     // Thực hiện lệnh Cập nhật: Tìm người dùng theo ID và thiết lập trường status mới
     await userEntity.updateOne({ _id: id }, { status: status });
-    // Trả về thành công (HTTP 200 OK)
+    // Trả về thành công
     res.status(200).json({
       message: "Thay đổi trạng thái người dùng có id" + id + "thành công",
     });
   } catch (error) {
-    // Xử lý Lỗi: Ghi log lỗi và trả về lỗi máy chủ (HTTP 500)
-    console.log("Có lỗi xảy ra khi thay đổi trạng thái người dùng", error);
-    res
-      .status(500)
-      .json({ message: "Thay đổi trạng thái người dùng thất bại" });
+    // Xử lý Lỗi: Ghi log lỗi và trả về lỗi máy chủ
+    console.log("Có lỗi xảy ra khi thay đổi trạng thái người dùng");
+    res.status(500).json({
+      message: "Thay đổi trạng thái người dùng thất bại",
+      error: error.message,
+    });
   }
 };
-//Router xử lý cập nhật thông tin cá nhân của người dùng
+//Hàm xử lý cập nhật thông tin cá nhân của người dùng
 exports.putUser = async (req, res) => {
   try {
     // Lấy ID người dùng từ tham số URL
@@ -180,7 +194,7 @@ exports.putUser = async (req, res) => {
           .status(404)
           .json({ message: "Không có dữ liệu nào được thêm mới" });
       } else {
-        // Cập nhật thành công, trả về status 200 (OK)
+        // Cập nhật thành công, trả về status 200
         return res
           .status(200)
           .json({ message: "Cập nhật thông tin người dùng thành công" });
@@ -188,12 +202,14 @@ exports.putUser = async (req, res) => {
     }
   } catch (error) {
     // Bắt và ghi log bất kỳ lỗi nào xảy ra trong quá trình cập nhật
-    console.log("Có lỗi xảy ra khi cập nhật thông tin người dùng", error);
+    console.log("Có lỗi xảy ra khi cập nhật thông tin người dùng");
     // Trả về status 500 nếu có lỗi xảy ra
-    res.status(500).json({ message: "Cập nhật thông tin thất bại" });
+    res
+      .status(500)
+      .json({ message: "Cập nhật thông tin thất bại", error: error.message });
   }
 };
-//Router xử lý chức năng đăng xuất
+//Hàm xử lý chức năng đăng xuất
 exports.logout = (req, res) => {
   //Xóa cookies => Mất phiên đăng nhập
   delete sessions[req.cookies.sessionId];
@@ -202,22 +218,29 @@ exports.logout = (req, res) => {
     .status(200)
     .json({ message: "Đăng xuất thành công" });
 };
-//Router xử lý xóa người dùng
+//Hàm xử lý xóa người dùng
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params; // Lấy ID người dùng từ URL parameter
-    //  Kiểm tra Ràng buộc Nghiệp vụ (Dependency Check) ---
+    //  Kiểm tra Ràng buộc Nghiệp vụ
     // Tìm kiếm các đơn hàng có liên quan đến ID người dùng này
     const userWithOrders = await orderEntity.find({ userId: id });
+    //Tìm kiếm các khóa học sở hữu bởi người dùng này
+    const userInEnrollment = await enrollmentEntity.find({ userId: id });
     // Nếu người dùng có đơn hàng
     if (userWithOrders.length > 0) {
       // Trả về lỗi 409 Conflict (Xung đột) vì vi phạm tính toàn vẹn dữ liệu/nghiệp vụ
       return res
         .status(409)
         .json({ message: "Người dùng này đã có đơn hàng không thể xóa" });
+    } else if (userInEnrollment.length > 0) {
+      // Trả về lỗi 409 Conflict (Xung đột) vì vi phạm tính toàn vẹn dữ liệu/nghiệp vụ
+      return res
+        .status(409)
+        .json({ message: "Người dùng này đang sở hữ khóa học, không thể xóa" });
     } else {
       //  Thực hiện Xóa
-      // Xóa người dùng nếu không có đơn hàng liên quan
+      // Xóa người dùng nếu không có đơn hàng và không sở hữu khóa học nào
       const result = await userEntity.deleteOne({ _id: id });
       //  Xử lý Kết quả Xóa
       if (result.deletedCount === 0) {
@@ -228,13 +251,15 @@ exports.deleteUser = async (req, res) => {
       } else {
         // Nếu deletedCount > 0: Xóa thành công
         return res.status(200).json({
-          message: "Đã xóa tài khoản người dùng có id" + id + "thành công",
+          message: "Đã xóa tài khoản người dùng thành công",
         });
       }
     }
   } catch (error) {
     // Xử lý Lỗi hệ thống
-    console.log("Có lỗi xảy ra khi xóa người dùng", error);
-    res.status(500).json({ message: "Xóa người dùng thất bại" });
+    console.log("Có lỗi xảy ra khi xóa người dùng");
+    res
+      .status(500)
+      .json({ message: "Xóa người dùng thất bại", error: error.message });
   }
 };

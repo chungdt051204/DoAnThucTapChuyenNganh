@@ -123,6 +123,9 @@ body {
 }
 .search-dropdown-menu {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   overflow-y: auto;
   width: 200px;
   height: 250px;
@@ -136,13 +139,12 @@ body {
   font-size: 14px;
   gap: 20px;
 }
-/* Container chính */
+
 .user-dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* Nút kích hoạt dropdown */
 .user-trigger {
   display: flex;
   align-items: center;
@@ -170,7 +172,6 @@ body {
   color: #64748b;
 }
 
-/* Menu Dropdown */
 .user-dropdown-menu {
   position: absolute;
   top: 120%;
@@ -196,9 +197,6 @@ body {
   }
 }
 
-/* Header bên trong menu */
-
-/* Các link trong menu */
 .menu-link {
   display: flex;
   align-items: center;
@@ -225,7 +223,6 @@ body {
   color: #2563eb;
 }
 
-/* Nút đăng xuất */
 .logout {
   color: #ef4444;
 }

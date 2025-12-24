@@ -123,17 +123,26 @@ export default function GetDetailCourse() {
               {course.totalLessons} bài học
             </div>
             {!course.isFree > 0 &&
-              //TH1: Khóa học đã được mua
               (courseIdInEnrollment.length > 0 &&
               courseIdInEnrollment.includes(course._id) ? (
-                <button disabled>Đã kích hoạt</button>
-              ) : //TH2: Khóa học đã được thêm vào giỏ hàng
-              courseIdInCart.length > 0 &&
+                /* TH1: Khóa học đã được mua */
+                <button className="btn-course btn-activated" disabled>
+                  <i className="fas fa-check-circle"></i> Đã kích hoạt
+                </button>
+              ) : courseIdInCart.length > 0 &&
                 courseIdInCart.includes(course._id) ? (
-                <button disabled>Đã thêm vào giỏ hàng</button>
+                /* TH2: Khóa học đã có trong giỏ hàng */
+                <button className="btn-course btn-in-cart" disabled>
+                  <i className="fas fa-shopping-cart"></i> Đã trong giỏ
+                </button>
               ) : (
-                //TH3: Chưa thao tác
-                <button onClick={handleAddCart}>Thêm vào giỏ</button>
+                /* TH3: Chưa thao tác */
+                <button
+                  className="btn-course btn-primary"
+                  onClick={handleAddCart}
+                >
+                  Thêm vào giỏ
+                </button>
               ))}
           </div>
         </div>
@@ -186,6 +195,7 @@ export default function GetDetailCourse() {
                 <div
                   onClick={() => {
                     if (
+                      courseIdInEnrollment.length > 0 &&
                       !courseIdInEnrollment.includes(course._id) &&
                       !course.isFree
                     ) {

@@ -104,7 +104,7 @@ function App() {
           <Route path="/admin/order/detail" element={<OrderDetail />} />
           <Route path="/payment" element={<ThanhToan />} />
         </Routes>
-        <ToastContainer position="top-center" autoClose={2000}></ToastContainer>
+        <ToastContainer position="top-center" autoClose={1000}></ToastContainer>
       </AppContext.Provider>
     </>
   );
