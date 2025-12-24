@@ -15,7 +15,7 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0;
-  color: #007bff; /* Màu xanh chủ đạo */
+  color: #007bff;
 }
 
 .my-courses-grid {
@@ -70,7 +70,7 @@
 }
 
 .my-courses-course-button {
-  background-color: #28a745; /* Màu xanh lá cho nút */
+  background-color: #28a745;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -91,24 +91,4 @@
   font-size: 1.2rem;
   color: #666;
   margin-top: 50px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .my-courses-header h2 {
-    font-size: 2rem;
-  }
-  .my-courses-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .my-courses-grid {
-    grid-template-columns: 1fr;
-  }
-  .my-courses-course-card {
-    max-width: 100%;
-  }
 }

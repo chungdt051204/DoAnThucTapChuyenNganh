@@ -1,7 +1,7 @@
 .form-select {
   display: block;
   width: 240px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   padding: 8px 15px;
   font-size: 16px;
   font-family: inherit;

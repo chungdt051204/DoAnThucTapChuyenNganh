@@ -186,14 +186,26 @@ export default function QuanLyKhoaHoc() {
           >
             Thêm khóa học
           </button>
-          <input
-            type="text"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="course-search-input"
-            placeholder="Tìm khóa học"
-          />
-          <button onClick={handleClickSearch}>Tìm</button>
+          <div className="search-wrapper">
+            <input
+              type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleClickSearch();
+              }}
+              className="course-search-input"
+              placeholder="Tìm khóa học"
+            />
+            <button
+              type="button"
+              className="search-btn"
+              onClick={handleClickSearch}
+              aria-label="Tìm"
+            >
+              <i className="fa-solid fa-magnifying-glass"></i>
+            </button>
+          </div>
           <CategoryFilter
             selectedValue={categorySelected}
             onCategoryChange={handleCategoryChange}

@@ -61,12 +61,12 @@
   display: inline-block;
   margin: 6px auto 0;
 }
-/* Lớp cơ sở (Base) cho tất cả nút khóa học */
+
 .btn-course {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px; /* Khoảng cách giữa icon và chữ */
+  gap: 8px;
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
@@ -74,14 +74,13 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  width: 100%; /* Hoặc để auto tùy layout */
+  width: 100%;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* TH3: Nút chính (Chưa mua - Thêm vào giỏ) */
 .btn-primary {
-  background-color: #2563eb; /* Xanh đậm chuyên nghiệp */
+  background-color: #2563eb;
   color: white;
   box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
@@ -96,28 +95,24 @@
   transform: translateY(0);
 }
 
-/* Style chung cho trạng thái Disabled (Đã mua / Đã trong giỏ) */
 .btn-course:disabled {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-/* TH1: Nút đã kích hoạt (Thường dùng màu xanh lá hoặc xám nhẹ) */
 .btn-activated {
   background-color: #ecfdf5;
   color: #059669;
   border: 1px solid #10b981;
 }
 
-/* TH2: Nút đã có trong giỏ (Thường dùng màu vàng hoặc cam nhạt) */
 .btn-in-cart {
   background-color: #fff7ed;
   color: #ea580c;
   border: 1px solid #fdba74;
 }
 
-/* Thêm icon nếu cần (Sử dụng FontAwesome) */
 .btn-course i {
   font-size: 16px;
 }

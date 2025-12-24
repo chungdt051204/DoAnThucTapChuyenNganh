@@ -1,5 +1,4 @@
 .btn-add-category {
-  /* Layout & Size */
   display: inline-flex;
   align-items: center;
   padding: 12px 24px;
@@ -8,28 +7,23 @@
   border: none;
   border-radius: 8px;
 
-  /* Typography */
   font-family: "Inter", sans-serif;
   font-size: 15px;
   font-weight: 600;
   color: #ffffff;
 
-  /* Styling */
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
 
-  /* Animation */
   transition: all 0.2s ease-in-out;
 }
 
-/* Hiệu ứng khi rê chuột vào */
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4);
   filter: brightness(1.1);
 }
 
-/* Hiệu ứng khi nhấn giữ */
 .btn:active {
   transform: translateY(0);
   filter: brightness(0.9);

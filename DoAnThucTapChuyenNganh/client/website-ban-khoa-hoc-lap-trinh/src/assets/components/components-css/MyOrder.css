@@ -17,7 +17,7 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0;
-  color: #007bff; /* Màu xanh chủ đạo */
+  color: #007bff;
 }
 
 .my-orders-table {
@@ -96,29 +96,4 @@
   font-size: 1.2rem;
   color: #666;
   margin-top: 50px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .my-orders-header h2 {
-    font-size: 2rem;
-  }
-  .my-orders-table {
-    font-size: 0.9rem;
-  }
-  .my-orders-table th,
-  .my-orders-table td {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .my-orders-container {
-    padding: 10px;
-  }
-  .my-orders-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
 }

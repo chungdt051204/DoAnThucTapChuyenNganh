@@ -17,7 +17,7 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0;
-  color: #007bff; /* Màu xanh chủ đạo */
+  color: #007bff;
 }
 
 .order-detail-status {
@@ -119,33 +119,4 @@
   font-weight: bold;
   color: #007bff;
   margin-top: 20px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .order-detail-header h2 {
-    font-size: 2rem;
-  }
-  .order-detail-table {
-    font-size: 0.9rem;
-  }
-  .order-detail-table th,
-  .order-detail-table td {
-    padding: 10px;
-  }
-  .order-detail-course-cell {
-    flex-direction: column;
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .order-detail-container {
-    padding: 10px;
-  }
-  .order-detail-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
 }

@@ -1,4 +1,3 @@
-/* Dashboard.css */
 .dashboard-container {
   width: 100%;
   margin: 0 auto;
@@ -132,32 +131,4 @@
   text-align: center;
   font-weight: bold;
   color: #667eea;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .dashboard-container {
-    padding: 10px;
-  }
-
-  .dashboard-stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-stats-card {
-    padding: 15px;
-  }
-
-  .dashboard-card-value {
-    font-size: 1.5rem;
-  }
-
-  .bestseller-table-container {
-    padding: 10px;
-  }
-
-  .dashboard-table-header,
-  .dashboard-product-cell {
-    padding: 8px;
-  }
 }

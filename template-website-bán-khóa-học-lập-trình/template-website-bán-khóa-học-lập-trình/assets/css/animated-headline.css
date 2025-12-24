@@ -33,20 +33,8 @@ a {
   font-size: 2.4rem;
   font-weight: 700;
 }
-@media only screen and (min-width: 768px) {
-  .cd-title {
-    line-height: 250px;
-  }
-}
-@media only screen and (min-width: 1170px) {
-  .cd-title {
-    height: 200px;
-    line-height: 300px;
-  }
-  .cd-title h1 {
-    font-size: 3rem;
-  }
-}
+
+
 
 .cd-intro {
   width: 90%;
@@ -57,32 +45,15 @@ a {
 .cd-intro {
   margin: 4em auto;
 }
-@media only screen and (min-width: 768px) {
-  .cd-intro {
-    margin: 5em auto;
-  }
-}
-@media only screen and (min-width: 1170px) {
-  .cd-intro {
-    margin: 6em auto;
-  }
-}
+
+
 
 .cd-headline {
   font-size: 3rem;
   line-height: 1.2;
 }
-@media only screen and (min-width: 768px) {
-  .cd-headline {
-    font-size: 4.4rem;
-    font-weight: 300;
-  }
-}
-@media only screen and (min-width: 1170px) {
-  .cd-headline {
-    font-size: 6rem;
-  }
-}
+
+
 
 .cd-words-wrapper {
   display: inline-block;
