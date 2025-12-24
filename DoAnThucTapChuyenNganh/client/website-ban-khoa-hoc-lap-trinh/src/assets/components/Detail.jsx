@@ -314,28 +314,42 @@ export default function GetDetailCourse() {
               </a>
             ))}
         </div>
-        <div style={{ height: "500px", border: "1px solid black" }}>
-          <input type="text" ref={comment} required />
-          <button onClick={handlePostComment}>Gửi</button>
-          <div
-            style={{
-              width: "90%",
-              border: "1px solid black",
-              margin: "auto",
-            }}
-          >
+        <div className="detail-comment-section">
+          <h3 className="detail-comments-title">Các bình luận</h3>
+          <div className="detail-comment-input-container">
+            <input
+              type="text"
+              ref={comment}
+              className="detail-comment-input"
+              placeholder="Viết bình luận của bạn..."
+              required
+            />
+            <button
+              onClick={handlePostComment}
+              className="detail-comment-button"
+            >
+              Gửi
+            </button>
+          </div>
+          <div className="detail-comment-list">
             {commentsInCourse.length > 0 &&
               commentsInCourse.map((value, index) => {
                 const image = value.userId.avatar.includes("https")
                   ? value.userId.avatar
                   : `http://localhost:3000/images/user/${value.userId.avatar}`;
                 return (
-                  <div key={index}>
-                    <div style={{ display: "flex" }}>
-                      <img src={image} alt="" width={60} height={60} />
-                      <p>{value.userId.username}</p>
+                  <div key={index} className="detail-comment-item">
+                    <img
+                      src={image}
+                      alt={value.userId.username}
+                      className="detail-comment-avatar"
+                    />
+                    <div className="detail-comment-body">
+                      <p className="detail-comment-username">
+                        {value.userId.username}
+                      </p>
+                      <p className="detail-comment-text">{value.comment}</p>
                     </div>
-                    <p>{value.comment}</p>
                   </div>
                 );
               })}
