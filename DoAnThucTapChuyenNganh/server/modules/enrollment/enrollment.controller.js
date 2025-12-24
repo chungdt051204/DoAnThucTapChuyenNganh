@@ -12,3 +12,15 @@ exports.getEnrollment = async (req, res) => {
     }
   } catch (error) {}
 };
+exports.postEnrollment = async (req, res) => {
+  try {
+    const { body } = req;
+    await enrollmentEntity.create({ ...body });
+    res.status(200).json({ message: "Đăng ký học thành công" });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi xử lý hàm postEnrollment");
+    res
+      .status(500)
+      .json({ message: "Đăng ký học thất bại", error: error.message });
+  }
+};

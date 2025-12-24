@@ -1,24 +1,27 @@
-import ReactPlayer from "react-player";
-import { toast } from "react-toastify";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState, useContext, useRef } from "react";
 import AppContext from "./AppContext";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import "./components-css/Detail.css";
-import UserNavBar from "./UserNavBar";
-import Footer from "./Footer";
+import { toast } from "react-toastify";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import UserNavBar from "./UserNavBar";
+import ReactPlayer from "react-player";
+import Footer from "./Footer";
+import "./components-css/Detail.css";
 
 export default function GetDetailCourse() {
   const navigate = useNavigate();
   const { user, isLogin, refresh, setRefresh } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
-  const [searchParams] = useSearchParams(); // useSearch dùng để truy cập các tham số truy vấn (query string) trên URL.
+  const [searchParams] = useSearchParams(); // useSearchParams dùng để truy cập các tham số truy vấn (query string) trên URL.
   const id = searchParams.get("id"); // Lấy giá trị của tham số 'id' từ query string.
   const lesson_order = searchParams.get("lesson_order"); // Lấy giá trị của tham số 'lesson_order' từ query string.
   const [course, setCourse] = useState(""); // useState lưu trữ dữ liệu chi tiết của khóa học.
   const dialog = useRef();
+  const comment = useRef();
   const [courseIdInCart, setCourseIdInCart] = useState([]);
   const [courseIdInEnrollment, setCourseIdInEnrollment] = useState([]);
+  const [commentsInCourse, setCommentsInCourse] = useState([]);
+
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
     : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
@@ -37,7 +40,8 @@ export default function GetDetailCourse() {
         .then(({ data }) => {
           console.log(data);
           setCourseIdInCart(
-            data.items.length &&
+            data !== null &&
+              data.items.length &&
               data.items.map((value) => {
                 return value.courseId._id;
               })
@@ -66,10 +70,18 @@ export default function GetDetailCourse() {
         });
     }
   }, [user, refresh]);
+  useEffect(() => {
+    fetchAPI({
+      url: `${url}/review?course_id=${course._id}`,
+      setData: setCommentsInCourse,
+    });
+  }, [refresh, course._id]);
+
+  //Hàm xử lý thêm vào giỏ hàng
   const handleAddCart = () => {
     // Kiểm tra Bắt buộc Đăng nhập
     if (!isLogin) {
-      alert("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
+      toast.warning("Bạn chưa đăng nhập"); // Thông báo lỗi nếu chưa đăng nhập
       return; // Dừng hàm ngay lập tức
     }
     //  Gọi API Thêm vào Giỏ hàng
@@ -97,8 +109,73 @@ export default function GetDetailCourse() {
       .catch(async (err) => {
         // Xử lý lỗi
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
-        alert(message); // Hiển thị thông báo lỗi
+        console.log(message); // Hiển thị thông báo lỗi
       });
+  };
+  //Hàm xử lý đăng ký học khóa học miễn phí
+  const handleEnrollFree = () => {
+    fetch(`${url}/enrollment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user._id,
+        courseId: course._id,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then(({ message }) => {
+        toast.success(message);
+        setRefresh((prev) => prev + 1);
+      })
+      .catch(async (err) => {
+        const { message } = await err.json();
+        console.log(message);
+      });
+  };
+  //Hàm xử lý đăng bình luận
+  const handlePostComment = () => {
+    if (!isLogin) {
+      toast.warning("Bạn chưa đăng nhập, không thể bình luận");
+      return;
+    } else if (
+      courseIdInEnrollment.length > 0 &&
+      !courseIdInEnrollment.includes(course._id)
+    ) {
+      toast.warning("Bạn chưa sở hữu khóa học này, không thể bình luận");
+      return;
+    } else {
+      if (comment.current.value !== "") {
+        fetch(`${url}/review`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user._id,
+            courseId: course._id,
+            comment: comment.current.value,
+          }),
+        })
+          .then((res) => {
+            if (res.ok) return res.json();
+            throw res;
+          })
+          .then(({ message }) => {
+            console.log(message);
+            comment.current.value = "";
+            setRefresh((prev) => prev + 1);
+          })
+          .catch(async (err) => {
+            const { message } = await err.json();
+            console.log(message);
+          });
+      }
+    }
   };
   return (
     <>
@@ -116,34 +193,49 @@ export default function GetDetailCourse() {
               {course.price > 0 ? (
                 <p>Giá: {course.price} VND</p>
               ) : (
-                <p>Miễn phí</p>
+                <p style={{ color: "#16a34a" }}>Miễn phí</p>
               )}
             </div>
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            {!course.isFree > 0 &&
-              (courseIdInEnrollment.length > 0 &&
-              courseIdInEnrollment.includes(course._id) ? (
-                /* TH1: Khóa học đã được mua */
-                <button className="btn-course btn-activated" disabled>
-                  <i className="fas fa-check-circle"></i> Đã kích hoạt
-                </button>
-              ) : courseIdInCart.length > 0 &&
-                courseIdInCart.includes(course._id) ? (
-                /* TH2: Khóa học đã có trong giỏ hàng */
-                <button className="btn-course btn-in-cart" disabled>
-                  <i className="fas fa-shopping-cart"></i> Đã trong giỏ
-                </button>
-              ) : (
-                /* TH3: Chưa thao tác */
-                <button
-                  className="btn-course btn-primary"
-                  onClick={handleAddCart}
-                >
-                  Thêm vào giỏ
-                </button>
-              ))}
+            {/* Bước 1: Kiểm tra xem đã sở hữu khóa học chưa (Bất kể phí hay miễn phí) */}
+            {courseIdInEnrollment.length > 0 &&
+            courseIdInEnrollment.includes(course._id) ? (
+              <button className="btn-course btn-activated" disabled>
+                <i className="fas fa-check-circle"></i> Đã kích hoạt
+              </button>
+            ) : (
+              /* Bước 2: Nếu chưa sở hữu, kiểm tra xem là khóa học miễn phí hay trả phí */
+              <>
+                {course.isFree ? (
+                  /* Nếu miễn phí: Cho nút Đăng ký ngay để lưu vào Enrollment */
+                  <button
+                    className="btn-course btn-primary"
+                    onClick={handleEnrollFree}
+                  >
+                    Đăng ký học ngay
+                  </button>
+                ) : (
+                  /* Nếu trả phí: Kiểm tra giỏ hàng */
+                  <>
+                    {courseIdInCart.length > 0 &&
+                    courseIdInCart.includes(course._id) ? (
+                      <button className="btn-course btn-in-cart" disabled>
+                        <i className="fas fa-shopping-cart"></i> Đã trong giỏ
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-course btn-primary"
+                        onClick={handleAddCart}
+                      >
+                        Thêm vào giỏ
+                      </button>
+                    )}
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
         <h2 className="course-title">{course.title}</h2>
@@ -196,10 +288,9 @@ export default function GetDetailCourse() {
                   onClick={() => {
                     if (
                       courseIdInEnrollment.length > 0 &&
-                      !courseIdInEnrollment.includes(course._id) &&
-                      !course.isFree
+                      !courseIdInEnrollment.includes(course._id)
                     ) {
-                      alert("Bạn chưa mua khóa học");
+                      toast.warning("Bạn chưa sở hữu khóa học");
                       return;
                     } else {
                       navigate(`/course?id=${id}&lesson_order=${idx + 1}`);
@@ -222,6 +313,33 @@ export default function GetDetailCourse() {
                 </div>
               </a>
             ))}
+        </div>
+        <div style={{ height: "500px", border: "1px solid black" }}>
+          <input type="text" ref={comment} required />
+          <button onClick={handlePostComment}>Gửi</button>
+          <div
+            style={{
+              width: "90%",
+              border: "1px solid black",
+              margin: "auto",
+            }}
+          >
+            {commentsInCourse.length > 0 &&
+              commentsInCourse.map((value, index) => {
+                const image = value.userId.avatar.includes("https")
+                  ? value.userId.avatar
+                  : `http://localhost:3000/images/user/${value.userId.avatar}`;
+                return (
+                  <div key={index}>
+                    <div style={{ display: "flex" }}>
+                      <img src={image} alt="" width={60} height={60} />
+                      <p>{value.userId.username}</p>
+                    </div>
+                    <p>{value.comment}</p>
+                  </div>
+                );
+              })}
+          </div>
         </div>
       </div>
       <dialog ref={dialog} className="video-dialog">

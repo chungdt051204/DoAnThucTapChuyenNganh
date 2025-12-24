@@ -35,8 +35,13 @@
   gap: 20px;
 }
 
+.course-list a {
+  text-decoration: none;
+}
+
 .course-item {
   width: 220px;
+  height: 330px;
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
@@ -81,11 +86,11 @@
 .course-price {
   font-size: 15px;
   font-weight: 700;
-  color: #16a34a;
+  color: red;
 }
 
 .course-price .free {
-  color: #2563eb;
+  color: #16a34a;
 }
 
 .empty {

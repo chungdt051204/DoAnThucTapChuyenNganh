@@ -1,27 +1,30 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import AppContext from "./AppContext";
-import "./components-css/NavBar.css";
+import { toast } from "react-toastify";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import "./components-css/NavBar.css";
+
 export default function UserNavBar() {
   const navigate = useNavigate(); // useNavigate dùng để điều hướng
   // Sử dụng Context để truy cập và quản lý các giá trị/hàm toàn cục của ứng dụng:
   const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
   const [isHovered, setIsHovered] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
   const [avatarClicked, setAvatarClicked] = useState(false);
+  // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm
   const [inputValue, setInputValue] = useState("");
-  // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm (dùng để kiểm soát input).
+  // useState lưu trữ danh sách các khóa học được gợi ý dựa trên nội dung tìm kiếm
   const [coursesWithSearchSuggestion, setCoursesWithSearchSuggestion] =
-    useState([]); // useState lưu trữ danh sách các khóa học được gợi ý dựa trên nội dung tìm kiếm.
-  const inputRef = useRef(); // useRef dùng để tham chiếu trực tiếp đến phần tử input để lấy giá trị.
-  const handleChange = () => {
+    useState([]);
+
+  const handleChange = (value) => {
     // Cập nhật state inputValue với giá trị hiện tại của ô input
-    setInputValue(inputRef.current.value);
-    // Gọi API Tìm kiếm Gợi ý
+    setInputValue(value);
+    // Gọi API Tìm kiếm gợi ý
     fetchAPI({
       url: `${url}/course/search/suggestion?search=${encodeURIComponent(
-        inputRef.current.value
+        value
       )}`,
       setData: setCoursesWithSearchSuggestion,
     });
@@ -36,20 +39,20 @@ export default function UserNavBar() {
       credentials: "include", // Đảm bảo gửi kèm **cookie** (sessionId) để server biết session nào cần hủy
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công (2xx), parse JSON
+        if (res.ok) return res.json(); // Nếu thành công , parse JSON
         throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
       .then(({ message }) => {
-        alert(message); // Hiển thị thông báo đăng xuất thành công
+        toast.success(message); // Hiển thị thông báo đăng xuất thành công
         setIsLogin(false); // Cập nhật trạng thái Context: người dùng không còn đăng nhập
-        navigate("/"); // Chuyển hướng về trang chủ
+        setTimeout(() => {
+          navigate("/"); // Chuyển hướng về trang chủ
+        }, 1000);
       })
       .catch(async (err) => {
-        // Xử lý lỗi (ví dụ: lỗi 401 nếu session đã hết hạn)
-        if (err.status === 401) {
-          const { message } = await err.json();
-          console.log(message); // In lỗi từ server ra console
-        }
+        // Xử lý lỗi
+        const { message } = await err.json();
+        console.log(message); // In lỗi từ server ra console
       });
   };
   return (
@@ -94,7 +97,7 @@ export default function UserNavBar() {
             <i
               onClick={() => {
                 if (!isLogin) {
-                  alert("Bạn chưa đăng nhập");
+                  toast.warning("Bạn chưa đăng nhập");
                   return;
                 } else {
                   navigate("/cart");
@@ -108,8 +111,8 @@ export default function UserNavBar() {
             <div className="search-dropdown">
               <div className="search-box">
                 <input
-                  onChange={handleChange}
-                  ref={inputRef}
+                  value={inputValue}
+                  onChange={(e) => handleChange(e.target.value)}
                   type="text"
                   placeholder="Nhập tên khóa học..."
                 />
@@ -128,14 +131,12 @@ export default function UserNavBar() {
                 <div className="search-dropdown-menu">
                   {coursesWithSearchSuggestion.length > 0 ? (
                     coursesWithSearchSuggestion.map((value, index) => {
+                      const image = value.image.includes("https")
+                        ? value.image
+                        : `http://localhost:3000/images/course/${value.image}`;
                       return (
                         <div className="search-dropdown-item" key={index}>
-                          <img
-                            src={value.image}
-                            alt=""
-                            width={60}
-                            height={80}
-                          />
+                          <img src={image} alt="" width={60} height={80} />
                           <p>{value.title}</p>
                         </div>
                       );
@@ -150,7 +151,6 @@ export default function UserNavBar() {
           <li className="nav-user-item">
             {isLogin ? (
               <div className="user-dropdown">
-                {/* Phần hiển thị avatar và nút bấm */}
                 <div
                   className="user-trigger"
                   onClick={() => setAvatarClicked((prev) => !prev)}
@@ -171,8 +171,6 @@ export default function UserNavBar() {
                     } icon-arrow`}
                   ></i>
                 </div>
-
-                {/* Menu dropdown */}
                 {avatarClicked && (
                   <div className="user-dropdown-menu">
                     <Link to="/profile" className="menu-link">

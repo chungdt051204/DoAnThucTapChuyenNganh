@@ -1,14 +1,15 @@
+import { Link, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
-import { useSearchParams } from "react-router-dom";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
-import "./components-css/CoursesWithQueryString.css";
 import UserNavBar from "./UserNavBar";
-import Footer from "./Footer";
 import PriceFilter from "./PriceFilter";
+import Footer from "./Footer";
+import "./components-css/CoursesWithQueryString.css";
+
 export default function CoursesWithQueryString({ text }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams(); //useSearchParams để lấy dữ liệu và gán dữ liệu cho query String
   const category_id = searchParams.get("category_id");
   const search = searchParams.get("search");
   const priceRange = searchParams.get("price");
@@ -16,6 +17,7 @@ export default function CoursesWithQueryString({ text }) {
   const [coursesWithQueryString, setCoursesWithQueryString] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [priceSelected, setPriceSelected] = useState("");
+
   useEffect(() => {
     const params = new URLSearchParams();
     if (category_id) {
@@ -42,6 +44,7 @@ export default function CoursesWithQueryString({ text }) {
     setCoursesWithQueryString,
     categories,
   ]);
+  //Hàm xử lý sự kiện chọn giá
   const handlePriceChange = (value) => {
     setPriceSelected(value);
     setSearchParams((prev) => {
@@ -73,31 +76,37 @@ export default function CoursesWithQueryString({ text }) {
               </p>
             </div>
           </header>
-
           <div className="course-list">
             {coursesWithQueryString.length > 0 ? (
-              coursesWithQueryString.map((course, index) => (
-                <div className="course-item" key={course._id || index}>
-                  <div className="course-image">
-                    <img
-                      src={course.image}
-                      alt={course.title}
-                      width={150}
-                      height={200}
-                    />
-                  </div>
-                  <div className="course-body">
-                    <h3 className="course-name">{course.title}</h3>
-                    <div className="course-price">
-                      {course.price > 0 ? (
-                        `${course.price.toLocaleString()}đ`
-                      ) : (
-                        <span className="free">Miễn phí</span>
-                      )}
+              coursesWithQueryString.map((value, index) => {
+                const image = value.image.includes("https")
+                  ? value.image
+                  : `http://localhost:3000/images/course/${value.image}`;
+                return (
+                  <Link to={`/course?id=${value._id}`} key={index}>
+                    <div className="course-item" key={value._id || index}>
+                      <div className="course-image">
+                        <img
+                          src={image}
+                          alt={value.title}
+                          width={150}
+                          height={200}
+                        />
+                      </div>
+                      <div className="course-body">
+                        <h3 className="course-name">{value.title}</h3>
+                        <div className="course-price">
+                          {value.price > 0 ? (
+                            value.price + " " + "VND"
+                          ) : (
+                            <span className="free">Miễn phí</span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))
+                  </Link>
+                );
+              })
             ) : (
               <div className="empty">Không tìm thấy khóa học nào.</div>
             )}

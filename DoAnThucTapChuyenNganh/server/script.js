@@ -24,12 +24,14 @@ const categoryRouter = require("./modules/category/category.router");
 const cartRouter = require("./modules/cart/cart.router");
 const orderRouter = require("./modules/order/order.router");
 const enrollmentRouter = require("./modules/enrollment/enrollment.router");
+const reviewRouter = require("./modules/review/review.router");
 app.use("/", userRouter);
 app.use("/", courseRouter);
 app.use("/", categoryRouter);
 app.use("/", cartRouter);
 app.use("/", orderRouter);
 app.use("/", enrollmentRouter);
+app.use("/", reviewRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 passport.use(
