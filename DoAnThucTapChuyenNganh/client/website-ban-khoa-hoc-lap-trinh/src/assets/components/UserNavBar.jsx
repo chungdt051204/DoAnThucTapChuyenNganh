@@ -135,10 +135,12 @@ export default function UserNavBar() {
                         ? value.image
                         : `http://localhost:3000/images/course/${value.image}`;
                       return (
-                        <div className="search-dropdown-item" key={index}>
-                          <img src={image} alt="" width={60} height={80} />
-                          <p>{value.title}</p>
-                        </div>
+                        <Link to={`/course?id=${value._id}`}>
+                          <div className="search-dropdown-item" key={index}>
+                            <img src={image} alt="" width={60} height={80} />
+                            <p>{value.title}</p>
+                          </div>
+                        </Link>
                       );
                     })
                   ) : (

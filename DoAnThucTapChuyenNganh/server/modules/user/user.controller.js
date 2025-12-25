@@ -164,7 +164,7 @@ exports.putUser = async (req, res) => {
     // Lấy ID người dùng từ tham số URL
     const { id } = req.params;
     // Lấy thông tin cập nhật từ body của yêu cầu
-    const { newUserName, newPassword } = req.body;
+    const { newFullname, newPassword } = req.body;
     // Tìm kiếm người dùng trong cơ sở dữ liệu bằng ID
     const userWithId = await userEntity.findOne({ _id: id });
     // Kiểm tra xem người dùng có tồn tại hay không
@@ -180,7 +180,7 @@ exports.putUser = async (req, res) => {
         },
         {
           // Trường cập nhật username: Nếu newUserName rỗng, giữ lại username cũ
-          username: newUserName === "" ? userWithId.username : newUserName,
+          fullName: newFullname === "" ? userWithId.fullName : newFullname,
           // Trường cập nhật password: Nếu newPassword rỗng, giữ lại password cũ
           password: newPassword === "" ? userWithId.password : newPassword,
           // Trường cập nhật avatar: Nếu có file mới dùng tên file đó ngược lại giữ lại avatar cũ
@@ -204,7 +204,7 @@ exports.putUser = async (req, res) => {
     // Bắt và ghi log bất kỳ lỗi nào xảy ra trong quá trình cập nhật
     console.log("Có lỗi xảy ra khi cập nhật thông tin người dùng");
     // Trả về status 500 nếu có lỗi xảy ra
-    res
+    return res
       .status(500)
       .json({ message: "Cập nhật thông tin thất bại", error: error.message });
   }

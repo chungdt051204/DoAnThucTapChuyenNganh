@@ -1,10 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import "./components-css/NavBar.css";
+import { useContext, useState } from "react";
 import AppContext from "./AppContext";
+import { toast } from "react-toastify";
+import "./components-css/NavBar.css";
+
 export default function AdminNavBar() {
   const navigate = useNavigate();
   const { isLogin, setIsLogin, user } = useContext(AppContext);
+  const [avatarClicked, setAvatarClicked] = useState(false);
+
+  //Hàm xử lý chức năng đăng xuất
   const handleLogout = () => {
     setIsLogin(false);
     fetch("http://localhost:3000/me", {
@@ -21,16 +26,18 @@ export default function AdminNavBar() {
         throw res;
       })
       .then(({ message }) => {
-        alert(message);
+        toast.success(message);
         navigate("/");
       });
   };
   return (
     <>
       <nav className="navbar">
-        <div className="logo">
-          <img src="/rocket-icon.svg" alt="Logo" />
-        </div>
+        <Link to="">
+          <div className="logo">
+            <img src="/rocket-icon.svg" alt="Logo" />
+          </div>
+        </Link>
         <ul className="menu">
           <li>
             <Link to="/admin">Dashboard</Link>
@@ -55,28 +62,49 @@ export default function AdminNavBar() {
               <p>Quản lý đơn hàng</p>
             </Link>
           </li>
+          <li className="nav-user-item">
+            {isLogin ? (
+              <div className="user-dropdown">
+                <div
+                  className="user-trigger"
+                  onClick={() => setAvatarClicked((prev) => !prev)}
+                >
+                  <img
+                    src={
+                      user.avatar.includes("https")
+                        ? user.avatar
+                        : `http://localhost:3000/images/user/${user.avatar}`
+                    }
+                    alt="avatar"
+                    referrerPolicy="no-referrer"
+                    className="user-avatar"
+                  />
+                  <i
+                    className={`fa-solid fa-angle-${
+                      avatarClicked ? "up" : "down"
+                    } icon-arrow`}
+                  ></i>
+                </div>
+                {avatarClicked && (
+                  <div className="user-dropdown-menu">
+                    <Link to="/profile" className="menu-link">
+                      <i className="fa-regular fa-user"></i> Thông tin cá nhân
+                    </Link>
+                    <hr />
+                    <div className="menu-link logout" onClick={handleLogout}>
+                      <i className="fa-solid fa-arrow-right-from-bracket"></i>{" "}
+                      Đăng xuất
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="login-btn">
+                Đăng nhập
+              </Link>
+            )}
+          </li>
         </ul>
-        <div className="auth">
-          {isLogin ? (
-            <div className="userProfile">
-              <img
-                src={
-                  user?.avatar?.includes("https")
-                    ? user.avatar
-                    : user?.avatar
-                    ? `http://localhost:3000/images/user/${user.avatar}`
-                    : "https://via.placeholder.com/50" // ảnh mặc định nếu lỗi
-                }
-                alt=""
-                width={50}
-                height={50}
-              />
-              <Link onClick={handleLogout}>Đăng xuất</Link>
-            </div>
-          ) : (
-            <Link to="/login">Đăng nhập</Link>
-          )}
-        </div>
       </nav>
     </>
   );

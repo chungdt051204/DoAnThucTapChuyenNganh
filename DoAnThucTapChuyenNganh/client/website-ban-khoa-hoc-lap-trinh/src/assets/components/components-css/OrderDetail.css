@@ -1,5 +1,3 @@
-/* OrderDetail.css - Đồng bộ với chủ đề website */
-
 .order-detail-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -19,17 +17,22 @@
   margin: 0;
   color: #007bff;
 }
-
 .order-detail-status {
   text-align: center;
   margin-bottom: 30px;
   font-size: 1.2rem;
   font-weight: bold;
-  background-color: #d4edda;
-  color: #155724;
   padding: 10px 20px;
   border-radius: 4px;
   display: inline-block;
+}
+.order-detail-status.pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.order-detail-status.success {
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .order-detail-info {
@@ -89,8 +92,8 @@
 }
 
 .order-detail-course-image {
-  width: 80px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #ddd;
@@ -109,7 +112,7 @@
 
 .order-detail-price {
   font-weight: bold;
-  color: #28a745;
+  color: red !important;
   font-size: 1.1rem;
 }
 

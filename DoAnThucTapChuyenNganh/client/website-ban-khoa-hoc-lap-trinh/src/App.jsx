@@ -1,27 +1,27 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import AppContext from "./assets/components/AppContext";
-import HomeUser from "./assets/components/HomeUser";
+import { fetchAPI } from "./assets/service/api";
 import Login from "./assets/components/Login";
 import Register from "./assets/components/Register";
-import { useEffect, useState } from "react";
-import GetDetailCourse from "./assets/components/Detail";
+import HomeUser from "./assets/components/HomeUser";
+import UserProfile from "./assets/components/UserProfile";
+import Cart from "./assets/components/Cart";
+import MyCourses from "./assets/components/MyCourses";
+import MyOrder from "./assets/components/MyOrder";
+import OrderDetail from "./assets/components/OrderDetail";
+import CoursesWithQueryString from "./assets/components/CoursesWithQueryString";
+import DetailCourse from "./assets/components/DetailCourse";
 import HomeAdmin from "./assets/components/HomeAdmin";
 import QuanLyDanhMuc from "./assets/components/QuanLyDanhMuc";
 import QuanLyKhoaHoc from "./assets/components/QuanLyKhoaHoc";
 import QuanLyNguoiDung from "./assets/components/QuanLyNguoiDung";
-import Cart from "./assets/components/Cart";
-import UserProfile from "./assets/components/UserProfile";
 import QuanLyDonHang from "./assets/components/QuanLyDonHang";
-import ThanhToan from "./assets/components/ThanhToan";
-import MyCourses from "./assets/components/MyCourses";
-import MyOrder from "./assets/components/MyOrder";
-import OrderDetail from "./assets/components/OrderDetail";
-import { fetchAPI } from "./assets/service/api";
-import CoursesWithQueryString from "./assets/components/CoursesWithQueryString";
 export const url = "http://localhost:3000";
 
 function App() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [isLogin, setIsLogin] = useState(false);
@@ -29,6 +29,7 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [orders, setOrders] = useState([]);
   const [refresh, setRefresh] = useState(0);
+
   useEffect(() => {
     fetch(`${url}/me`, {
       credentials: "include", //Cho phép gửi kèm cookie
@@ -72,6 +73,7 @@ function App() {
           users,
           setUsers,
           orders,
+          setOrders,
           refresh,
           setRefresh,
         }}
@@ -80,7 +82,7 @@ function App() {
           <Route path="/" element={<HomeUser></HomeUser>} />
           <Route path="/login" element={<Login></Login>} />
           <Route path="/register" element={<Register></Register>} />
-          <Route path="/course" element={<GetDetailCourse></GetDetailCourse>} />
+          <Route path="/course" element={<DetailCourse></DetailCourse>} />
           <Route
             path="/courses/category"
             element={<CoursesWithQueryString text="Khóa học theo danh mục" />}
@@ -102,7 +104,6 @@ function App() {
           <Route path="/admin/user" element={<QuanLyNguoiDung />} />
           <Route path="/admin/order" element={<QuanLyDonHang />} />
           <Route path="/admin/order/detail" element={<OrderDetail />} />
-          <Route path="/payment" element={<ThanhToan />} />
         </Routes>
         <ToastContainer position="top-center" autoClose={1000}></ToastContainer>
       </AppContext.Provider>

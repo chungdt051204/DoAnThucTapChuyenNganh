@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
+import { toast } from "react-toastify";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
 import AdminNavBar from "./AdminNavBar";
@@ -27,6 +28,8 @@ export default function QuanLyKhoaHoc() {
   const [price, setPrice] = useState("");
   const addImage = useRef();
   const updateImage = useRef();
+  const addThumbnail = useRef();
+  const updateThumbnail = useRef();
   const [errTitle, setErrTitle] = useState("");
   const [errCategory, setErrCategory] = useState("");
   const [errPrice, setErrPrice] = useState("");
@@ -43,6 +46,7 @@ export default function QuanLyKhoaHoc() {
     });
     setSearchValue("");
   }, [refresh, setCourses, category_id, search, priceRange]);
+  //Hàm xử lý chức năng tìm kiếm khóa học
   const handleClickSearch = () => {
     setSearchParams((prev) => {
       const nextParams = new URLSearchParams(prev);
@@ -51,6 +55,7 @@ export default function QuanLyKhoaHoc() {
       return nextParams;
     });
   };
+  //Hàm xử lý chọn danh mục
   const handleCategoryChange = (value) => {
     setCategorySelected(value);
     setSearchParams((prev) => {
@@ -60,6 +65,7 @@ export default function QuanLyKhoaHoc() {
       return nextParams;
     });
   };
+  //Hàm xử lý chọn giá
   const handlePriceChange = (value) => {
     setPriceSelected(value);
     setSearchParams((prev) => {
@@ -69,6 +75,7 @@ export default function QuanLyKhoaHoc() {
       return nextParams;
     });
   };
+  //Hàm xử lý chức năng thêm khóa học
   const handleAddSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi submit form mặc định của trình duyệt
     // Validation (Kiểm tra dữ liệu đầu vào)
@@ -84,7 +91,7 @@ export default function QuanLyKhoaHoc() {
       // Kiểm tra trường Giá
       setErrPrice("Vui lòng nhập giá");
       return;
-    } else if (!addImage.current.files[0]) {
+    } else if (!addImage.current.files[0] || !addThumbnail.current.files[0]) {
       // Kiểm tra file (Image) có tồn tại không
       setErrImage("Bạn chưa chọn file");
       return;
@@ -94,7 +101,8 @@ export default function QuanLyKhoaHoc() {
     formData.append("title", title); // Thêm dữ liệu tiêu đề
     formData.append("categoryId", categorySelected); // Thêm ID danh mục
     formData.append("price", price); // Thêm giá
-    formData.append("image", addImage.current.files[0]); // Thêm file hình ảnh (lấy từ Ref)
+    formData.append("image", addImage.current.files[0]); // Thêm file hình ảnh
+    formData.append("thumbnail", addThumbnail.current.files[0]);
 
     // Gửi yêu cầu POST đến API để thêm khóa học
     fetch("http://localhost:3000/course", {
@@ -102,19 +110,20 @@ export default function QuanLyKhoaHoc() {
       body: formData, // Đính kèm FormData
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu HTTP status 2xx, parse JSON
-        throw res; // Nếu status lỗi  ném Response object để xử lý lỗi
+        if (res.ok) return res.json(); // Nếu HTTP status, parse JSON
+        throw res; // Nếu status lỗi,  ném Response object để xử lý lỗi
       })
       .then(({ message }) => {
-        alert(message); // Hiển thị thông báo thành công từ server
+        toast.success(message); // Hiển thị thông báo thành công từ server
         setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu
         addDialog.current.close(); // Đóng modal/dialog Thêm mới
       })
       .catch(async (err) => {
         const { message } = await err.json(); // Đọc body lỗi để lấy thông báo chi tiết
-        alert(message); // Hiển thị thông báo lỗi chi tiết
+        console.log(message); // Hiển thị thông báo lỗi chi tiết
       });
   };
+  //Hàm xử lý chức năng sửa khóa học
   const handleClickUpdate = (id) => {
     fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourseWithId });
     updateDialog.current.showModal();
@@ -127,50 +136,52 @@ export default function QuanLyKhoaHoc() {
     formData.append("title", title);
     formData.append("categoryId", categorySelected);
     formData.append("price", price);
-    // Thêm file hình ảnh mới (lấy từ Ref)
+    // Thêm file hình ảnh mới
     formData.append("image", updateImage.current.files[0]);
+    formData.append("thumbnail", updateThumbnail.current.files[0]);
     // Gửi yêu cầu PUT đến API, đính kèm ID khóa học vào query string
     fetch(`http://localhost:3000/course?id=${id}`, {
       method: "PUT",
       body: formData, // Đính kèm FormData
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu HTTP status 2xx, parse JSON
+        if (res.ok) return res.json(); // Nếu HTTP status , parse JSON
         throw res; // Nếu status lỗi, ném Response object
       })
       .then(({ message }) => {
         // Xử lý Thành công
-        alert(message); // Hiển thị thông báo thành công
+        toast.success(message); // Hiển thị thông báo thành công
         setRefresh((prev) => prev + 1); // Kích hoạt tải lại dữ liệu
         updateDialog.current.close(); // Đóng modal Cập nhật
       })
       .catch(async (err) => {
         //Xử lý Lỗi
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body
-        alert(message); // Hiển thị thông báo lỗi chi tiết
+        console.log(message); // Hiển thị thông báo lỗi chi tiết
       });
   };
+  //Hàm xử lý chức năng xóa khóa học
   const handleDelete = (id) => {
     //Gửi yêu cầu DELETE đến API, đính kèm ID khóa học vào query string
     fetch(`http://localhost:3000/course?id=${id}`, {
       method: "DELETE",
     })
       .then((res) => {
-        //Kiểm tra Response: Nếu thành công (status 2xx), parse JSON
+        //Kiểm tra Response: Nếu thành công , parse JSON
         if (res.ok) return res.json();
         // Nếu lỗi, ném Response object để xử lý lỗi
         throw res;
       })
       .then(({ message }) => {
         // Xử lý thành công: Hiển thị thông báo
-        alert(message);
+        toast.success(message);
         // Cập nhật dữ liệu để component hiển thị danh sách mới
         setRefresh((prev) => prev + 1);
       })
       .catch(async (err) => {
         // Xử lý lỗi: Lấy thông báo lỗi chi tiết từ body của Response object đã ném
         const { message } = await err.json();
-        alert(message); // Hiển thị thông báo lỗi
+        toast.error(message); // Hiển thị thông báo lỗi
       });
   };
   return (
@@ -215,6 +226,7 @@ export default function QuanLyKhoaHoc() {
             onPriceChange={handlePriceChange}
           />
         </div>
+        <h3 style={{ marginLeft: "30px" }}>Tổng khóa học: {courses.length}</h3>
         <div className="course-table-container">
           <table>
             <thead>
@@ -267,8 +279,8 @@ export default function QuanLyKhoaHoc() {
         </div>
       </div>
       <dialog ref={addDialog}>
+        <h2>Thêm khóa học</h2>
         <form action="" method="dialog" onSubmit={handleAddSubmit}>
-          Tên khóa học:
           <input
             type="text"
             onChange={(e) => {
@@ -279,8 +291,8 @@ export default function QuanLyKhoaHoc() {
           />
           {errTitle && <span>{errTitle}</span>}
           <br />
-          Danh mục:
           <select
+            className="form-select"
             onChange={(e) => {
               setCategorySelected(e.target.value);
               setErrCategory("");
@@ -298,8 +310,6 @@ export default function QuanLyKhoaHoc() {
           </select>
           <br />
           {errCategory && <span>{errCategory}</span>}
-          <br />
-          Giá:{" "}
           <input
             onChange={(e) => {
               setPrice(e.target.value);
@@ -309,22 +319,33 @@ export default function QuanLyKhoaHoc() {
             placeholder="Nhập giá"
           />
           {errPrice && <span>{errPrice}</span>}
-          <br />
           Image:
-          <input
-            type="file"
-            onChange={() => {
-              setErrImage("");
-            }}
-            ref={addImage}
-          />
-          <br />
+          <div className="avatar-group">
+            <input
+              type="file"
+              name="image"
+              ref={addImage}
+              className="custom-file-input"
+              accept=".jpg, .jpeg, .png"
+            />
+          </div>
+          Thumbnail:
+          <div className="avatar-group">
+            <input
+              type="file"
+              name="image"
+              ref={addThumbnail}
+              className="custom-file-input"
+              accept=".jpg, .jpeg, .png"
+            />
+          </div>
+          {errFile && <span>{errFile}</span>}
           <button>Thêm</button>
         </form>
       </dialog>
       <dialog ref={updateDialog}>
+        <h2>Sửa khóa học</h2>
         <form action="" method="dialog" onSubmit={handleUpdateSubmit}>
-          Tên khóa học:
           <input
             type="text"
             onChange={(e) => {
@@ -333,10 +354,8 @@ export default function QuanLyKhoaHoc() {
             }}
             defaultValue={courseWithId.title}
           />
-          {errTitle && <span>{errTitle}</span>}
-          <br />
-          Danh mục:
           <select
+            className="form-select"
             onChange={(e) => {
               setCategorySelected(e.target.value);
               setErrCategory("");
@@ -355,9 +374,6 @@ export default function QuanLyKhoaHoc() {
               })}
           </select>
           <br />
-          {errCategory && <span>{errCategory}</span>}
-          <br />
-          Giá:
           <input
             onChange={(e) => {
               setPrice(e.target.value);
@@ -366,18 +382,26 @@ export default function QuanLyKhoaHoc() {
             type="text"
             defaultValue={courseWithId.price}
           />
-          {errPrice && <span>{errPrice}</span>}
-          <br />
           Image:
-          <input
-            type="file"
-            onChange={() => {
-              setErrImage("");
-            }}
-            ref={updateImage}
-          />
-          <br />
-          {errFile && <span>{errFile}</span>}
+          <div className="avatar-group">
+            <input
+              type="file"
+              name="image"
+              ref={updateImage}
+              className="custom-file-input"
+              accept=".jpg, .jpeg, .png"
+            />
+          </div>
+          Thumbnail:
+          <div className="avatar-group">
+            <input
+              type="file"
+              name="image"
+              ref={updateThumbnail}
+              className="custom-file-input"
+              accept=".jpg, .jpeg, .png"
+            />
+          </div>
           <br />
           <button>Cập nhật</button>
         </form>

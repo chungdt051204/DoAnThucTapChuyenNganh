@@ -9,7 +9,7 @@ import ReactPlayer from "react-player";
 import Footer from "./Footer";
 import "./components-css/Detail.css";
 
-export default function GetDetailCourse() {
+export default function DetailCourse() {
   const navigate = useNavigate();
   const { user, isLogin, refresh, setRefresh } = useContext(AppContext); // useContext thông tin người dùng và trạng thái đăng nhập từ Context.
   const [searchParams] = useSearchParams(); // useSearchParams dùng để truy cập các tham số truy vấn (query string) trên URL.
@@ -20,16 +20,27 @@ export default function GetDetailCourse() {
   const comment = useRef();
   const [courseIdInCart, setCourseIdInCart] = useState([]);
   const [courseIdInEnrollment, setCourseIdInEnrollment] = useState([]);
+  const [courseIdInPending, setCourseIdInPending] = useState([]);
   const [commentsInCourse, setCommentsInCourse] = useState([]);
+  let thumbnail = null;
+  if (course) {
+    thumbnail = course.thumbnail.includes("https")
+      ? course.thumbnail
+      : `http://localhost:3000/images/course/${course.thumbnail}`;
+  }
 
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
     : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
 
   useEffect(() => {
-    fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourse });
-  }, [id]);
-  useEffect(() => {
+    if (id) {
+      fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourse });
+      fetchAPI({
+        url: `${url}/review?course_id=${id}`,
+        setData: setCommentsInCourse,
+      });
+    }
     if (user) {
       // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
       fetch(`http://localhost:3000/cart?user_id=${user._id}`)
@@ -48,10 +59,6 @@ export default function GetDetailCourse() {
           );
           // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
         });
-    }
-  }, [user, refresh]);
-  useEffect(() => {
-    if (user) {
       // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
       fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
         .then((res) => {
@@ -68,14 +75,22 @@ export default function GetDetailCourse() {
           );
           // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
         });
+      fetch(`http://localhost:3000/order?user_id=${user._id}`)
+        .then((res) => {
+          if (res.ok) return res.json(); // Nếu thành công parse JSON.
+          throw res; // Nếu thất bại, ném response để xử lý lỗi.
+        })
+        .then(({ data }) => {
+          console.log(data);
+          const pendingIds = data
+            .filter((order) => order.status === "pending") // Chỉ lọc đơn hàng chờ duyệt
+            .flatMap((order) => order.items.map((item) => item.courseId._id)); // Lấy ID từ mảng items
+
+          setCourseIdInPending(pendingIds);
+          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+        });
     }
-  }, [user, refresh]);
-  useEffect(() => {
-    fetchAPI({
-      url: `${url}/review?course_id=${course._id}`,
-      setData: setCommentsInCourse,
-    });
-  }, [refresh, course._id]);
+  }, [id, user, refresh]);
 
   //Hàm xử lý thêm vào giỏ hàng
   const handleAddCart = () => {
@@ -182,11 +197,7 @@ export default function GetDetailCourse() {
       <UserNavBar></UserNavBar>
       <div className="course-card">
         <div className="course-hero">
-          <img
-            className="course-thumb"
-            src={course.thumbnail}
-            alt={course.title}
-          />
+          <img className="course-thumb" src={thumbnail} alt={course.title} />
           <div className="course-side">
             <div className="level">{course.title}</div>
             <div className="price">
@@ -199,17 +210,21 @@ export default function GetDetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            {/* Bước 1: Kiểm tra xem đã sở hữu khóa học chưa (Bất kể phí hay miễn phí) */}
+            {/* TH1: Kiểm tra xem người dùng đã sở hữu khóa học chưa (Enrollment) */}
             {courseIdInEnrollment.length > 0 &&
             courseIdInEnrollment.includes(course._id) ? (
               <button className="btn-course btn-activated" disabled>
                 <i className="fas fa-check-circle"></i> Đã kích hoạt
               </button>
+            ) : /* TH2: Kiểm tra xem đơn hàng có đang trong trạng thái chờ xác nhận (Pending) không */
+            courseIdInPending && courseIdInPending.includes(course._id) ? (
+              <button className="btn-course btn-pending" disabled>
+                <i className="fas fa-history"></i> Đang xác nhận...
+              </button>
             ) : (
-              /* Bước 2: Nếu chưa sở hữu, kiểm tra xem là khóa học miễn phí hay trả phí */
+              /* TH3: Nếu chưa sở hữu và không chờ, kiểm tra miễn phí hay trả phí */
               <>
                 {course.isFree ? (
-                  /* Nếu miễn phí: Cho nút Đăng ký ngay để lưu vào Enrollment */
                   <button
                     className="btn-course btn-primary"
                     onClick={handleEnrollFree}
@@ -217,7 +232,7 @@ export default function GetDetailCourse() {
                     Đăng ký học ngay
                   </button>
                 ) : (
-                  /* Nếu trả phí: Kiểm tra giỏ hàng */
+                  /* TH4: Kiểm tra giỏ hàng */
                   <>
                     {courseIdInCart.length > 0 &&
                     courseIdInCart.includes(course._id) ? (
@@ -361,8 +376,8 @@ export default function GetDetailCourse() {
           <ReactPlayer
             width={700}
             height={350}
-            src={lesson && lesson.videoUrl}
-            controls="true"
+            src={lesson ? lesson.videoUrl : null}
+            controls={true}
           ></ReactPlayer>
         </div>
       </dialog>

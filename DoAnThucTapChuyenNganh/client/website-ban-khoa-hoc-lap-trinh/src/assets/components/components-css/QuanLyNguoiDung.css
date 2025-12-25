@@ -101,7 +101,7 @@
 
 .action-delete {
   background-color: #f8f9fa;
-  color: #333;
+  color: red;
   border: 1px solid #ccc;
 }
 .action-delete:hover {

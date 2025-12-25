@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AppContext from "./AppContext";
 import "./components-css/CoursesPre.css";
+
 export default function CoursesPre() {
   const { courses } = useContext(AppContext);
   return (

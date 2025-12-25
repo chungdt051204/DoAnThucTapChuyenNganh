@@ -1,10 +1,10 @@
+import { useSearchParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
-import Footer from "./Footer";
-import UserNavBar from "./UserNavBar";
-import { useSearchParams } from "react-router-dom";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import Footer from "./Footer";
+import UserNavBar from "./UserNavBar";
 import "./components-css/OrderDetail.css";
 
 export default function OrderDetail() {
@@ -12,6 +12,7 @@ export default function OrderDetail() {
   const id = searchParams.get("id");
   const { refresh } = useContext(AppContext);
   const [orderWithOrderId, setOrderWithOrderId] = useState("");
+
   useEffect(() => {
     if (id) {
       fetchAPI({
@@ -30,7 +31,9 @@ export default function OrderDetail() {
           </div>
           {orderWithOrderId && (
             <>
-              <div className="order-detail-status">Trạng thái: Success</div>
+              <div className={`order-detail-status ${orderWithOrderId.status}`}>
+                Trạng thái: {orderWithOrderId.status}
+              </div>
               {orderWithOrderId.fullName && (
                 <div className="order-detail-info">
                   <h3>Thông tin khách hàng</h3>
@@ -66,12 +69,12 @@ export default function OrderDetail() {
                             />
                             <div className="order-detail-course-info">
                               <p className="order-detail-course-name">
-                                {value.courseName || value.courseId.title}
+                                {value.courseName}
                               </p>
                             </div>
                           </td>
                           <td className="order-detail-price">
-                            {value.coursePrice || value.courseId.price} VNĐ
+                            {value.coursePrice} VNĐ
                           </td>
                         </tr>
                       );

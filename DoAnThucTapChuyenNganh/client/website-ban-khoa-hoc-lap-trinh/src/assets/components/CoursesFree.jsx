@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AppContext from "./AppContext";
 import "./components-css/CoursesFree.css";
+
 export default function CoursesFree() {
   const { courses } = useContext(AppContext);
   return (
@@ -12,10 +13,13 @@ export default function CoursesFree() {
           {courses.length > 0 ? (
             courses.map((value, index) => {
               if (value.isFree) {
+                const image = value.image.includes("https")
+                  ? value.image
+                  : `http://localhost:3000/images/course/${value.image}`;
                 return (
                   <div key={index} className="course-free-item">
                     <Link to={`/course?id=${value._id}`}>
-                      <img src={value.image} alt="" width={150} height={200} />
+                      <img src={image} alt="" width={150} height={200} />
                     </Link>
                     <p>{value.title}</p>
                   </div>

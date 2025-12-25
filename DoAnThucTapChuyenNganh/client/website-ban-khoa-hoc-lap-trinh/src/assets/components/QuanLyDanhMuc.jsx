@@ -1,11 +1,12 @@
-import { useContext, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useContext, useRef, useState } from "react";
 import AppContext from "./AppContext";
+import { toast } from "react-toastify";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
 import "./components-css/QuanLyDanhMuc.css";
-import { fetchAPI } from "../service/api";
-import { url } from "../../App";
 
 export default function QuanLyDanhMuc() {
   const { categories, setRefresh } = useContext(AppContext); // lấy danh mục từ useContext
@@ -19,8 +20,9 @@ export default function QuanLyDanhMuc() {
   // quản lý lỗi + dữ liệu category cần sửa
   const [err, setErr] = useState("");
   const [categoryWithId, setCategoryWithId] = useState("");
+
+  //Hàm xử lý chức năng thêm danh mục
   const handleAddSubmit = (e) => {
-    // hàm chạy khi bấm nút "thêm"
     e.preventDefault(); // ngăn sự kiện submit mặc định
     if (addDialogValue.current.value === "") {
       setErr("Vui lòng nhập tên danh mục muốn thêm");
@@ -33,7 +35,7 @@ export default function QuanLyDanhMuc() {
       headers: {
         "Content-Type": "application/json", // báo cáo cho backend biết dữ liệu bạn gửi là JSON
       },
-      body: JSON.stringify({ title: addDialogValue.current.value }), // gửi tên danh mục bạn vừa nhập
+      body: JSON.stringify({ title: addDialogValue.current.value }), // gửi tên danh mục vừa nhập
     })
       //kiểm tra phản hồi từ server
       .then((res) => {
@@ -42,7 +44,7 @@ export default function QuanLyDanhMuc() {
       })
       // xử lý dữ liệu từ backend
       .then(({ message }) => {
-        alert(message);
+        toast.success(message);
         addDialog.current.close(); // đóng dialog
         setRefresh((prev) => prev + 1); //Tăng giá trị state 'refresh' để kích hoạt tải lại dữ liệu
       })
@@ -55,12 +57,13 @@ export default function QuanLyDanhMuc() {
     fetchAPI({ url: `${url}/category?id=${id}`, setData: setCategoryWithId });
     updateDialog.current.showModal();
   };
+  //Hàm xử lý chức năng sửa danh mục
   const handleUpdateSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
     //  Gọi API Cập nhật
     // Gửi yêu cầu PUT đến API, kèm theo ID của danh mục cần cập nhật dưới dạng query parameter.
     fetch(`http://localhost:3000/category?id=${id}`, {
-      method: "PUT", // Phương thức HTTP chuẩn để cập nhật/thay thế tài nguyên.
+      method: "PUT", // Phương thức HTTP chuẩn để cập nhật
       headers: {
         "Content-type": "application/json", // Chỉ định dữ liệu gửi đi là JSON.
       },
@@ -68,42 +71,43 @@ export default function QuanLyDanhMuc() {
       body: JSON.stringify({ title: updateDialogValue.current.value }),
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công (2xx), parse JSON.
+        if (res.ok) return res.json(); // Nếu thành công, parse JSON.
         throw res; // Nếu thất bại, ném response.
       })
       .then(({ message }) => {
-        alert(message); // Hiển thị thông báo thành công từ server.
+        toast.success(message); // Hiển thị thông báo thành công từ server.
         updateDialog.current.close(); // Đóng hộp thoại/modal cập nhật.
         setRefresh((prev) => prev + 1); // Tăng state 'refresh' để kích hoạt tải lại dữ liệu danh mục.
       })
       .catch(async (err) => {
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
-        alert(message);
+        console.log(message);
       });
   };
+  //Hàm xử lý chức năng xóa danh mục
   const handleDelete = (id) => {
     // Gửi yêu cầu DELETE đến API, kèm theo ID của danh mục cần xóa dưới dạng query parameter
     fetch(`http://localhost:3000/category?id=${id}`, {
-      method: "DELETE", // Phương thức HTTP chuẩn để xóa tài nguyên
+      method: "DELETE", // Phương thức HTTP chuẩn để xóa
     })
       .then((res) => {
-        if (res.ok) return res.json(); // Nếu thành công (2xx), parse JSON
+        if (res.ok) return res.json(); // Nếu thành công , parse JSON
         throw res; // Nếu thất bại, ném response để xử lý lỗi
       })
       .then(({ message }) => {
-        alert(message); // Hiển thị thông báo thành công từ server
+        toast.success(message); // Hiển thị thông báo thành công từ server
         setRefresh((prev) => prev + 1); // Tăng giá trị state 'refresh' để kích hoạt tải lại dữ liệu
       })
       .catch(async (err) => {
         const { message } = await err.json(); // Lấy thông báo lỗi chi tiết từ body response
-        alert(message);
+        toast.error(message);
       });
   };
   return (
     <>
       <section>
         <AdminNavBar />
-        <div style={{ margin: "100px 50px" }}>
+        <div style={{ margin: "50px" }}>
           <button
             className="btn-add-category"
             onClick={() => {
@@ -147,8 +151,6 @@ export default function QuanLyDanhMuc() {
             </tbody>
           </table>
         </div>
-        <Footer />
-        {/* Giao diện các bảng dialog */}
         <dialog ref={addDialog}>
           <h2>Thêm danh mục</h2>
           <form method="dialog" onSubmit={handleAddSubmit}>
@@ -173,6 +175,7 @@ export default function QuanLyDanhMuc() {
             <button>Sửa</button>
           </form>
         </dialog>
+        <Footer />
       </section>
     </>
   );

@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
-import UserNavBar from "./UserNavBar";
-import Footer from "./Footer";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import UserNavBar from "./UserNavBar";
+import Footer from "./Footer";
 import "./components-css/MyCourses.css";
 
 export default function MyCourses() {

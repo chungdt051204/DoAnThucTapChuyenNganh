@@ -1,5 +1,5 @@
 const cartEntity = require("../../models/cart.model"); //Import cartEntity từ thư mục models
-//Router xử lý chức năng thêm khóa học và giỏ hàng
+//Hàm xử lý chức năng thêm khóa học và giỏ hàng
 exports.postCart = async (req, res) => {
   try {
     //Lấy dữ liệu gửi từ phía client bằng req.body
@@ -19,7 +19,7 @@ exports.postCart = async (req, res) => {
           },
         ],
       });
-      res
+      return res
         .status(200)
         .json({ message: "Đã thêm khóa học vào giỏ hàng thành công" });
     }
@@ -43,13 +43,13 @@ exports.postCart = async (req, res) => {
             }, //Dùng push để thêm 1 khóa học sau các khóa học trong giỏ hàng($push chỉ dùng Object không dùng mảng)
           }
         );
-        res
+        return res
           .status(200)
           .json({ message: "Đã thêm khóa học vào giỏ hàng thành công" });
       }
       //Nếu có khóa học trong giỏ hàng rồi thì không được thêm nữa
       else {
-        res
+        return res
           .status(409)
           .json({ message: "Khóa học này đã tồn tại trong giỏ hàng" });
       }
@@ -59,34 +59,74 @@ exports.postCart = async (req, res) => {
     return res.status(500).json({ message: "Xử lý thêm vào giỏ thất bại" });
   }
 };
-//Router lấy dữ liệu khóa học nằm trong giỏ hàng
+//Hàm lấy dữ liệu khóa học nằm trong giỏ hàng của người dùng
 exports.getCartItem = async (req, res) => {
-  //Lấy id người dùng gửi từ phía client bằng req.query
-  const { user_id } = req.query;
-  //Tìm kiếm giỏ hàng có userId bằng id người dùng gửi từ phía client
-  const cart = await cartEntity
-    .findOne({ userId: user_id })
-    .populate("items.courseId");
-  res.status(200).json({ data: cart });
+  try {
+    //Lấy id người dùng gửi từ phía client bằng req.query
+    const { user_id } = req.query;
+    if (user_id) {
+      //Tìm kiếm giỏ hàng có userId bằng id người dùng gửi từ phía client
+      const cart = await cartEntity
+        .findOne({ userId: user_id })
+        .populate("items.courseId");
+      return res.status(200).json({ data: cart });
+    } else {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+  } catch (error) {
+    console.error("Có lỗi xảy ra khi xử lý hàm getCartItem");
+    return res.status(500).json({
+      message: "Lấy dữ liệu giỏ hàng người dùng thất bại",
+      error: error.message,
+    });
+  }
 };
-//Router xử lý chức năng xóa nhiều khóa học trong giỏ hàng
-exports.deleteCartItems = async (req, res) => {
-  //Lấy id người dùng gửi từ phía client bằng req.query
-  const { user_id } = req.query;
-  //Lấy mảng chứa id khóa học gửi từ phía client bằng req.body
-  const { cartItemSelected } = req.body;
-  //Xóa các item được chọn trong giỏ hàng bằng cách cập nhật lại item trong giỏ hàng
-  //Dùng $push để xóa các item và $in lấy ra các item được chọn để xóa
-  await cartEntity.updateOne(
-    { userId: user_id },
-    { $pull: { items: { _id: { $in: cartItemSelected } } } }
-  );
-  res.status(200).json({
-    message:
-      "Đã xóa" +
-      " " +
-      cartItemSelected.length +
-      " " +
-      "khóa học ra khỏi giỏ hàng thành công",
-  });
+//Hàm xử lý chức năng xóa một hoặc nhiều khóa học trong giỏ hàng
+exports.deleteCartItem = async (req, res) => {
+  try {
+    //Lấy id người dùng gửi từ phía client bằng req.query
+    const { user_id } = req.query;
+    //Lấy id item người dùng gửi từ phía client bằng req.query
+    const { cart_item_id } = req.query;
+    //Lấy mảng chứa id khóa học gửi từ phía client bằng req.body, nếu ko có thì là mảng rỗng
+    const cartItemIdSelected =
+      req.body && req.body.cartItemSelected ? req.body.cartItemSelected : [];
+    //Xóa các item được chọn trong giỏ hàng bằng cách cập nhật lại item trong giỏ hàng
+    //Dùng $pull để xóa các item và $in lấy ra các item được chọn để xóa
+    if (user_id) {
+      //Xóa 1 item
+      if (cart_item_id) {
+        await cartEntity.updateOne(
+          { userId: user_id },
+          { $pull: { items: { _id: cart_item_id } } }
+        );
+        return res.status(200).json({
+          message: "Đã xóa 1 khóa học ra khỏi giỏ hàng thành công",
+        });
+      }
+      //Xóa nhiều item
+      if (cartItemIdSelected.length > 0) {
+        await cartEntity.updateOne(
+          { userId: user_id },
+          { $pull: { items: { _id: { $in: cartItemIdSelected } } } }
+        );
+        return res.status(200).json({
+          message:
+            "Đã xóa" +
+            " " +
+            cartItemIdSelected.length +
+            " " +
+            "khóa học ra khỏi giỏ hàng thành công",
+        });
+      }
+    } else {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+  } catch (error) {
+    console.error("Có lỗi xảy ra khi xử lý hàm deleteCartItem");
+    return res.status(500).json({
+      message: "Xử lý xóa item trong giỏ hàng thất bại",
+      error: error.message,
+    });
+  }
 };

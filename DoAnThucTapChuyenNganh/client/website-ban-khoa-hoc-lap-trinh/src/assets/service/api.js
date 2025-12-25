@@ -8,7 +8,7 @@ export const fetchAPI = ({ url, setData }) => {
       setData(data);
     })
     .catch(async (err) => {
-      const { message } = await err.josn();
+      const { message } = await err.json();
       console.log(message);
     });
 };

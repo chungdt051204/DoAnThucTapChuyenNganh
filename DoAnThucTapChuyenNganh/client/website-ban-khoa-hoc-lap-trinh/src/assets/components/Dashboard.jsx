@@ -1,9 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import AppContext from "./AppContext";
-import DailyRevenueChart from "./DailyRevenueChart";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import DailyRevenueChart from "./DailyRevenueChart";
 import "./components-css/Dashboard.css";
+
 export default function DashBoard() {
   const { refresh, courses, users, orders } = useContext(AppContext);
   const [dailyRevenue, setDailyRevenue] = useState([]);
@@ -13,6 +14,7 @@ export default function DashBoard() {
     orders.forEach((value) => {
       totalRevenue = totalRevenue + value.totalAmount;
     });
+
   useEffect(() => {
     fetchAPI({ url: `${url}/daily-revenue`, setData: setDailyRevenue });
     fetchAPI({
@@ -47,7 +49,7 @@ export default function DashBoard() {
         </div>
         {bestSellerCourses.length > 0 && (
           <div className="bestseller-table-container">
-            <h3> Top Sản phẩm Bán chạy</h3>
+            <h3> Top khóa học bán chạy</h3>
             <table className="bestseller-table">
               <thead>
                 <tr>

@@ -3,7 +3,7 @@ export default function PriceFilter({ onPriceChange, selectedValue }) {
   return (
     <>
       <select
-        class="form-select"
+        className="form-select"
         value={selectedValue}
         onChange={(e) => onPriceChange(e.target.value)}
       >

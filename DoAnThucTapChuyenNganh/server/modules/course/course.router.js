@@ -17,16 +17,22 @@ router.get(`${prefix}/course`, coursesController.getCourse);
 
 // Route tìm kiếm gợi ý
 router.get(`${prefix}/course/search/suggestion`, coursesController.getCourse);
-// POST: Thêm khóa học mới (với upload.single("image") middleware)
+// POST: Thêm khóa học mới cho phép upload nhiều file
 router.post(
   `${prefix}/course`,
-  upload.single("image"),
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 },
+  ]),
   coursesController.postCourse
 );
-// PUT: Cập nhật khóa học (ảnh là tùy chọn, với upload.single("image") middleware)
+// PUT: Cập nhật khóa học cho phép upload nhiều file
 router.put(
   `${prefix}/course`,
-  upload.single("image"),
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 },
+  ]),
   coursesController.putCourse
 );
 // DELETE: Xóa khóa học

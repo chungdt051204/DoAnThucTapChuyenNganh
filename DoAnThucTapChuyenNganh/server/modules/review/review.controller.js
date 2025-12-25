@@ -1,4 +1,5 @@
 const reviewsEntity = require("../../models/review.model");
+//Hàm lấy dữ liệu bình luận
 exports.getReview = async (req, res) => {
   try {
     const { course_id } = req.query;
@@ -10,6 +11,7 @@ exports.getReview = async (req, res) => {
     res.status(200).json({ data: reviews });
   } catch (error) {}
 };
+//Hàm xử lý thêm bình luận
 exports.postReview = async (req, res) => {
   try {
     const { body } = req;

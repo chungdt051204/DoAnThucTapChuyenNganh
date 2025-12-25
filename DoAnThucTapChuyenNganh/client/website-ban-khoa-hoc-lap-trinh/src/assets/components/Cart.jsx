@@ -1,34 +1,36 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
+import { toast } from "react-toastify";
+import { fetchAPI } from "../service/api";
+import { url } from "../../App";
 import UserNavBar from "./UserNavBar";
 import Footer from "./Footer";
 import "./components-css/Cart.css";
-import { fetchAPI } from "../service/api";
-import { url } from "../../App";
-import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-  const { user } = useContext(AppContext);
-  const [myCart, setMyCart] = useState({ items: [] });
+  const { user, refresh, setRefresh } = useContext(AppContext);
+  const [myCart, setMyCart] = useState(null);
   const [cartItemSelected, setCartItemSelected] = useState([]);
-  const [refresh, setRefresh] = useState(0);
+  const [clicked, setClicked] = useState(false);
   const dialog = useRef();
   const fullNameRef = useRef();
   const phoneRef = useRef();
-  const navigate = useNavigate();
+
   let sum = 0;
-  if (myCart?.items?.length > 0) {
-    myCart?.items?.forEach((value) => {
-      if (cartItemSelected.includes(value._id))
-        sum += parseFloat(value.courseId.price);
-    });
+  if (myCart !== null) {
+    myCart.items.length > 0 &&
+      myCart.items.forEach((value) => {
+        if (cartItemSelected.includes(value._id))
+          sum += parseFloat(value.courseId.price);
+      });
   }
   useEffect(() => {
     if (user) {
       fetchAPI({ url: `${url}/cart?user_id=${user._id}`, setData: setMyCart });
     }
   }, [user, refresh]);
-  const handleChange = (id) => {
+
+  const handleItemSelected = (id) => {
     // Nếu id khóa học chưa tồn tại trong mảng cartItemSelected => khóa học chưa được chọn
     //Thì thêm id khóa học vào mảng cartItemSelected
     if (!cartItemSelected.includes(id)) {
@@ -42,7 +44,39 @@ export default function Cart() {
       setCartItemSelected(newArr);
     }
   };
-  const handleDelete = () => {
+  //Hàm xử lý chọn tất cả item trong giỏ hàng
+  const handleClickAll = () => {
+    setClicked((prev) => !prev);
+    if (!clicked) {
+      setCartItemSelected(
+        myCart !== null &&
+          myCart.items.length > 0 &&
+          myCart.items.map((value) => {
+            return value._id;
+          })
+      );
+    } else setCartItemSelected([]);
+  };
+  //Hàm xử lý xóa 1 item ra khỏi giỏ hàng
+  const handleDelete = (id) => {
+    fetch(`${url}/cart?user_id=${user._id}&cart_item_id=${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw res;
+      })
+      .then(({ message }) => {
+        toast.success(message);
+        setRefresh((prev) => prev + 1);
+      })
+      .catch(async (err) => {
+        const { message } = await err.json();
+        console.log(message);
+      });
+  };
+  //Hàm xử lý xóa nhiều item được chọn ra khỏi giỏ hàng
+  const handleDeleteItemSelected = () => {
     fetch(`http://localhost:3000/cart?user_id=${user._id}`, {
       method: "DELETE",
       headers: {
@@ -56,22 +90,26 @@ export default function Cart() {
       })
       .then(({ message }) => {
         setCartItemSelected([]);
-        alert(message);
+        toast.success(message);
+        setClicked(false);
         setRefresh((prev) => prev + 1);
       })
       .catch();
   };
+  //Hàm xử lý mở Popup thanh toán
   const handleOpenPurchaseDialog = () => {
     if (cartItemSelected.length == 0) {
-      alert("Bạn chưa chọn khóa học cần mua");
+      toast.warning("Bạn chưa chọn khóa học cần mua");
       return;
     }
     dialog.current.showModal();
   };
+  //Hàm xử lý mua khóa học
   const handleSubmit = (e) => {
-    const orderItemSelected = (myCart?.items || []).filter((value) =>
-      cartItemSelected.includes(value._id)
-    );
+    const orderItemSelected =
+      myCart !== null &&
+      myCart.items.length > 0 &&
+      myCart.items.filter((value) => cartItemSelected.includes(value._id));
     e.preventDefault();
     fetch("http://localhost:3000/order", {
       method: "POST",
@@ -91,8 +129,9 @@ export default function Cart() {
         throw res;
       })
       .then(({ message }) => {
-        alert(message);
-        navigate("/");
+        toast.success(message);
+        setRefresh((prev) => prev + 1);
+        dialog.current.close();
       })
       .catch(async (err) => {
         const { message } = await err.json();
@@ -103,19 +142,22 @@ export default function Cart() {
     <div className="page-layout">
       <UserNavBar />
       <div className="main-content">
-        <div className="cart" style={{ margin: "100px 50px" }}>
+        <div className="cart" style={{ margin: "50px" }}>
           <table className="cart-table">
             <thead>
               <tr>
-                <th className="col-product">Sản Phẩm</th>
+                <th className="col-product">Khóa học</th>
                 <th className="col-price">Đơn Giá</th>
                 <th className="col-action">Thao Tác</th>
               </tr>
             </thead>
             <tbody>
-              {/* Row 1 */}
-              {myCart?.items?.length > 0 &&
-                myCart?.items?.map((value, index) => {
+              {myCart !== null &&
+                myCart.items.length > 0 &&
+                myCart.items.map((value, index) => {
+                  const image = value.courseId.image.includes("https")
+                    ? value.courseId.image
+                    : `http://localhost:3000/images/course/${value.courseId.image}`;
                   return (
                     <tr key={index}>
                       <td className="col-product">
@@ -130,18 +172,13 @@ export default function Cart() {
                           {/* Checked chỉ đúng khi checkbox đc chọn */}
                           <input
                             type="checkbox"
-                            // checkbox được chọn là khi trong mảng cartItemSelected có chứa id của khóa học
+                            // checkbox được chọn là khi trong mảng cartItemSelected có chứa id của khóa học đó
                             checked={cartItemSelected.includes(value._id)}
-                            onChange={() => handleChange(value._id)}
+                            onChange={() => handleItemSelected(value._id)}
                           />
                           <div className="product-cell">
                             <div className="product-thumb">
-                              <img
-                                src={value.courseId.image}
-                                alt=""
-                                width={64}
-                                height={64}
-                              />
+                              <img src={image} alt="" width={64} height={64} />
                             </div>
                             <div className="product-info">
                               <div className="product-name">
@@ -152,10 +189,17 @@ export default function Cart() {
                         </div>
                       </td>
                       <td className="col-price">
-                        <p style={{ color: "red" }}>{value.courseId.price}</p>
+                        <p style={{ color: "red" }}>
+                          {value.courseId.price} VNĐ
+                        </p>
                       </td>
                       <td className="col-action">
-                        <a style={{ color: "red" }}>Xóa</a>
+                        <p
+                          style={{ color: "red", cursor: "pointer" }}
+                          onClick={() => handleDelete(value._id)}
+                        >
+                          Xóa
+                        </p>
                       </td>
                     </tr>
                   );
@@ -167,9 +211,17 @@ export default function Cart() {
                   <div className="footer-row">
                     <div className="left-actions">
                       <label>
-                        <input type="checkbox" /> Chọn tất cả
+                        <input
+                          type="checkbox"
+                          checked={clicked}
+                          onChange={handleClickAll}
+                        />
+                        Chọn tất cả
                       </label>
-                      <button onClick={handleDelete} className="btn-plain">
+                      <button
+                        onClick={handleDeleteItemSelected}
+                        className="btn-plain"
+                      >
                         Xóa
                       </button>
                     </div>
@@ -220,28 +272,33 @@ export default function Cart() {
                     </tr>
                   </thead>
                   <tbody>
-                    {myCart?.items?.map((value, index) => {
-                      if (cartItemSelected.includes(value._id)) {
-                        return (
-                          <tr key={index}>
-                            <td className="course-info">
-                              <img src={value.courseId.image} alt="" />
-                              <span>{value.courseId.title}</span>
-                            </td>
-                            <td className="price-cell">
-                              {value.courseId.price.toLocaleString()}đ
-                            </td>
-                          </tr>
-                        );
-                      }
-                      return null;
-                    })}
+                    {myCart !== null &&
+                      myCart.items.length > 0 &&
+                      myCart.items.map((value, index) => {
+                        if (cartItemSelected.includes(value._id)) {
+                          const image = value.courseId.image.includes("https")
+                            ? value.courseId.image
+                            : `http://localhost:3000/images/course/${value.courseId.image}`;
+                          return (
+                            <tr key={index}>
+                              <td className="course-info">
+                                <img src={image} alt="" />
+                                <span>{value.courseId.title}</span>
+                              </td>
+                              <td className="price-cell">
+                                {value.courseId.price} VNĐ
+                              </td>
+                            </tr>
+                          );
+                        }
+                        return null;
+                      })}
                   </tbody>
                 </table>
               </div>
               <div className="total-box">
                 <span>Tổng cộng:</span>
-                <strong>{sum.toLocaleString()} VND</strong>
+                <strong>{sum} VND</strong>
               </div>
               <div className="btn-group">
                 <button

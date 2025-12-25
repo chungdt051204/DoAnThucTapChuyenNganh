@@ -1,10 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "./AppContext";
 import "./components-css/Carousel.css";
+
 export default function Carousel() {
   const { courses } = useContext(AppContext);
   const [index, setIndex] = useState(0);
   const carousel = useRef();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => {

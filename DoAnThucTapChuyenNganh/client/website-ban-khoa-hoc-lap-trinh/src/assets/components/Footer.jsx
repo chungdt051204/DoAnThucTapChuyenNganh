@@ -6,7 +6,6 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        {/* Cột 1: Giới thiệu */}
         <div className="footer-section">
           <h3 className="footer-title">Lập Trình Online</h3>
           <p>
@@ -14,7 +13,6 @@ export default function Footer() {
             kỹ năng và sự nghiệp IT.
           </p>
         </div>
-        {/* Cột 2: Liên kết nhanh */}
         <div className="footer-section">
           <h3 className="footer-title">Liên kết nhanh</h3>
           <ul>
@@ -29,7 +27,6 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-        {/* Cột 3: Liên hệ */}
         <div className="footer-section">
           <h3 className="footer-title">Liên hệ</h3>
           <p>Email: quoctien15904@gmail.com</p>

@@ -1,4 +1,5 @@
 const enrollmentEntity = require("../../models/enrollment.model");
+//Hàm lấy dữ liệu các khóa học người dùng đã sở hữu
 exports.getEnrollment = async (req, res) => {
   try {
     const { user_id } = req.query;
@@ -12,6 +13,7 @@ exports.getEnrollment = async (req, res) => {
     }
   } catch (error) {}
 };
+//Hàm xử lý đăng ký học khóa học
 exports.postEnrollment = async (req, res) => {
   try {
     const { body } = req;

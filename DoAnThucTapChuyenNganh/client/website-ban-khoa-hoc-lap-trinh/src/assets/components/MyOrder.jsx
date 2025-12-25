@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import AppContext from "./AppContext";
 import Footer from "./Footer";
 import UserNavBar from "./UserNavBar";
@@ -10,6 +10,7 @@ import "./components-css/MyOrder.css";
 export default function MyOrder() {
   const { user, refresh } = useContext(AppContext);
   const [myOrders, setMyOrders] = useState([]);
+
   useEffect(() => {
     if (user) {
       fetchAPI({
@@ -43,13 +44,16 @@ export default function MyOrder() {
                     <tr key={index}>
                       <td className="my-orders-order-id">{value._id}</td>
                       <td className="my-orders-date">
-                        {new Date(value.updatedAt).toLocaleDateString()}
+                        {new Date(value.updatedAt).toLocaleDateString()} -
+                        {new Date(value.updatedAt).toLocaleTimeString()}
                       </td>
                       <td className="my-orders-total">
                         {value.totalAmount} VNĐ
                       </td>
                       <td>
-                        <span className="my-orders-status">{value.status}</span>
+                        <span className={`my-orders-status ${value.status}`}>
+                          {value.status}
+                        </span>
                       </td>
                       <td className="my-orders-action">
                         <Link to={`/my-orders/detail?id=${value._id}`}>

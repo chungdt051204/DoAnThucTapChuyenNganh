@@ -1,3 +1,4 @@
+//Import các thư viện cần thiết
 require("dotenv").config();
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -8,6 +9,7 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const cors = require("cors");
+//Sử dụng các thư viện vừa cài
 //Thứ tự đặt: cors, cookie-parser, body-parser, router
 app.use(
   cors({
@@ -18,6 +20,7 @@ app.use(
 const cookiesParser = require("cookie-parser");
 app.use(cookiesParser());
 app.use(express.json());
+//Khai báo các route
 const userRouter = require("./modules/user/user.router");
 const courseRouter = require("./modules/course/course.router");
 const categoryRouter = require("./modules/category/category.router");
@@ -25,6 +28,7 @@ const cartRouter = require("./modules/cart/cart.router");
 const orderRouter = require("./modules/order/order.router");
 const enrollmentRouter = require("./modules/enrollment/enrollment.router");
 const reviewRouter = require("./modules/review/review.router");
+//Sử dụng các route
 app.use("/", userRouter);
 app.use("/", courseRouter);
 app.use("/", categoryRouter);
@@ -34,6 +38,7 @@ app.use("/", enrollmentRouter);
 app.use("/", reviewRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
+//Xử lý đăng nhập google
 passport.use(
   new GoogleStrategy(
     {
@@ -49,6 +54,7 @@ passport.use(
         if (!user) {
           user = await userEntity.create({
             email: profile.emails[0].value,
+            fullName: profile.displayName + Math.random(),
             username: profile.displayName,
             avatar: profile.photos[0].value,
           });

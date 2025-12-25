@@ -1,6 +1,6 @@
 const categoryEntity = require("../../models/category.model");
 const courseEntity = require("../../models/course.model");
-//Router lấy dữ liệu danh mục trong database
+//Hàm lấy dữ liệu danh mục trong database
 exports.getCategory = async (req, res) => {
   try {
     //Lấy id danh mục gửi từ phía client bằng req.query
@@ -16,7 +16,7 @@ exports.getCategory = async (req, res) => {
     return res.status(500).json({ message: "Lấy dữ liệu danh mục thất bại" });
   }
 };
-//Router thêm danh mục
+//Hàm thêm danh mục
 exports.postCategory = async (req, res) => {
   try {
     //Lấy dữ liệu title gửi từ phía client bằng req.body
@@ -28,8 +28,7 @@ exports.postCategory = async (req, res) => {
     return res.status(500).json({ message: "Thêm thất bại" });
   }
 };
-
-//Router cập nhật danh mục
+//Hàm cập nhật danh mục
 exports.putCategory = async (req, res) => {
   try {
     //Lấy id danh mục gửi từ phía client bằng req.query
@@ -44,7 +43,7 @@ exports.putCategory = async (req, res) => {
     return res.status(500).json({ message: "Sửa thất bại" });
   }
 };
-//Router xóa danh mục theo danh mục được chọn
+//Hàm xóa danh mục theo danh mục được chọn
 exports.deleteCategory = async (req, res) => {
   try {
     //Lấy id danh mục gửi từ phía client bằng req.query

@@ -13,6 +13,7 @@ export default function Register() {
   const [passwordNotValid, setPasswordNotValid] = useState();
   const [verifyPasswordNotValid, setVerifyPasswordNotValid] = useState();
   const [phoneNotValid, setPhoneNotValid] = useState();
+  const [avatarNotValid, setAvatarNotValid] = useState();
   // useRef quản lý input
   // Các ref này dùng để truy cập trực tiếp giá trị hiện tại của các trường input
   const fullName = useRef();
@@ -30,19 +31,6 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn hành vi gửi form mặc định của trình duyệt.
     const formData = new FormData(); // Tạo đối tượng để đóng gói dữ liệu form, bao gồm file
-    //  Đóng gói Dữ liệu Form
-    // Gắn dữ liệu từ các trường input vào đối tượng formData.
-    formData.append("fullName", fullName.current.value);
-    formData.append("username", username.current.value);
-    formData.append("email", email.current.value);
-    formData.append("password", password.current.value);
-    formData.append("avatar", avatar.current.files[0]); // Lấy file đầu tiên.
-    formData.append("phone", phone.current.value);
-    const gender = male.current.checked
-      ? male.current.value
-      : female.current.value; // Xác định giá trị gender.
-    formData.append("gender", gender);
-    formData.append("dateOfBirth", dateOfBirth.current.value);
     // Kiểm tra Validation
     // Thực hiện kiểm tra từng trường. Nếu có lỗi, đặt thông báo lỗi tương ứng và dừng hàm
     if (fullName.current.value === "") {
@@ -71,7 +59,22 @@ export default function Register() {
     } else if (phone.current.value.length < 10) {
       setPhoneNotValid("Số điện thoại hợp lệ phải có đủ 10 số");
       return;
+    } else if (!avatar.current.files[0]) {
+      setAvatarNotValid("Vui lòng chọn file");
     } else {
+      //  Đóng gói Dữ liệu Form
+      // Gắn dữ liệu từ các trường input vào đối tượng formData.
+      formData.append("fullName", fullName.current.value);
+      formData.append("username", username.current.value);
+      formData.append("email", email.current.value);
+      formData.append("password", password.current.value);
+      formData.append("avatar", avatar.current.files[0]); // Lấy file đầu tiên.
+      formData.append("phone", phone.current.value);
+      const gender = male.current.checked
+        ? male.current.value
+        : female.current.value; // Xác định giá trị gender.
+      formData.append("gender", gender);
+      formData.append("dateOfBirth", dateOfBirth.current.value);
       //Gọi API Đăng ký
       fetch("http://localhost:3000/register", {
         method: "POST",
@@ -189,6 +192,7 @@ export default function Register() {
                 accept=".jpg, .jpeg, .png"
               />
             </div>
+            {avatarNotValid && <span>{avatarNotValid}</span>}
             <button>Đăng ký</button>
           </form>
         </div>

@@ -1,7 +1,6 @@
 .order-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 14px;
   background: white;
@@ -59,27 +58,41 @@
   text-decoration: none;
 }
 
+/* Style chung cho nút nhỏ trong bảng */
+.btn-confirm-sm,
 .btn-detail-sm {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
-
-  background-color: transparent;
-  color: #2563eb;
-  border: 1px solid #2563eb;
-  border-radius: 4px;
-
   cursor: pointer;
+  border: none;
   transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Nút Xác nhận - Màu xanh lá */
+.btn-confirm-sm {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-confirm-sm:hover {
+  background-color: #218838;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Giữ nguyên/Cập nhật nút Xem chi tiết - Màu xanh dương hoặc xám */
+.btn-detail-sm {
+  background-color: #007bff;
+  color: white;
 }
 
 .btn-detail-sm:hover {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: #0069d9;
 }
 
-.btn-detail-sm:active {
-  transform: scale(0.96);
+/* Hiệu ứng khi nhấn nút */
+button:active {
+  transform: translateY(1px);
 }
