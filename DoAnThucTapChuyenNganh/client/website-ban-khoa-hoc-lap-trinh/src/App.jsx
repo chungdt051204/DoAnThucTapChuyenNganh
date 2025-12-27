@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import AppContext from "./assets/components/AppContext";
@@ -21,7 +21,6 @@ import QuanLyDonHang from "./assets/components/QuanLyDonHang";
 export const url = "http://localhost:3000";
 
 function App() {
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [isLogin, setIsLogin] = useState(false);

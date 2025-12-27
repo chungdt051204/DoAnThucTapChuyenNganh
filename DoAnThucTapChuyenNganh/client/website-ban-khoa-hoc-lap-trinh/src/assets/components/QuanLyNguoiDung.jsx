@@ -63,9 +63,9 @@ export default function QuanLyNguoiDung() {
       method: "DELETE",
     })
       .then((res) => {
-        // Kiểm tra Response: Nếu thành công (status 2xx), parse JSON
+        // Kiểm tra Response: Nếu thành công , parse JSON
         if (res.ok) return res.json();
-        // Nếu lỗi (status 4xx, 5xx), ném Response object để xử lý lỗi
+        // Nếu lỗi , ném Response object để xử lý lỗi
         throw res;
       })
       .then(({ message }) => {
@@ -114,7 +114,6 @@ export default function QuanLyNguoiDung() {
                       <td>{value.email}</td>
                       <td>{value.role}</td>
                       <td>
-                        {/* Dùng style inline cho trạng thái */}
                         <p
                           style={{
                             color: value.status === "banned" ? "red" : "green",

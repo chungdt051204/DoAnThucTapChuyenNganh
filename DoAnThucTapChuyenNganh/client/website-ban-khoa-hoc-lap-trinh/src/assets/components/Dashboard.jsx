@@ -9,11 +9,14 @@ export default function DashBoard() {
   const { refresh, courses, users, orders } = useContext(AppContext);
   const [dailyRevenue, setDailyRevenue] = useState([]);
   const [bestSellerCourses, setBestSellerCourses] = useState([]);
-  let totalRevenue = 0;
-  orders.length > 0 &&
-    orders.forEach((value) => {
+  //Tính tổng doanh thu các đơn hàng đã thanh toán thành công
+  const totalRevenue = () => {
+    let totalRevenue = 0;
+    orders?.forEach((value) => {
       totalRevenue = totalRevenue + value.totalAmount;
     });
+    return totalRevenue;
+  };
 
   useEffect(() => {
     fetchAPI({ url: `${url}/daily-revenue`, setData: setDailyRevenue });
@@ -41,7 +44,7 @@ export default function DashBoard() {
           </div>
           <div className="dashboard-stats-card revenue-card">
             <div className="dashboard-card-title">Tổng Doanh thu</div>
-            <div className="dashboard-card-value">{totalRevenue} VNĐ</div>
+            <div className="dashboard-card-value">{totalRevenue()} VNĐ</div>
           </div>
         </div>
         <div className="dashboard-chart-area">
@@ -54,7 +57,7 @@ export default function DashBoard() {
               <thead>
                 <tr>
                   <th className="dashboard-table-header dashboard-product-name-col">
-                    Sản phẩm
+                    Khóa học
                   </th>
                   <th className="dashboard-table-header dashboard-quantity-col">
                     Số lượng bán được
@@ -62,9 +65,9 @@ export default function DashBoard() {
                 </tr>
               </thead>
               <tbody>
-                {bestSellerCourses.map((value, index) => {
+                {bestSellerCourses.map((value) => {
                   return (
-                    <tr key={index} className="dashboard-table-row">
+                    <tr key={value._id} className="dashboard-table-row">
                       <td className="dashboard-product-cell dashboard-name-cell">
                         {value.courseName}
                       </td>

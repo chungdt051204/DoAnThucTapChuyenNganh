@@ -4,6 +4,7 @@ const lessonSchema = new mongoose.Schema({
   duration: { type: String, required: true },
   order: { type: Number, required: true },
   videoUrl: { type: String, required: true },
+  isPreview: { type: Boolean, default: true },
 });
 const courseSchema = new mongoose.Schema(
   {
@@ -14,9 +15,7 @@ const courseSchema = new mongoose.Schema(
       ref: "categoryEntity", //Tham chiếu đến collection category
       required: true,
     },
-    duration: { type: String, default: "0h0m" },
     price: { type: Number, required: true, min: 0 },
-    rating: { type: Number, default: 0, min: 0, max: 5 }, // Điểm đánh giá trung bình
     totalLessons: { type: Number, default: 0 },
     thumbnail: { type: String },
     image: { type: String },
@@ -25,12 +24,7 @@ const courseSchema = new mongoose.Schema(
     lessons: [lessonSchema],
     isFeatured: { type: Boolean, default: false },
     isFree: { type: Boolean, default: true },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
-    },
   },
   { timestamps: true }
 );
-module.exports = mongoose.model("courseEntity", courseSchema, "courses");
+module.exports = mongoose.model("courseEntity", courseSchema, "course");

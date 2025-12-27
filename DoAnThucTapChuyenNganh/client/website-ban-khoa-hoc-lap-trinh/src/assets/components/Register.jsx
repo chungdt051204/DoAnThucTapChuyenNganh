@@ -50,7 +50,7 @@ export default function Register() {
       password.current.value === username.current.value
     ) {
       setPasswordNotValid(
-        "Mật khẩu phải có đủ 8 ký tự và không được trùng với tên đăng nhập"
+        "Mật khẩu phải có tối thiểu 8 ký tự và không được trùng với tên đăng nhập"
       );
       return;
     } else if (verifyPassword.current.value !== password.current.value) {

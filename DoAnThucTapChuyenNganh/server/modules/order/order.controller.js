@@ -4,35 +4,48 @@ const enrollmentEntity = require("../../models/enrollment.model");
 //Hàm xử lý tạo đơn hàng
 exports.postOrder = async (req, res) => {
   try {
-    const { body } = req;
-    const courseItem = body.orderItemSelected.map((value) => {
-      return {
-        courseId: value.courseId._id,
-        courseName: value.courseId.title,
-        coursePrice: value.courseId.price,
-      };
+    const {
+      userId,
+      fullName,
+      phone,
+      orderItemSelected,
+      totalAmount,
+      remainingAmount,
+      status,
+    } = req.body;
+    const orderItemId = orderItemSelected.map((value) => {
+      return value.orderItemId;
     });
     //Tạo đơn hàng
     await orderEntity.create({
-      userId: body.userId,
-      fullName: body.fullName,
-      phone: body.phone,
-      items: courseItem,
-      totalAmount: body.totalAmount,
+      userId: userId,
+      fullName: fullName,
+      phone: phone,
+      items: orderItemSelected,
+      totalAmount: totalAmount,
+      remainingAmount: remainingAmount,
+      status: status,
     });
-    const orderItemId = body.orderItemSelected.map((value) => {
-      return value._id;
+    // Tạo enrollment (Dùng Promise.all để đợi tất cả hoàn thành)
+    const enrollmentPromises = orderItemSelected.map((value) => {
+      return enrollmentEntity.create({
+        userId: userId,
+        courseId: value.courseId,
+        accessLevel: value.paymentType === "PARTIAL" ? "LIMITED" : "UNLIMITED",
+      });
     });
-    //Xoa các khóa học đã mua khỏi giỏ hàng
+    // Chờ tất cả các bản ghi enrollment được tạo xong
+    await Promise.all(enrollmentPromises);
+    //Xoá các khóa học đã mua khỏi giỏ hàng
     await cartEntity.updateOne(
-      { userId: body.userId },
+      { userId: userId },
       {
         $pull: {
           items: { _id: { $in: orderItemId } },
         },
       }
     );
-    await res.status(200).json({ message: "Thanh toan thanh cong" });
+    return res.status(200).json({ message: "Thanh toán thành công" });
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm postOrder");
     res.status(500).json({ message: "Thanh toan that bai" });
@@ -89,8 +102,6 @@ exports.putStatusOrder = async (req, res) => {
             courseId: courseId,
           });
         });
-        // Chờ tất cả các bản ghi enrollment được tạo xong
-        await Promise.all(enrollmentPromises);
       }
       return res
         .status(200)
@@ -101,21 +112,32 @@ exports.putStatusOrder = async (req, res) => {
     res.status(500).json({ message: "Cập nhật trạng thái đơn hàng thất bại" });
   }
 };
-//Hàm lấy tổng doanh thu theo ngày
+// Hàm tính tổng doanh thu theo ngày
 exports.getDailyRevenue = async (req, res) => {
-  const dailyRevenue = await orderEntity.aggregate([
-    {
-      //Toán tử $group để nhóm dữ liệu
-      $group: {
-        //Điều kiện nhóm: _id là ngày tạo đơn hàng
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-        //Tính tổng tiền theo điều kiện nhóm
-        totalAmount: { $sum: "$totalAmount" },
+  try {
+    const dailyRevenue = await orderEntity.aggregate([
+      {
+        // Nhóm dữ liệu theo ngày
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          // Tính tổng tiền của các đơn hàng đã lọc
+          totalAmount: { $sum: "$totalAmount" },
+          // Đếm số đơn hàng trong ngày đó
+          orderCount: { $sum: 1 },
+        },
       },
-    },
-    { $sort: { _id: 1 } }, //Sắp xếp tăng dần theo ngày mua
-  ]);
-  res.status(200).json({ data: dailyRevenue });
+      {
+        // Sắp xếp tăng dần theo ngày
+        $sort: { _id: 1 },
+      },
+    ]);
+
+    res.status(200).json({ data: dailyRevenue });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Lỗi khi lấy doanh thu", error: error.message });
+  }
 };
 //Hàm lấy top khóa học bán chạy
 exports.getBestSellerCourses = async (req, res) => {

@@ -10,6 +10,7 @@ import "./components-css/MyCourses.css";
 export default function MyCourses() {
   const { user, refresh } = useContext(AppContext);
   const [myCourses, setMyCourses] = useState([]);
+
   useEffect(() => {
     if (user) {
       fetchAPI({

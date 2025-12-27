@@ -9,7 +9,8 @@ import "./components-css/NavBar.css";
 export default function UserNavBar() {
   const navigate = useNavigate(); // useNavigate dùng để điều hướng
   // Sử dụng Context để truy cập và quản lý các giá trị/hàm toàn cục của ứng dụng:
-  const { user, isLogin, setIsLogin, categories } = useContext(AppContext);
+  const { user, isLogin, setIsLogin, categories, setRefresh } =
+    useContext(AppContext);
   const [isHovered, setIsHovered] = useState(false); // useState quản lý trạng thái bật/tắt của một phần tử
   const [avatarClicked, setAvatarClicked] = useState(false);
   // useState lưu trữ giá trị người dùng nhập vào ô tìm kiếm
@@ -45,6 +46,7 @@ export default function UserNavBar() {
       .then(({ message }) => {
         toast.success(message); // Hiển thị thông báo đăng xuất thành công
         setIsLogin(false); // Cập nhật trạng thái Context: người dùng không còn đăng nhập
+        setRefresh((prev) => prev + 1);
         setTimeout(() => {
           navigate("/"); // Chuyển hướng về trang chủ
         }, 1000);
@@ -58,9 +60,11 @@ export default function UserNavBar() {
   return (
     <>
       <nav className="navbar">
-        <div className="logo">
-          <img src="/rocket-icon.svg" alt="Logo" />
-        </div>
+        <Link to="">
+          <div className="logo">
+            <img src="/rocket-icon.svg" alt="Logo" />
+          </div>
+        </Link>
         <ul className="menu">
           <li></li>
           <li>

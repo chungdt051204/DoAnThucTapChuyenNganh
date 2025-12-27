@@ -23,11 +23,9 @@ export default function CoursesWithQueryString({ text }) {
     if (category_id) {
       params.append("category_id", category_id);
       //Lấy ra tên danh mục được chọn
-      const title =
-        categories.length > 0 &&
-        categories.map((value) => {
-          if (value._id === category_id) return value.title;
-        });
+      const title = categories?.map((value) => {
+        if (value._id === category_id) return value.title;
+      });
       setCategoryName(title);
     }
     if (search) params.append("search", search);
@@ -68,7 +66,7 @@ export default function CoursesWithQueryString({ text }) {
               <h1 className="page-title">
                 {text}
                 <span className="title-highlight">
-                  {category_id && categoryName}
+                  {category_id ? categoryName : ""}
                 </span>
               </h1>
               <p className="page-count">
@@ -78,13 +76,13 @@ export default function CoursesWithQueryString({ text }) {
           </header>
           <div className="course-list">
             {coursesWithQueryString.length > 0 ? (
-              coursesWithQueryString.map((value, index) => {
+              coursesWithQueryString.map((value) => {
                 const image = value.image.includes("https")
                   ? value.image
                   : `http://localhost:3000/images/course/${value.image}`;
                 return (
-                  <Link to={`/course?id=${value._id}`} key={index}>
-                    <div className="course-item" key={value._id || index}>
+                  <Link to={`/course?id=${value._id}`} key={value._id}>
+                    <div className="course-item">
                       <div className="course-image">
                         <img
                           src={image}

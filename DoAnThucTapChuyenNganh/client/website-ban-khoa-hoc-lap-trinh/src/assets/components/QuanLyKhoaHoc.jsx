@@ -257,7 +257,7 @@ export default function QuanLyKhoaHoc() {
                       </td>
                       <td>{value.categoryId.title}</td>
                       <td className="price-cell">
-                        {value.price > 0 ? `${value.price} đ` : "Miễn phí"}
+                        {value.price > 0 ? `${value.price} VNĐ` : "Miễn phí"}
                       </td>
                       <td className="action-cell">
                         <Link to={`/admin/course?id=${value._id}`}>
@@ -361,7 +361,7 @@ export default function QuanLyKhoaHoc() {
               setErrCategory("");
             }}
           >
-            <option value={courseWithId && courseWithId.categoryId._id}>
+            <option value={courseWithId ? courseWithId.categoryId._id : ""}>
               {courseWithId ? courseWithId.categoryId.title : "Chọn danh mục"}
             </option>
             {categories.length > 0 &&

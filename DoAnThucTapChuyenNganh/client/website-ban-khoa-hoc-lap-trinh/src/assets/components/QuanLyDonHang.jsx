@@ -6,12 +6,14 @@ import AdminNavBar from "./AdminNavBar";
 import Footer from "./Footer";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
+import { toast } from "react-toastify";
 
 function QuanLyDonHang() {
   const [searchParams, setSearchParams] = useSearchParams();
   const status = searchParams.get("status");
   const { orders, setOrders, refresh, setRefresh } = useContext(AppContext);
   const [statusSelected, setStatusSelected] = useState("");
+
   useEffect(() => {
     const params = new URLSearchParams();
     if (status) params.append("status", status);
@@ -38,7 +40,8 @@ function QuanLyDonHang() {
         return value.courseId._id;
       });
     if (courseIds.length === 0) {
-      alert("Đơn hàng này không có sản phẩm");
+      toast.error("Đơn hàng này không có sản phẩm");
+      return;
     } else {
       fetch(`${url}/order?id=${order._id}`, {
         method: "PUT",
@@ -55,7 +58,7 @@ function QuanLyDonHang() {
           throw res;
         })
         .then(({ message }) => {
-          console.log(message);
+          toast.success(message);
           setRefresh((prev) => !prev);
         })
         .catch(async (err) => {

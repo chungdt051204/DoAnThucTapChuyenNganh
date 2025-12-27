@@ -71,7 +71,7 @@ export default function AdminNavBar() {
                 >
                   <img
                     src={
-                      user.avatar.includes("https")
+                      user?.avatar?.includes("https")
                         ? user.avatar
                         : `http://localhost:3000/images/user/${user.avatar}`
                     }

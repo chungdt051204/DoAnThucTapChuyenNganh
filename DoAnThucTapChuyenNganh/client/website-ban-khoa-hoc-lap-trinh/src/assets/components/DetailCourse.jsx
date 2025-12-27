@@ -19,20 +19,19 @@ export default function DetailCourse() {
   const dialog = useRef();
   const comment = useRef();
   const [courseIdInCart, setCourseIdInCart] = useState([]);
-  const [courseIdInEnrollment, setCourseIdInEnrollment] = useState([]);
-  const [courseIdInPending, setCourseIdInPending] = useState([]);
+  const [courseInEnrollment, setCourseInEnrollment] = useState([]);
   const [commentsInCourse, setCommentsInCourse] = useState([]);
   let thumbnail = null;
-  if (course) {
-    thumbnail = course.thumbnail.includes("https")
-      ? course.thumbnail
-      : `http://localhost:3000/images/course/${course.thumbnail}`;
-  }
-
+  thumbnail = course?.thumbnail?.includes("https")
+    ? course.thumbnail
+    : `http://localhost:3000/images/course/${course.thumbnail}`;
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
-    : ""; //Tìm kiếm bài học ứng với thứ tự được chọn
-
+    : null; //Tìm kiếm bài học ứng với thứ tự được chọn
+  const enrollmentDetail = courseInEnrollment?.find(
+    (value) => value.courseId._id === course._id
+  );
+  const isOwned = !!enrollmentDetail;
   useEffect(() => {
     if (id) {
       fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourse });
@@ -42,7 +41,6 @@ export default function DetailCourse() {
       });
     }
     if (user) {
-      // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
       fetch(`http://localhost:3000/cart?user_id=${user._id}`)
         .then((res) => {
           if (res.ok) return res.json(); // Nếu thành công parse JSON.
@@ -51,15 +49,11 @@ export default function DetailCourse() {
         .then(({ data }) => {
           console.log(data);
           setCourseIdInCart(
-            data !== null &&
-              data.items.length &&
-              data.items.map((value) => {
-                return value.courseId._id;
-              })
+            data?.items?.map((value) => {
+              return value.courseId._id;
+            })
           );
-          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
         });
-      // Gọi API để lấy dữ liệu chi tiết khóa học, sử dụng ID lấy từ URL.
       fetch(`http://localhost:3000/enrollment?user_id=${user._id}`)
         .then((res) => {
           if (res.ok) return res.json(); // Nếu thành công parse JSON.
@@ -67,30 +61,14 @@ export default function DetailCourse() {
         })
         .then(({ data }) => {
           console.log(data);
-          setCourseIdInEnrollment(
-            data.length &&
-              data.map((value) => {
-                return value.courseId._id;
-              })
-          );
-          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
+          setCourseInEnrollment(data);
         });
-      fetch(`http://localhost:3000/order?user_id=${user._id}`)
-        .then((res) => {
-          if (res.ok) return res.json(); // Nếu thành công parse JSON.
-          throw res; // Nếu thất bại, ném response để xử lý lỗi.
-        })
-        .then(({ data }) => {
-          console.log(data);
-          const pendingIds = data
-            .filter((order) => order.status === "pending") // Chỉ lọc đơn hàng chờ duyệt
-            .flatMap((order) => order.items.map((item) => item.courseId._id)); // Lấy ID từ mảng items
-
-          setCourseIdInPending(pendingIds);
-          // Cập nhật state 'course' với dữ liệu chi tiết khóa học nhận được.
-        });
+    } else {
+      // KHI LOGOUT: Reset toàn bộ state liên quan đến user về mặc định
+      setCourseIdInCart([]);
+      setCourseInEnrollment([]);
     }
-  }, [id, user, refresh]);
+  }, [id, user, refresh, isLogin]);
 
   //Hàm xử lý thêm vào giỏ hàng
   const handleAddCart = () => {
@@ -129,38 +107,39 @@ export default function DetailCourse() {
   };
   //Hàm xử lý đăng ký học khóa học miễn phí
   const handleEnrollFree = () => {
-    fetch(`${url}/enrollment`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: user._id,
-        courseId: course._id,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+    if (!isLogin) {
+      toast.warning("Bạn chưa đăng nhập");
+    } else {
+      fetch(`${url}/enrollment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user._id,
+          courseId: course._id,
+        }),
       })
-      .then(({ message }) => {
-        toast.success(message);
-        setRefresh((prev) => prev + 1);
-      })
-      .catch(async (err) => {
-        const { message } = await err.json();
-        console.log(message);
-      });
+        .then((res) => {
+          if (res.ok) return res.json();
+          throw res;
+        })
+        .then(({ message }) => {
+          toast.success(message);
+          setRefresh((prev) => prev + 1);
+        })
+        .catch(async (err) => {
+          const { message } = await err.json();
+          console.log(message);
+        });
+    }
   };
   //Hàm xử lý đăng bình luận
   const handlePostComment = () => {
     if (!isLogin) {
       toast.warning("Bạn chưa đăng nhập, không thể bình luận");
       return;
-    } else if (
-      courseIdInEnrollment.length > 0 &&
-      !courseIdInEnrollment.includes(course._id)
-    ) {
+    } else if (!isOwned) {
       toast.warning("Bạn chưa sở hữu khóa học này, không thể bình luận");
       return;
     } else {
@@ -202,7 +181,7 @@ export default function DetailCourse() {
             <div className="level">{course.title}</div>
             <div className="price">
               {course.price > 0 ? (
-                <p>Giá: {course.price} VND</p>
+                <p>Giá: {course.price} VNĐ</p>
               ) : (
                 <p style={{ color: "#16a34a" }}>Miễn phí</p>
               )}
@@ -210,19 +189,18 @@ export default function DetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course.totalLessons} bài học
             </div>
-            {/* TH1: Kiểm tra xem người dùng đã sở hữu khóa học chưa (Enrollment) */}
-            {courseIdInEnrollment.length > 0 &&
-            courseIdInEnrollment.includes(course._id) ? (
-              <button className="btn-course btn-activated" disabled>
-                <i className="fas fa-check-circle"></i> Đã kích hoạt
-              </button>
-            ) : /* TH2: Kiểm tra xem đơn hàng có đang trong trạng thái chờ xác nhận (Pending) không */
-            courseIdInPending && courseIdInPending.includes(course._id) ? (
-              <button className="btn-course btn-pending" disabled>
-                <i className="fas fa-history"></i> Đang xác nhận...
-              </button>
+            {isLogin && isOwned ? (
+              enrollmentDetail.accessLevel === "LIMITED" ? (
+                <button className="btn-course btn-warning">
+                  <i className="fas fa-unlock-alt"></i> Thanh toán nốt 50% còn
+                  lại
+                </button>
+              ) : (
+                <button className="btn-course btn-activated" disabled>
+                  <i className="fas fa-check-circle"></i> Đã kích hoạt
+                </button>
+              )
             ) : (
-              /* TH3: Nếu chưa sở hữu và không chờ, kiểm tra miễn phí hay trả phí */
               <>
                 {course.isFree ? (
                   <button
@@ -232,10 +210,8 @@ export default function DetailCourse() {
                     Đăng ký học ngay
                   </button>
                 ) : (
-                  /* TH4: Kiểm tra giỏ hàng */
                   <>
-                    {courseIdInCart.length > 0 &&
-                    courseIdInCart.includes(course._id) ? (
+                    {isLogin && courseIdInCart?.includes(course._id) ? (
                       <button className="btn-course btn-in-cart" disabled>
                         <i className="fas fa-shopping-cart"></i> Đã trong giỏ
                       </button>
@@ -294,18 +270,22 @@ export default function DetailCourse() {
           {course.lessons &&
             course.lessons.length > 0 &&
             course.lessons.map((lesson, idx) => (
-              <a
-                key={idx}
-                href={`#lesson-${idx}`}
-                style={{ display: "block", marginBottom: "8px" }}
-              >
+              <a key={idx} style={{ display: "block", marginBottom: "8px" }}>
                 <div
                   onClick={() => {
-                    if (
-                      courseIdInEnrollment.length > 0 &&
-                      !courseIdInEnrollment.includes(course._id)
-                    ) {
+                    if (!isLogin) {
+                      toast.warning("Bạn chưa đăng nhập");
+                      return;
+                    } else if (!isOwned) {
                       toast.warning("Bạn chưa sở hữu khóa học");
+                      return;
+                    } else if (
+                      enrollmentDetail?.accessLevel === "LIMITED" &&
+                      lesson.isPreview == false
+                    ) {
+                      toast.warning(
+                        "Vui lòng thanh toán nốt 50% còn lại để xem toàn bộ bài học trong khóa học"
+                      );
                       return;
                     } else {
                       navigate(`/course?id=${id}&lesson_order=${idx + 1}`);

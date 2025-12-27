@@ -11,6 +11,11 @@ const enrollmentSchema = new mongoose.Schema(
       ref: "courseEntity",
       required: true,
     },
+    accessLevel: {
+      type: String,
+      enum: ["LIMITED", "UNLIMITED"],
+      required: true,
+    },
   },
   { timestamps: true }
 );

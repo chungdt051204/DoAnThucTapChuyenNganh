@@ -13,6 +13,16 @@ const orderItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  paymentType: {
+    type: String,
+    enum: ["FULL", "PARTIAL"],
+    required: true,
+  },
+  appliedAmount: {
+    // Số tiền phải trả cho item này trong đơn hàng này
+    type: Number,
+    required: true,
+  },
 });
 const orderSchema = new mongoose.Schema(
   {
@@ -34,10 +44,14 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    remainingAmount: {
+      type: Number,
+      default: 0,
+    },
     status: {
       type: String,
-      enum: ["pending", "success"],
-      default: "pending",
+      enum: ["partially_paid", "fully_paid"],
+      required: true,
     },
     paymentMethod: {
       type: String,
