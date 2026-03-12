@@ -1,6 +1,6 @@
 import { useSearchParams, Link } from "react-router-dom";
 export default function PaginationButton({ totalPages }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const createUrl = (page) => {
     if (page > 1) params.set("page", page);

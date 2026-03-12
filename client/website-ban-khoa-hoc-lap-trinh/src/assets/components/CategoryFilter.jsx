@@ -12,7 +12,7 @@ export default function CategoryFilter({ onCategoryChange, selectedValue }) {
         onChange={(e) => onCategoryChange(e.target.value)}
       >
         <option value="">Lọc danh mục</option>
-        {categories?.map((value) => {
+        {categories?.docs?.map((value) => {
           return (
             <option key={value._id} value={value._id}>
               {value.title}

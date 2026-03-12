@@ -9,20 +9,31 @@ import "../styles/MyCourses.css";
 
 export default function MyCourses() {
   const navigate = useNavigate();
-  const { user, refresh, isLoading } = useContext(AppContext);
+  const { user, refresh, isLoading, isLogin } = useContext(AppContext);
   const [myCourses, setMyCourses] = useState([]);
 
   useEffect(() => {
-    if (isLoading) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    if (!isLoading) {
+      if (!isLogin) {
+        navigate("/");
+        return;
+      }
+    }
+  }, [refresh, isLoading, isLogin, navigate]);
+
+  useEffect(() => {
     if (user) {
       fetchAPI({
         url: `${url}/enrollment?user_id=${user._id}`,
         setData: setMyCourses,
       });
-    } else {
-      navigate("/");
     }
-  }, [user, refresh, navigate, isLoading]);
+  }, [refresh, user]);
   return (
     <div className="page-layout">
       <UserNavBar />
@@ -34,9 +45,6 @@ export default function MyCourses() {
           <div className="my-courses-grid">
             {myCourses.length > 0 ? (
               myCourses.map((value) => {
-                const image = value.courseId.image.includes("https")
-                  ? value.courseId.image
-                  : `${url}/images/course/${value.courseId.image}`;
                 return (
                   <div key={value._id} className="my-courses-course-card">
                     <Link
@@ -44,7 +52,7 @@ export default function MyCourses() {
                       className="my-courses-course-link"
                     >
                       <img
-                        src={image}
+                        src={value.courseId.image}
                         alt=""
                         className="my-courses-course-image"
                       />

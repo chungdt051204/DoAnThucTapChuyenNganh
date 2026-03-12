@@ -9,40 +9,33 @@ import PriceFilter from "../components/PriceFilter";
 import CategoryFilter from "../components/CategoryFilter";
 import Footer from "../components/Footer";
 import "../styles/QuanLyKhoaHoc.css";
+import PaginationButton from "../components/PaginationButton";
 
 export default function QuanLyKhoaHoc() {
   const navigate = useNavigate();
+  const { isLoading, isLogin, user, categories, refresh, setRefresh } =
+    useContext(AppContext);
   const [searchParams, setSearchParams] = useSearchParams();
-  const {
-    isLoading,
-    isLogin,
-    user,
-    courses,
-    setCourses,
-    categories,
-    refresh,
-    setRefresh,
-  } = useContext(AppContext);
+  const params = new URLSearchParams(searchParams);
+  const page = searchParams.get("page");
   const id = searchParams.get("id");
   const search = searchParams.get("search");
   const category_id = searchParams.get("category_id");
   const priceRange = searchParams.get("price");
-  const addDialog = useRef();
-  const updateDialog = useRef();
-  const [courseWithId, setCourseWithId] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [courseWithId, setCourseWithId] = useState(null);
   const [searchValue, setSearchValue] = useState("");
-  const [categorySelected, setCategorySelected] = useState("");
-  const [priceSelected, setPriceSelected] = useState("");
+  const [categorySelected, setCategorySelected] = useState(null);
+  const [priceSelected, setPriceSelected] = useState(null);
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const addImage = useRef();
-  const updateImage = useRef();
-  const addThumbnail = useRef();
-  const updateThumbnail = useRef();
-  const [errTitle, setErrTitle] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
   const [errCategory, setErrCategory] = useState("");
-  const [errPrice, setErrPrice] = useState("");
-  const [errFile, setErrImage] = useState("");
+  const [errFile, setErrFile] = useState("");
+  const formDialog = useRef();
+  const confirmDialog = useRef();
+  const image = useRef();
+  const thumbnail = useRef();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,15 +53,16 @@ export default function QuanLyKhoaHoc() {
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (search) params.append("search", encodeURIComponent(search));
+    if (page) params.append("_page", page);
+    if (search) params.append("search", search);
     if (category_id) params.append("category_id", category_id);
     if (priceRange) params.append("price", priceRange);
     fetchAPI({
-      url: `${url}/course?${params.toString()}`,
+      url: `${url}/course?${params.toString()}&_limit=10`,
       setData: setCourses,
     });
     setSearchValue("");
-  }, [refresh, setCourses, category_id, search, priceRange]);
+  }, [refresh, page, setCourses, category_id, search, priceRange]);
 
   //Hàm xử lý chức năng tìm kiếm khóa học
   const handleClickSearch = () => {
@@ -100,27 +94,22 @@ export default function QuanLyKhoaHoc() {
     });
   };
   //Hàm xử lý chức năng thêm khóa học
-  const handleAddSubmit = (e) => {
+  const handleCreateCourse = (e) => {
     e.preventDefault();
-    if (title === "") {
-      setErrTitle("Vui lòng nhập tên khóa học");
+    if (categorySelected == 0) {
+      setErrCategory("Vui lòng chọn danh mục");
       return;
-    } else if (categorySelected == 0) {
-      setErrCategory("Bạn chưa chọn danh mục");
-      return;
-    } else if (price === "") {
-      setErrPrice("Vui lòng nhập giá");
-      return;
-    } else if (!addImage.current.files[0] || !addThumbnail.current.files[0]) {
-      setErrImage("Bạn chưa chọn file");
+    }
+    if (!image.current.files[0] || !thumbnail.current.files[0]) {
+      setErrFile("Bạn chưa chọn file");
       return;
     }
     const formData = new FormData();
     formData.append("title", title);
     formData.append("categoryId", categorySelected);
     formData.append("price", price);
-    formData.append("image", addImage.current.files[0]);
-    formData.append("thumbnail", addThumbnail.current.files[0]);
+    formData.append("image", image.current.files[0]);
+    formData.append("thumbnail", thumbnail.current.files[0]);
     fetch(`${url}/course`, {
       method: "POST",
       body: formData,
@@ -132,7 +121,7 @@ export default function QuanLyKhoaHoc() {
       .then(({ message }) => {
         toast.success(message);
         setRefresh((prev) => prev + 1);
-        addDialog.current.close();
+        formDialog.current.close();
       })
       .catch(async (err) => {
         const { message } = await err.json();
@@ -140,18 +129,20 @@ export default function QuanLyKhoaHoc() {
       });
   };
   //Hàm xử lý chức năng sửa khóa học
-  const handleClickUpdate = (id) => {
-    fetchAPI({ url: `${url}/course?id=${id}`, setData: setCourseWithId });
-    updateDialog.current.showModal();
+  const handleOpenDialog = (id) => {
+    setIsEdit(true);
+    params.set("id", id);
+    formDialog.current.showModal();
+    navigate(`?${params.toString()}`);
   };
-  const handleUpdateSubmit = (e) => {
+  const handleUpdateCourse = (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("title", title);
     formData.append("categoryId", categorySelected);
     formData.append("price", price);
-    formData.append("image", updateImage.current.files[0]);
-    formData.append("thumbnail", updateThumbnail.current.files[0]);
+    formData.append("image", image.current.files[0]);
+    formData.append("thumbnail", thumbnail.current.files[0]);
     fetch(`${url}/course?id=${id}`, {
       method: "PUT",
       body: formData,
@@ -163,7 +154,7 @@ export default function QuanLyKhoaHoc() {
       .then(({ message }) => {
         toast.success(message);
         setRefresh((prev) => prev + 1);
-        updateDialog.current.close();
+        formDialog.current.close();
       })
       .catch(async (err) => {
         const { message } = await err.json();
@@ -171,8 +162,8 @@ export default function QuanLyKhoaHoc() {
       });
   };
   //Hàm xử lý chức năng xóa khóa học
-  const handleDelete = (id) => {
-    fetch(`${url}/course?id=${id}`, {
+  const handleDelete = () => {
+    fetch(`${url}/course?id=${courseWithId?._id}`, {
       method: "DELETE",
     })
       .then((res) => {
@@ -196,7 +187,7 @@ export default function QuanLyKhoaHoc() {
           <button
             className="add-course-btn"
             onClick={() => {
-              addDialog.current.showModal();
+              formDialog.current.showModal();
             }}
           >
             Thêm khóa học
@@ -230,7 +221,9 @@ export default function QuanLyKhoaHoc() {
             onPriceChange={handlePriceChange}
           />
         </div>
-        <h3 style={{ marginLeft: "30px" }}>Tổng khóa học: {courses.length}</h3>
+        <h3 style={{ marginLeft: "30px" }}>
+          Tổng khóa học: {courses?.docs?.length}
+        </h3>
         <div className="course-table-container">
           <table>
             <thead>
@@ -241,16 +234,13 @@ export default function QuanLyKhoaHoc() {
               </tr>
             </thead>
             <tbody>
-              {courses?.map((value, index) => {
-                const image = value.image.includes("https")
-                  ? value.image
-                  : `${url}/images/course/${value.image}`;
+              {courses?.docs?.map((value, index) => {
                 const isSelected = index === 0 ? "selected" : "";
                 return (
                   <tr key={index} className={isSelected}>
                     <td className="course-title-cell">
                       <img
-                        src={image}
+                        src={value.image}
                         alt=""
                         className="course-img"
                         width={50}
@@ -267,7 +257,7 @@ export default function QuanLyKhoaHoc() {
                     <td className="action-cell">
                       <Link to={`/admin/course?id=${value._id}`}>
                         <i
-                          onClick={() => handleClickUpdate(value._id)}
+                          onClick={() => handleOpenDialog(value._id)}
                           className="fa-solid fa-pen"
                         ></i>
                       </Link>
@@ -281,20 +271,23 @@ export default function QuanLyKhoaHoc() {
               })}
             </tbody>
           </table>
+          <PaginationButton totalPages={courses?.totalPages} />
         </div>
       </div>
-      <dialog ref={addDialog}>
-        <h2>Thêm khóa học</h2>
-        <form action="" method="dialog" onSubmit={handleAddSubmit}>
+      <dialog ref={formDialog}>
+        <h2>{isEdit ? "Sửa thông tin khóa học" : "Thêm khóa học"}</h2>
+        <form
+          method="dialog"
+          onSubmit={isEdit ? handleUpdateCourse : handleCreateCourse}
+        >
           <input
             type="text"
             onChange={(e) => {
               setTitle(e.target.value);
-              setErrTitle("");
             }}
             placeholder="Nhập tên khóa học"
+            required
           />
-          {errTitle && <span>{errTitle}</span>}
           <br />
           <select
             className="form-select"
@@ -304,7 +297,7 @@ export default function QuanLyKhoaHoc() {
             }}
           >
             <option value="0">Chọn danh mục</option>
-            {categories?.map((value, index) => {
+            {categories?.docs?.map((value, index) => {
               return (
                 <option key={index} value={value._id}>
                   {value.title}
@@ -317,18 +310,17 @@ export default function QuanLyKhoaHoc() {
           <input
             onChange={(e) => {
               setPrice(e.target.value);
-              setErrPrice("");
             }}
             type="text"
             placeholder="Nhập giá"
+            required
           />
-          {errPrice && <span>{errPrice}</span>}
           Image:
           <div className="avatar-group">
             <input
               type="file"
               name="image"
-              ref={addImage}
+              ref={image}
               className="custom-file-input"
               accept=".jpg, .jpeg, .png"
             />
@@ -338,76 +330,26 @@ export default function QuanLyKhoaHoc() {
             <input
               type="file"
               name="image"
-              ref={addThumbnail}
+              ref={thumbnail}
               className="custom-file-input"
               accept=".jpg, .jpeg, .png"
             />
           </div>
           {errFile && <span>{errFile}</span>}
-          <button>Thêm</button>
-        </form>
-      </dialog>
-      <dialog ref={updateDialog}>
-        <h2>Sửa khóa học</h2>
-        <form action="" method="dialog" onSubmit={handleUpdateSubmit}>
-          <input
-            type="text"
-            onChange={(e) => {
-              setTitle(e.target.value);
-              setErrTitle("");
+          <button>Lưu</button>
+          <button
+            onClick={() => {
+              setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                if (newParams.has("id")) newParams.delete("id");
+                return newParams;
+              });
+              formDialog.current.close();
             }}
-            defaultValue={courseWithId.title}
-          />
-          <select
-            className="form-select"
-            onChange={(e) => {
-              setCategorySelected(e.target.value);
-              setErrCategory("");
-            }}
+            type="button"
           >
-            <option value={courseWithId ? courseWithId.categoryId._id : ""}>
-              {courseWithId ? courseWithId.categoryId.title : "Chọn danh mục"}
-            </option>
-            {categories.length > 0 &&
-              categories.map((value, index) => {
-                return (
-                  <option key={index} value={value._id}>
-                    {value.title}
-                  </option>
-                );
-              })}
-          </select>
-          <br />
-          <input
-            onChange={(e) => {
-              setPrice(e.target.value);
-              setErrPrice("");
-            }}
-            type="text"
-            defaultValue={courseWithId.price}
-          />
-          Image:
-          <div className="avatar-group">
-            <input
-              type="file"
-              name="image"
-              ref={updateImage}
-              className="custom-file-input"
-              accept=".jpg, .jpeg, .png"
-            />
-          </div>
-          Thumbnail:
-          <div className="avatar-group">
-            <input
-              type="file"
-              name="image"
-              ref={updateThumbnail}
-              className="custom-file-input"
-              accept=".jpg, .jpeg, .png"
-            />
-          </div>
-          <br />
-          <button>Cập nhật</button>
+            Hủy
+          </button>
         </form>
       </dialog>
       <Footer />

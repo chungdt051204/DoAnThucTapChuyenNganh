@@ -19,9 +19,7 @@ export default function UserNavBar() {
   const handleChange = (value) => {
     setInputValue(value);
     fetchAPI({
-      url: `${url}/course/search/suggestion?search=${encodeURIComponent(
-        value
-      ).trim()}`,
+      url: `${url}/course?search=${encodeURIComponent(value).trim()}`,
       setData: setCoursesWithSearchSuggestion,
     });
   };
@@ -56,7 +54,7 @@ export default function UserNavBar() {
               </Link>
               {isHovered && (
                 <div className="categories-dropdown-menu">
-                  {categories?.map((value) => {
+                  {categories?.docs?.map((value) => {
                     return (
                       <div className="categories-dropdown-item" key={value._id}>
                         <Link to={`/courses/category?category_id=${value._id}`}>
@@ -105,8 +103,8 @@ export default function UserNavBar() {
               </div>
               {inputValue !== "" && (
                 <div className="search-dropdown-menu">
-                  {coursesWithSearchSuggestion.length > 0 ? (
-                    coursesWithSearchSuggestion.map((value, index) => {
+                  {coursesWithSearchSuggestion?.docs?.length > 0 ? (
+                    coursesWithSearchSuggestion?.docs?.map((value, index) => {
                       const image = value.image.includes("https")
                         ? value.image
                         : `${url}/images/course/${value.image}`;
@@ -134,11 +132,7 @@ export default function UserNavBar() {
                   onClick={() => setAvatarClicked((prev) => !prev)}
                 >
                   <img
-                    src={
-                      user.avatar.includes("https")
-                        ? user.avatar
-                        : `${url}/images/user/${user.avatar}`
-                    }
+                    src={user?.avatar}
                     alt="avatar"
                     referrerPolicy="no-referrer"
                     className="user-avatar"

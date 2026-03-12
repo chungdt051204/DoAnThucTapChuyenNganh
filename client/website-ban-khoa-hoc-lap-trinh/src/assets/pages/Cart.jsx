@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import AppContext from "../components/AppContext";
 import { toast } from "react-toastify";
-import { fetchAPI } from "../service/api";
 import { url } from "../../App";
 import UserNavBar from "../components/UserNavBar";
 import Footer from "../components/Footer";
 import { useNavigate } from "react-router-dom";
 import "../styles/Cart.css";
+import { fetchAPI } from "../service/api";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -55,7 +55,13 @@ export default function Cart() {
         return;
       }
     }
-  }, [isLogin, isLoading, navigate, user]);
+  }, [refresh, isLogin, isLoading, navigate, user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchAPI({ url: `${url}/cart?user_id=${user._id}`, setData: setMyCart });
+    }
+  }, [refresh, user]);
   //Hàm xử lý chọn nhiều item trong giỏ hàng
   const handleItemSelected = (id) => {
     if (!cartItemIdSelected.includes(id)) {
@@ -192,9 +198,6 @@ export default function Cart() {
             </thead>
             <tbody>
               {myCart?.items?.map((value) => {
-                const image = value.courseId.image.includes("https")
-                  ? value.courseId.image
-                  : `http://localhost:3000/images/course/${value.courseId.image}`;
                 return (
                   <tr key={value._id}>
                     <td className="col-product">
@@ -212,7 +215,12 @@ export default function Cart() {
                         />
                         <div className="product-cell">
                           <div className="product-thumb">
-                            <img src={image} alt="" width={64} height={64} />
+                            <img
+                              src={value.courseId.image}
+                              alt=""
+                              width={64}
+                              height={64}
+                            />
                           </div>
                           <div className="product-info">
                             <div className="product-name">
@@ -308,13 +316,10 @@ export default function Cart() {
                   <tbody>
                     {myCart?.items?.map((value) => {
                       if (cartItemIdSelected.includes(value._id)) {
-                        const image = value.courseId.image.includes("https")
-                          ? value.courseId.image
-                          : `http://localhost:3000/images/course/${value.courseId.image}`;
                         return (
                           <tr key={value._id}>
                             <td className="course-info">
-                              <img src={image} alt="" />
+                              <img src={value.courseId.image} alt="" />
                               <span>{value.courseId.title}</span>
                             </td>
                             <td className="price-cell">

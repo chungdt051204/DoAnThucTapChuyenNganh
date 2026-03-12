@@ -11,16 +11,28 @@ export default function OrderDetail({ component }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
-  const { refresh, setRefresh, user, isLoading } = useContext(AppContext);
+  const { refresh, setRefresh, user, isLoading, isLogin } =
+    useContext(AppContext);
   const [orderWithOrderId, setOrderWithOrderId] = useState("");
   const [orderItemSelected, setOrderItemSelected] = useState(null);
   const dialog = useRef();
   const getRemainingAmount = (value) => {
     return value?.coursePrice - value?.appliedAmount;
   };
-
   useEffect(() => {
-    if (isLoading) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    if (!isLoading) {
+      if (!isLogin) {
+        navigate("/");
+        return;
+      }
+    }
+  }, [refresh, isLoading, isLogin, navigate]);
+  useEffect(() => {
     if (user) {
       if (id) {
         fetchAPI({
@@ -28,8 +40,8 @@ export default function OrderDetail({ component }) {
           setData: setOrderWithOrderId,
         });
       }
-    } else navigate("/");
-  }, [id, refresh, navigate, user, isLoading]);
+    }
+  }, [refresh, id, user]);
   //Hàm mở popup dialog
   const handleOpenDialog = (value) => {
     setOrderItemSelected(value);
@@ -107,14 +119,11 @@ export default function OrderDetail({ component }) {
                 </thead>
                 <tbody>
                   {orderWithOrderId?.items?.map((value) => {
-                    const image = value.courseId.image.includes("https")
-                      ? value.courseId.image
-                      : `${url}/images/course/${value.courseId.image}`;
                     return (
                       <tr key={value._id}>
                         <td className="order-detail-course-cell">
                           <img
-                            src={image}
+                            src={value.courseId.image}
                             className="order-detail-course-image"
                           />
                           <div className="order-detail-course-info">

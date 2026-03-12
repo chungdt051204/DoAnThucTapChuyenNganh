@@ -10,12 +10,12 @@ export default function Carousel() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => {
-        if (index < courses.filter((value) => value.isFeatured).length) {
+        if (index < courses?.docs?.filter((value) => value.isFeatured).length) {
           carousel.current.scrollLeft += 1100;
           return prev + 1;
         } else {
           carousel.current.scrollLeft -=
-            1100 * courses.filter((value) => value.isFeatured).length;
+            1100 * courses?.docs?.filter((value) => value.isFeatured).length;
           return 0;
         }
       });
@@ -25,7 +25,7 @@ export default function Carousel() {
   return (
     <>
       <div className="carousel-track" ref={carousel}>
-        {courses?.map((value) => {
+        {courses?.docs?.map((value) => {
           if (value.isFeatured) {
             return (
               <div key={value._id} className="carousel-item">

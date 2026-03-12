@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import AppContext from "./AppContext";
-import { url } from "../../App";
 import "../styles/CoursesPre.css";
 
 export default function CoursesPre() {
@@ -14,16 +13,13 @@ export default function CoursesPre() {
       >
         <h2>Khóa học trả phí</h2>
         <div className="course-pre-track">
-          {courses.length > 0 ? (
-            courses.map((value) => {
+          {courses?.docs?.length > 0 ? (
+            courses?.docs?.map((value) => {
               if (!value.isFree) {
-                const image = value.image.includes("https")
-                  ? value.image
-                  : `${url}/images/course/${value.image}`;
                 return (
                   <div key={value._id} className="course-pre-item">
                     <Link to={`/course?id=${value._id}`}>
-                      <img src={image} alt="" width={150} height={200} />
+                      <img src={value.image} alt="" width={150} height={200} />
                     </Link>
                     <p>{value.title}</p>
                     <p className="price">{value.price} VNĐ</p>

@@ -1,3 +1,4 @@
+const mongoosePaginate = require("mongoose-paginate-v2");
 const mongoose = require("mongoose");
 const lessonSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -27,4 +28,5 @@ const courseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+courseSchema.plugin(mongoosePaginate);
 module.exports = mongoose.model("courseEntity", courseSchema, "courses");

@@ -11,12 +11,24 @@ export default function MyOrder() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const status = searchParams.get("status");
-  const { user, refresh, isLoading } = useContext(AppContext);
+  const { user, refresh, isLoading, isLogin } = useContext(AppContext);
   const [myOrders, setMyOrders] = useState([]);
   const [statusSelected, setStatusSelected] = useState("");
 
   useEffect(() => {
-    if (isLoading) return;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    if (!isLoading) {
+      if (!isLogin) {
+        navigate("/");
+        return;
+      }
+    }
+  }, [refresh, isLoading, isLogin, navigate]);
+  useEffect(() => {
     if (user) {
       const params = new URLSearchParams();
       params.append("user_id", user._id);
@@ -25,8 +37,8 @@ export default function MyOrder() {
         url: `${url}/order?${params.toString()}`,
         setData: setMyOrders,
       });
-    } else navigate("/");
-  }, [user, refresh, status, navigate, isLoading]);
+    }
+  }, [refresh, user, status]);
   //Hàm xử lý chọn trạng thái đơn hàng
   const handleStatusSelected = (value) => {
     setStatusSelected(value);

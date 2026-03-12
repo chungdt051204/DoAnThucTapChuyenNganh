@@ -8,6 +8,7 @@ import AdminNavBar from "../components/AdminNavBar";
 import Footer from "../components/Footer";
 import PaginationButton from "../components/PaginationButton";
 import "../styles/QuanLyDanhMuc.css";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function QuanLyDanhMuc() {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function QuanLyDanhMuc() {
   const [categoryWithId, setCategoryWithId] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const formDialog = useRef();
+  const confirmDialog = useRef();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -47,7 +49,7 @@ export default function QuanLyDanhMuc() {
     const params = new URLSearchParams();
     if (page) params.append("_page", page);
     fetchAPI({
-      url: `${url}/category?${params.toString()}&_limit=2`,
+      url: `${url}/category?${params.toString()}&_limit=10`,
       setData: setCategories,
     });
   }, [refresh, page, setCategories]);
@@ -63,11 +65,11 @@ export default function QuanLyDanhMuc() {
   }, [id]);
 
   useEffect(() => {
-    if (categoryWithId !== null) {
+    if (isEdit && categoryWithId !== null) {
       setCategoryName(categoryWithId?.title);
       formDialog.current.showModal();
     }
-  }, [categoryWithId]);
+  }, [isEdit, categoryWithId]);
 
   //Hàm xử lý chức năng thêm danh mục
   const handleCreateCategory = (e) => {
@@ -133,24 +135,30 @@ export default function QuanLyDanhMuc() {
         console.log(message);
       });
   };
-
+  const handleOpenConfirmDialog = (id) => {
+    setCategoryWithId(categories?.docs?.find((value) => value._id === id));
+    confirmDialog.current.showModal();
+  };
   //Hàm xử lý chức năng xóa danh mục
-  const handleDelete = (id) => {
-    fetch(`${url}/category?id=${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) return res.json();
-        throw res;
+  const handleDeleteCategory = () => {
+    if (categoryWithId) {
+      fetch(`${url}/category?id=${categoryWithId?._id}`, {
+        method: "DELETE",
       })
-      .then(({ message }) => {
-        toast.success(message);
-        setRefresh((prev) => prev + 1);
-      })
-      .catch(async (err) => {
-        const { message } = await err.json();
-        toast.error(message);
-      });
+        .then((res) => {
+          if (res.ok) return res.json();
+          throw res;
+        })
+        .then(({ message }) => {
+          toast.success(message);
+          confirmDialog.current.close();
+          setRefresh((prev) => prev + 1);
+        })
+        .catch(async (err) => {
+          const { message } = await err.json();
+          toast.error(message);
+        });
+    }
   };
 
   return (
@@ -190,7 +198,7 @@ export default function QuanLyDanhMuc() {
                     <td>
                       <i
                         style={{ color: "red" }}
-                        onClick={() => handleDelete(value._id)}
+                        onClick={() => handleOpenConfirmDialog(value._id)}
                         className="fa-solid fa-trash"
                       ></i>
                     </td>
@@ -230,6 +238,11 @@ export default function QuanLyDanhMuc() {
             </button>
           </form>
         </dialog>
+        <ConfirmDialog
+          handleClick={handleDeleteCategory}
+          ref={confirmDialog}
+          text="Bạn có muốn xóa danh mục này không ?"
+        />
         <Footer />
       </section>
     </>

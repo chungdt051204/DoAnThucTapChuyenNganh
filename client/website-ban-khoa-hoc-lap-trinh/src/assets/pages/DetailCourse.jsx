@@ -21,10 +21,7 @@ export default function DetailCourse() {
   const [courseIdInCart, setCourseIdInCart] = useState([]);
   const [courseInEnrollment, setCourseInEnrollment] = useState([]);
   const [commentsInCourse, setCommentsInCourse] = useState([]);
-  let thumbnail = null;
-  thumbnail = course?.thumbnail?.includes("https")
-    ? course.thumbnail
-    : `${url}/images/course/${course.thumbnail}`;
+
   //Tìm kiếm bài học ứng với thứ tự được chọn
   const lesson = course.lessons
     ? course.lessons.find((value) => value.order == lesson_order)
@@ -213,18 +210,18 @@ export default function DetailCourse() {
       <UserNavBar></UserNavBar>
       <div className="course-card">
         <div className="course-hero">
-          <img className="course-thumb" src={thumbnail} alt={course.title} />
+          <img className="course-thumb" src={course?.thumbnail} />
           <div className="course-side">
-            <div className="level">{course.title}</div>
+            <div className="level">{course?.title}</div>
             <div className="price">
-              {course.price > 0 ? (
-                <p>Giá: {course.price} VNĐ</p>
+              {course?.price > 0 ? (
+                <p>Giá: {course?.price} VNĐ</p>
               ) : (
                 <p style={{ color: "#16a34a" }}>Miễn phí</p>
               )}
             </div>
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
-              {course.totalLessons} bài học
+              {course?.totalLessons} bài học
             </div>
             {isLogin && isOwned ? (
               enrollmentDetail.accessLevel === "LIMITED" ? (
@@ -239,7 +236,7 @@ export default function DetailCourse() {
               )
             ) : (
               <>
-                {course.isFree ? (
+                {course?.isFree ? (
                   <button
                     className="btn-course btn-primary"
                     onClick={handleEnrollFree}
@@ -266,12 +263,12 @@ export default function DetailCourse() {
             )}
           </div>
         </div>
-        <h2 className="course-title">{course.title}</h2>
-        <div className="course-meta">{course.shortDescription || ""}</div>
+        <h2 className="course-title">{course?.title}</h2>
+        <div className="course-meta">{course?.shortDescription || ""}</div>
         <div className="info-grid">
           <div className="info-card">
             <h3>Mô tả</h3>
-            <p style={{ margin: 0 }}>{course.description}</p>
+            <p style={{ margin: 0 }}>{course?.description}</p>
           </div>
           <div className="info-card">
             <div className="info-split">
@@ -356,13 +353,10 @@ export default function DetailCourse() {
           </div>
           <div className="detail-comment-list">
             {commentsInCourse?.map((value) => {
-              const image = value.userId.avatar.includes("https")
-                ? value.userId.avatar
-                : `${url}/images/user/${value.userId.avatar}`;
               return (
                 <div key={value._id} className="detail-comment-item">
                   <img
-                    src={image}
+                    src={value.userId.avatar}
                     alt={value.userId.username}
                     className="detail-comment-avatar"
                   />

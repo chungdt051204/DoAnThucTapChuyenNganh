@@ -4,10 +4,20 @@ const enrollmentEntity = require("../../models/enrollment.model");
 //Hàm xử lý chức năng lấy danh sách khóa học
 exports.getCourse = async (req, res) => {
   try {
-    const { id } = req.query;
-    const { category_id } = req.query;
-    const { search } = req.query;
-    const { price } = req.query;
+    const arrayCourse = await courseEntity.find();
+    const {
+      _page = 1,
+      _limit = arrayCourse?.length,
+      id,
+      category_id,
+      search,
+      price,
+    } = req.query;
+    const options = {
+      page: _page,
+      limit: _limit,
+      populate: "categoryId",
+    };
     if (id) {
       const coursesWithId = await courseEntity
         .findOne({ _id: id })
@@ -27,9 +37,7 @@ exports.getCourse = async (req, res) => {
       if (price === "medium") query.price = { $gte: 200000, $lte: 400000 };
       if (price === "high") query.price = { $gte: 400000 };
     }
-    const coursesWithQueryString = await courseEntity
-      .find(query)
-      .populate("categoryId");
+    const coursesWithQueryString = await courseEntity.paginate(query, options);
     return res.status(200).json({ data: coursesWithQueryString });
   } catch (error) {
     console.log("Có lỗi xảy ra khi xử lý hàm getCourses");
@@ -46,8 +54,8 @@ exports.postCourse = async (req, res) => {
       title: title,
       categoryId: categoryId,
       price: price,
-      image: req.files["image"] && req.files["image"][0].filename,
-      thumbnail: req.files["thumbnail"] && req.files["thumbnail"][0].filename,
+      image: req.files["image"] && req.files["image"][0].path,
+      thumbnail: req.files["thumbnail"] && req.files["thumbnail"][0].path,
       isFree: parseFloat(price) === 0,
     });
     res.status(200).json({ message: "Thêm khóa học thành công" });
