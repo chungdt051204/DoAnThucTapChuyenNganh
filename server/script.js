@@ -1,0 +1,75 @@
+//Import các thư viện cần thiết
+require("dotenv").config();
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const connectDB = require("./database");
+connectDB();
+const userEntity = require("./models/user.model");
+const express = require("express");
+const app = express();
+const port = 3000;
+const cors = require("cors");
+//Sử dụng các thư viện vừa cài
+//Thứ tự đặt: cors, cookie-parser, body-parser, router
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+const cookiesParser = require("cookie-parser");
+app.use(cookiesParser());
+app.use(express.json());
+const { isLogin } = require("./middleware/auth.middleware");
+//Khai báo các route
+const userRouter = require("./modules/user/user.router");
+const courseRouter = require("./modules/course/course.router");
+const categoryRouter = require("./modules/category/category.router");
+const cartRouter = require("./modules/cart/cart.router");
+const orderRouter = require("./modules/order/order.router");
+const enrollmentRouter = require("./modules/enrollment/enrollment.router");
+const reviewRouter = require("./modules/review/review.router");
+//Sử dụng các route
+app.use("/", userRouter);
+app.use("/", courseRouter);
+app.use("/", categoryRouter);
+app.use("/", cartRouter);
+app.use("/", orderRouter);
+app.use("/", enrollmentRouter);
+app.use("/", reviewRouter);
+//Thêm dòng này để sử dụng đc ảnh phía server
+app.use(express.static("public"));
+//Xử lý đăng nhập google
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/google/callback",
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        let user = await userEntity.findOne({
+          email: profile.emails[0].value,
+        });
+        if (!user) {
+          user = await userEntity.create({
+            email: profile.emails[0].value,
+            fullName: profile.displayName,
+            username: `${profile.displayName} ${Math.floor(
+              Math.random() * 10000
+            )}`,
+            avatar: profile.photos[0].value,
+            loginMethod: "Google",
+          });
+        }
+        return done(null, user);
+      } catch (error) {
+        return done(error, null);
+      }
+    }
+  )
+);
+app.listen(port, () => {
+  console.log("Server đang chạy với port" + " " + port);
+});

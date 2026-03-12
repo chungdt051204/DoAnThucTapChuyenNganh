@@ -1,0 +1,32 @@
+const enrollmentEntity = require("../../models/enrollment.model");
+//Hàm lấy dữ liệu các khóa học người dùng đã sở hữu
+exports.getEnrollment = async (req, res) => {
+  try {
+    const { user_id } = req.query;
+    if (user_id) {
+      const enrollmentsWithUserId = await enrollmentEntity
+        .find({
+          userId: user_id,
+        })
+        .populate("courseId");
+      res.status(200).json({ data: enrollmentsWithUserId });
+    }
+  } catch (error) {}
+};
+//Hàm xử lý đăng ký học khóa học
+exports.postEnrollment = async (req, res) => {
+  try {
+    const { userId, courseId } = req.body;
+    await enrollmentEntity.create({
+      userId: userId,
+      courseId: courseId,
+      accessLevel: "UNLIMITED",
+    });
+    res.status(200).json({ message: "Đăng ký học thành công" });
+  } catch (error) {
+    console.log("Có lỗi xảy ra khi xử lý hàm postEnrollment");
+    res
+      .status(500)
+      .json({ message: "Đăng ký học thất bại", error: error.message });
+  }
+};
