@@ -23,7 +23,7 @@ export default function CoursesWithQueryString({ text }) {
     if (category_id) {
       params.append("category_id", category_id);
       //Lấy ra tên danh mục được chọn
-      const title = categories?.map((value) => {
+      const title = categories?.docs?.map((value) => {
         if (value._id === category_id) return value.title;
       });
       setCategoryName(title);
@@ -75,8 +75,8 @@ export default function CoursesWithQueryString({ text }) {
             </div>
           </header>
           <div className="course-list">
-            {coursesWithQueryString.length > 0 ? (
-              coursesWithQueryString.map((value) => {
+            {coursesWithQueryString?.docs?.length > 0 ? (
+              coursesWithQueryString?.docs?.map((value) => {
                 const image = value.image.includes("https")
                   ? value.image
                   : `${url}/images/course/${value.image}`;

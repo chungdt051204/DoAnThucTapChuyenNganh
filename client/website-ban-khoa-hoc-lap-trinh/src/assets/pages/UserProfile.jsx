@@ -4,6 +4,8 @@ import AppContext from "../components/AppContext";
 import { toast } from "react-toastify";
 import { url } from "../../App";
 import "../styles/UserProfile.css";
+import UserNavBar from "../components/UserNavBar";
+import Footer from "../components/Footer";
 
 export default function UserProfile() {
   const navigate = useNavigate();
@@ -59,6 +61,7 @@ export default function UserProfile() {
 
   return (
     <>
+      <UserNavBar />
       <div className="profile-container">
         <h2 className="profile-title">Thông tin người dùng</h2>
         <div className="profile-avatar-wrapper">
@@ -154,6 +157,7 @@ export default function UserProfile() {
           </div>
         </form>
       </dialog>
+      <Footer />
     </>
   );
 }

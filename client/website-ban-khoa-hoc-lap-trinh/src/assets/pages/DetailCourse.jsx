@@ -12,7 +12,7 @@ import "../styles/Detail.css";
 export default function DetailCourse() {
   const navigate = useNavigate();
   const { user, isLogin, refresh, setRefresh } = useContext(AppContext);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("id"); //
   const lesson_order = searchParams.get("lesson_order");
   const [course, setCourse] = useState(null);
@@ -356,7 +356,18 @@ export default function DetailCourse() {
         </div>
       </div>
       <dialog ref={dialog} className="video-dialog">
-        <button className="close-btn" onClick={() => dialog.current.close()}>
+        <button
+          className="close-btn"
+          onClick={() => {
+            setSearchParams((prev) => {
+              const newParams = new URLSearchParams(prev);
+              if (newParams.has("lesson_order"))
+                newParams.delete("lesson_order");
+              return newParams;
+            });
+            dialog.current.close();
+          }}
+        >
           ×
         </button>
         <div
