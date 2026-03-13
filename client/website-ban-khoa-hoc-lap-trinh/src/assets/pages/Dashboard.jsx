@@ -2,16 +2,20 @@ import { useEffect, useState, useContext } from "react";
 import AppContext from "../components/AppContext";
 import { fetchAPI } from "../service/api";
 import { url } from "../../App";
-import DailyRevenueChart from "../components/DailyRevenueChart";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/DashBoard.css";
+import ColumnChart from "../components/ColumnChart";
+import LineChart from "../components/LineChart";
 
 export default function DashBoard() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const option = searchParams.get("option");
   const { isLoading, isLogin, refresh, user, courses, users, orders } =
     useContext(AppContext);
-  const [dailyRevenue, setDailyRevenue] = useState([]);
+  const [revenues, setRevenues] = useState([]);
   const [bestSellerCourses, setBestSellerCourses] = useState([]);
+  const [selectedValue, setSelectedValue] = useState(option || "");
 
   //Tính tổng doanh thu các đơn hàng đã thanh toán thành công
   const totalRevenue = () => {
@@ -38,13 +42,32 @@ export default function DashBoard() {
 
   useEffect(() => {
     if (!isLoading && isLogin && user?.role === "admin") {
-      fetchAPI({ url: `${url}/daily-revenue`, setData: setDailyRevenue });
+      const params = new URLSearchParams();
+      if (option) params.append("option", option);
+      fetchAPI({
+        url: `${url}/revenue?${params.toString()}`,
+        setData: setRevenues,
+      });
       fetchAPI({
         url: `${url}/best-seller-courses`,
         setData: setBestSellerCourses,
       });
     }
-  }, [refresh, user, isLogin, isLoading]);
+  }, [refresh, user, isLogin, isLoading, option]);
+
+  const handleChange = (value) => {
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      if (value !== "") {
+        setSelectedValue(value);
+        newParams.set("option", value);
+      } else {
+        setSelectedValue("");
+        if (newParams.has("option")) newParams.delete("option");
+      }
+      return newParams;
+    });
+  };
 
   return (
     <>
@@ -53,7 +76,7 @@ export default function DashBoard() {
         <div className="dashboard-stats-grid">
           <div className="dashboard-stats-card product-card">
             <div className="dashboard-card-title">Tổng khóa học</div>
-            <div className="dashboard-card-value">{courses.length}</div>
+            <div className="dashboard-card-value">{courses.docs?.length}</div>
           </div>
           <div className="dashboard-stats-card user-card">
             <div className="dashboard-card-title">Tổng Người dùng</div>
@@ -68,8 +91,24 @@ export default function DashBoard() {
             <div className="dashboard-card-value">{totalRevenue()} VNĐ</div>
           </div>
         </div>
+        <select
+          value={selectedValue}
+          onChange={(e) => handleChange(e.target.value)}
+        >
+          <option value="">Chọn lựa chọn</option>
+          <option value="1">Doanh thu từng khóa học trong ngày</option>
+          <option value="2">Tổng doanh thu trong 7 ngày gần nhất</option>
+        </select>
         <div className="dashboard-chart-area">
-          <DailyRevenueChart data={dailyRevenue} />
+          {selectedValue !== "" ? (
+            selectedValue == 1 ? (
+              <ColumnChart data={revenues} />
+            ) : (
+              <LineChart data={revenues} />
+            )
+          ) : (
+            <p>Vui lòng chọn 1 lựa chọn để xem biểu đồ thống kê</p>
+          )}
         </div>
         {bestSellerCourses.length > 0 && (
           <div className="bestseller-table-container">

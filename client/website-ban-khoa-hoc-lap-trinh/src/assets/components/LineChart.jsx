@@ -26,13 +26,13 @@ const options = {
   plugins: {
     title: {
       display: true,
-      text: "Biểu đồ Doanh thu Hàng ngày",
+      text: "Biểu đồ Tổng Doanh thu trong 7 ngày gần nhất",
     },
   },
 };
-export default function DailyRevenueChart({ data }) {
-  const label = data.map((value) => value._id);
-  const total = data.map((value) => value.totalAmount);
+export default function LineChart({ data }) {
+  const label = data.map((value) => value._id) || [];
+  const total = data.map((value) => value.totalRevenue) || 0;
   const chartData = {
     labels: label,
     datasets: [

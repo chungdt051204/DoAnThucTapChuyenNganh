@@ -1,6 +1,11 @@
 const cartEntity = require("../../models/cart.model");
 const orderEntity = require("../../models/order.model");
 const enrollmentEntity = require("../../models/enrollment.model");
+const revenueEntity = require("../../models/revenue.model");
+const date = Date.now();
+const dayJS = require("dayjs");
+const start = dayJS().startOf("day").toDate();
+const end = dayJS().endOf("day").toDate();
 //Hàm xử lý tạo đơn hàng
 exports.postOrder = async (req, res) => {
   try {
@@ -36,6 +41,29 @@ exports.postOrder = async (req, res) => {
     });
     // Chờ tất cả các bản ghi enrollment được tạo xong
     await Promise.all(enrollmentPromises);
+    //Tạo doanh thu của từng khóa học trong ngày
+    const revenuePromises = orderItemSelected.map(async (value) => {
+      const revenue = await revenueEntity.findOne({
+        courseId: value.courseId,
+        createdAt: { $gte: start, $lte: end },
+      });
+      if (!revenue) {
+        return revenueEntity.create({
+          courseId: value.courseId,
+          courseName: value.courseName,
+          totalAmount: value.appliedAmount,
+        });
+      } else {
+        return revenueEntity.updateOne(
+          {
+            courseId: value.courseId,
+            createdAt: { $gte: start, $lte: end },
+          },
+          { totalAmount: revenue.totalAmount + value.appliedAmount }
+        );
+      }
+    });
+    await Promise.all(revenuePromises);
     //Xoá các khóa học đã mua khỏi giỏ hàng
     await cartEntity.updateOne(
       { userId: userId },

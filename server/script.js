@@ -29,6 +29,7 @@ const cartRouter = require("./modules/cart/cart.router");
 const orderRouter = require("./modules/order/order.router");
 const enrollmentRouter = require("./modules/enrollment/enrollment.router");
 const reviewRouter = require("./modules/review/review.router");
+const revenueRouter = require("./modules/revenue/revenue.router");
 //Sử dụng các route
 app.use("/", userRouter);
 app.use("/", courseRouter);
@@ -37,6 +38,7 @@ app.use("/", cartRouter);
 app.use("/", orderRouter);
 app.use("/", enrollmentRouter);
 app.use("/", reviewRouter);
+app.use("/", revenueRouter);
 //Thêm dòng này để sử dụng đc ảnh phía server
 app.use(express.static("public"));
 //Xử lý đăng nhập google

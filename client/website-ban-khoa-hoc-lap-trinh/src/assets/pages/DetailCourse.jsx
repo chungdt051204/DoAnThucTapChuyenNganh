@@ -15,22 +15,21 @@ export default function DetailCourse() {
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id"); //
   const lesson_order = searchParams.get("lesson_order");
-  const [course, setCourse] = useState("");
+  const [course, setCourse] = useState(null);
+  const [myCart, setMyCart] = useState(null);
+  const [myEnrollments, setMyEnrollments] = useState([]);
+  const [commentsInCourse, setCommentsInCourse] = useState([]);
   const dialog = useRef();
   const comment = useRef();
-  const [courseIdInCart, setCourseIdInCart] = useState([]);
-  const [courseInEnrollment, setCourseInEnrollment] = useState([]);
-  const [commentsInCourse, setCommentsInCourse] = useState([]);
-
-  //Tìm kiếm bài học ứng với thứ tự được chọn
-  const lesson = course.lessons
-    ? course.lessons.find((value) => value.order == lesson_order)
-    : null;
+  const courseInCart =
+    myCart?.items?.find((value) => value.courseId._id == course?._id) || null;
   //Tìm kiếm khóa học người dùng đã sở hữu
-  const enrollmentDetail = courseInEnrollment?.find(
-    (value) => value.courseId._id === course._id
-  );
-  const isOwned = !!enrollmentDetail;
+  const courseInEnrollment =
+    myEnrollments?.find((value) => value.courseId._id === course?._id) || null;
+  //Tìm kiếm bài học ứng với thứ tự được chọn
+  const lesson =
+    course?.lessons.find((value) => value.order == lesson_order) || null;
+
   //Hàm tính thời gian bình luận
   const getTimeComment = (value) => {
     const now = new Date();
@@ -60,35 +59,18 @@ export default function DetailCourse() {
         setData: setCommentsInCourse,
       });
     }
-    if (user) {
-      fetch(`${url}/cart?user_id=${user._id}`)
-        .then((res) => {
-          if (res.ok) return res.json();
-          throw res;
-        })
-        .then(({ data }) => {
-          console.log(data);
-          setCourseIdInCart(
-            data?.items?.map((value) => {
-              return value.courseId._id;
-            })
-          );
-        });
-      fetch(`${url}/enrollment?user_id=${user._id}`)
-        .then((res) => {
-          if (res.ok) return res.json();
-          throw res;
-        })
-        .then(({ data }) => {
-          console.log(data);
-          setCourseInEnrollment(data);
-        });
-    } else {
-      // KHI LOGOUT: Reset toàn bộ state liên quan đến user về mặc định
-      setCourseIdInCart([]);
-      setCourseInEnrollment([]);
-    }
   }, [id, user, refresh, isLogin]);
+
+  useEffect(() => {
+    if (user) {
+      fetchAPI({ url: `${url}/cart?user_id=${user?._id}`, setData: setMyCart });
+      fetchAPI({
+        url: `${url}/enrollment?user_id=${user?._id}`,
+        setData: setMyEnrollments,
+      });
+    }
+  }, [user]);
+
   //Hàm xử lý thêm vào giỏ hàng
   const handleAddCart = () => {
     if (!isLogin) {
@@ -152,11 +134,11 @@ export default function DetailCourse() {
     if (!isLogin) {
       toast.warning("Bạn chưa đăng nhập");
       return;
-    } else if (!isOwned) {
+    } else if (!courseInEnrollment) {
       toast.warning("Bạn chưa sở hữu khóa học");
       return;
     } else if (
-      enrollmentDetail?.accessLevel === "LIMITED" &&
+      courseInEnrollment?.accessLevel === "LIMITED" &&
       value.isPreview == false
     ) {
       toast.warning(
@@ -173,7 +155,7 @@ export default function DetailCourse() {
     if (!isLogin) {
       toast.warning("Bạn chưa đăng nhập, không thể bình luận");
       return;
-    } else if (!isOwned) {
+    } else if (!courseInEnrollment) {
       toast.warning("Bạn chưa sở hữu khóa học này, không thể bình luận");
       return;
     } else {
@@ -223,8 +205,8 @@ export default function DetailCourse() {
             <div style={{ fontSize: "0.85rem", color: "#334a5e" }}>
               {course?.totalLessons} bài học
             </div>
-            {isLogin && isOwned ? (
-              enrollmentDetail.accessLevel === "LIMITED" ? (
+            {isLogin && courseInEnrollment ? (
+              courseInEnrollment?.accessLevel === "LIMITED" ? (
                 <button className="btn-course btn-warning">
                   <i className="fas fa-unlock-alt"></i> Thanh toán nốt 50% còn
                   lại
@@ -245,7 +227,7 @@ export default function DetailCourse() {
                   </button>
                 ) : (
                   <>
-                    {isLogin && courseIdInCart?.includes(course._id) ? (
+                    {isLogin && courseInCart !== null ? (
                       <button className="btn-course btn-in-cart" disabled>
                         <i className="fas fa-shopping-cart"></i> Đã trong giỏ
                       </button>
@@ -317,8 +299,8 @@ export default function DetailCourse() {
                 <div className="lesson-left">
                   <div className="play">
                     {!isLogin ||
-                    !isOwned ||
-                    (enrollmentDetail?.accessLevel === "LIMITED" &&
+                    !courseInEnrollment ||
+                    (courseInEnrollment?.accessLevel === "LIMITED" &&
                       !value.isPreview)
                       ? "🔒"
                       : "▶"}
@@ -388,7 +370,7 @@ export default function DetailCourse() {
           <ReactPlayer
             width="100%"
             height="100%"
-            url={lesson?.videoUrl}
+            src={lesson?.videoUrl}
             controls={true}
           />
         </div>
